@@ -1,0 +1,57 @@
+import { Navigate, Route, Routes } from "react-router-dom";
+import { useAuth } from "./providers/AuthProvider";
+import { AppLayout } from "./components/AppLayout";
+import { LandingPage } from "./pages/LandingPage";
+import { LoginPage } from "./pages/LoginPage";
+import { SignupPage } from "./pages/SignupPage";
+import { DashboardPage } from "./pages/DashboardPage";
+import { UpgradePage } from "./pages/UpgradePage";
+
+function ProtectedRoute({ children }) {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-slate-950 text-slate-100">
+        Loading...
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return children;
+}
+
+export default function App() {
+  return (
+    <Routes>
+      <Route path="/" element={<LandingPage />} />
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/signup" element={<SignupPage />} />
+      <Route
+        path="/dashboard"
+        element={
+          <ProtectedRoute>
+            <AppLayout>
+              <DashboardPage />
+            </AppLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/upgrade"
+        element={
+          <ProtectedRoute>
+            <AppLayout>
+              <UpgradePage />
+            </AppLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+  );
+}

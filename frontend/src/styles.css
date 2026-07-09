@@ -1,0 +1,112 @@
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Manrope:wght@400;500;600;700;800&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color: #d9ecff;
+  background:
+    radial-gradient(circle at 18% 18%, rgba(53, 117, 255, 0.24), transparent 28%),
+    radial-gradient(circle at 82% 16%, rgba(72, 226, 194, 0.18), transparent 24%),
+    linear-gradient(180deg, #030711 0%, #06111f 46%, #091a2b 100%);
+  font-family: "Manrope", "Segoe UI", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 18% 18%, rgba(53, 117, 255, 0.24), transparent 28%),
+    radial-gradient(circle at 82% 16%, rgba(72, 226, 194, 0.18), transparent 24%),
+    linear-gradient(180deg, #030711 0%, #06111f 46%, #091a2b 100%);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+h1,
+h2,
+h3,
+h4,
+.display-font {
+  font-family: "Space Grotesk", "Segoe UI", sans-serif;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.tech-shell {
+  position: relative;
+  overflow: hidden;
+  background:
+    linear-gradient(180deg, rgba(3, 7, 17, 0.74), rgba(3, 7, 17, 0.92)),
+    linear-gradient(125deg, rgba(7, 24, 42, 0.85), rgba(5, 15, 30, 0.7));
+}
+
+.tech-shell::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(116, 160, 255, 0.09) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(116, 160, 255, 0.09) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.38), transparent 88%);
+}
+
+.glass-panel {
+  background: linear-gradient(180deg, rgba(12, 23, 42, 0.72), rgba(9, 17, 30, 0.56));
+  border: 1px solid rgba(190, 224, 255, 0.12);
+  box-shadow:
+    0 24px 80px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(22px);
+}
+
+.glass-panel-soft {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
+  border: 1px solid rgba(190, 224, 255, 0.12);
+  box-shadow:
+    0 18px 60px rgba(0, 0, 0, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(18px);
+}
+
+.aurora-orb {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(18px);
+  opacity: 0.75;
+  pointer-events: none;
+}
+
+.glow-button {
+  box-shadow:
+    0 12px 40px rgba(84, 203, 255, 0.24),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+.data-chip {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(190, 224, 255, 0.1);
+  backdrop-filter: blur(12px);
+}
