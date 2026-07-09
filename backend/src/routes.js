@@ -91,7 +91,8 @@ async function requireAuth(request, response, next) {
     const decodedToken = await getAdminAuth().verifyIdToken(token);
     request.authUser = decodedToken;
     return next();
-  } catch (_error) {
+  } catch (error) {
+    console.error("Firebase auth verification failed:", error?.message || error);
     return response.status(401).json({ error: "Invalid authentication token." });
   }
 }
