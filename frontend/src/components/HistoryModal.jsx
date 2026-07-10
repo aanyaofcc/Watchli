@@ -85,6 +85,26 @@ function PrimaryPriceBlock({ snapshot }) {
   );
 }
 
+function getPriceSummary(priceChange) {
+  if (!priceChange?.changed) {
+    return "";
+  }
+
+  if (priceChange.type === "updated") {
+    return `${priceChange.previousPrice} -> ${priceChange.currentPrice}`;
+  }
+
+  if (priceChange.type === "appeared") {
+    return `Now ${priceChange.currentPrice}`;
+  }
+
+  if (priceChange.type === "removed") {
+    return `Removed ${priceChange.previousPrice}`;
+  }
+
+  return priceChange.label || "";
+}
+
 export function HistoryModal({
   website,
   snapshots,
@@ -150,9 +170,14 @@ export function HistoryModal({
                       </p>
                     </div>
                     {snapshot.diffSummary?.priceChange?.changed ? (
-                      <p className="text-sm text-amber-100">
-                        {snapshot.diffSummary.priceChange.label}
-                      </p>
+                      <div className="text-right">
+                        <p className="text-sm font-medium text-amber-100">
+                          Price alert: {getPriceSummary(snapshot.diffSummary.priceChange)}
+                        </p>
+                        <p className="mt-1 text-xs text-amber-200/80">
+                          {snapshot.diffSummary.priceChange.label}
+                        </p>
+                      </div>
                     ) : snapshot.diffSummary?.changedWordCount ? (
                       <p className="text-sm text-slate-300">
                         {snapshot.diffSummary.changedWordCount} changed word

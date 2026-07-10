@@ -14,6 +14,26 @@ function formatDate(value) {
   }).format(date);
 }
 
+function getPriceSummary(priceChange) {
+  if (!priceChange?.changed) {
+    return "";
+  }
+
+  if (priceChange.type === "updated") {
+    return `${priceChange.previousPrice} -> ${priceChange.currentPrice}`;
+  }
+
+  if (priceChange.type === "appeared") {
+    return `Now ${priceChange.currentPrice}`;
+  }
+
+  if (priceChange.type === "removed") {
+    return `Removed ${priceChange.previousPrice}`;
+  }
+
+  return priceChange.label || "";
+}
+
 export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy }) {
   const statusClasses = {
     Watching: "bg-emerald-500/15 text-emerald-200 border-emerald-400/20",
@@ -70,10 +90,19 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
         {website.lastDiffSummary?.priceChange?.changed ? (
           <div className="inline-flex items-center gap-2 rounded-full border border-amber-300/20 bg-amber-300/10 px-3 py-1.5 text-sm text-amber-100">
             <DollarSign className="h-4 w-4" />
-            {website.lastDiffSummary.priceChange.label}
+            Price alert: {getPriceSummary(website.lastDiffSummary.priceChange)}
           </div>
         ) : null}
       </div>
+
+      {website.lastDiffSummary?.priceChange?.changed ? (
+        <div className="mt-5 rounded-3xl border border-amber-300/20 bg-amber-300/10 p-4">
+          <p className="text-xs uppercase tracking-[0.16em] text-amber-200">Latest price change</p>
+          <p className="mt-2 text-base font-semibold text-white">
+            {website.lastDiffSummary.priceChange.label}
+          </p>
+        </div>
+      ) : null}
 
       <div className="mt-6 flex flex-col gap-3 sm:flex-row">
         <button

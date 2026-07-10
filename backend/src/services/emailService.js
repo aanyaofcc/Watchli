@@ -41,6 +41,15 @@ function buildEmailShell({ eyebrow, title, intro, bodyHtml, buttonLabel, buttonH
   `;
 }
 
+function escapeHtml(value = "") {
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 export async function sendChangeEmail({ email, url, checkedAt, diffSummary }) {
   if (!resend || !config.emailFrom) {
     throw new Error("Email service is not configured.");
@@ -48,6 +57,8 @@ export async function sendChangeEmail({ email, url, checkedAt, diffSummary }) {
 
   const priceChange = diffSummary?.priceChange;
   const isPriceAlert = Boolean(priceChange?.changed && priceChange?.currentPrice);
+  const safeUrl = escapeHtml(url);
+  const safeCheckedAt = escapeHtml(checkedAt);
   const emailTitle = isPriceAlert ? "A watched product price changed" : "A watched page just changed";
   const emailEyebrow = isPriceAlert ? "Price change detected" : "Change detected";
   const emailIntro = isPriceAlert
@@ -57,7 +68,23 @@ export async function sendChangeEmail({ email, url, checkedAt, diffSummary }) {
     ? `
       <div style="margin-bottom:16px;border-radius:22px;border:1px solid rgba(126,231,255,0.18);background:rgba(126,231,255,0.06);padding:18px 20px;">
         <p style="margin:0 0 10px;font-size:12px;letter-spacing:0.14em;text-transform:uppercase;color:#8ed9ff;">Price signal</p>
-        <p style="margin:0;font-size:16px;line-height:1.7;color:#ffffff;">${priceChange.label}</p>
+        <p style="margin:0 0 14px;font-size:17px;line-height:1.6;color:#ffffff;font-weight:700;">${escapeHtml(priceChange.label)}</p>
+        ${
+          priceChange.previousPrice && priceChange.currentPrice
+            ? `
+              <div style="display:flex;flex-wrap:wrap;gap:12px;">
+                <div style="min-width:180px;flex:1;border-radius:18px;border:1px solid rgba(190,224,255,0.1);background:rgba(255,255,255,0.04);padding:14px 16px;">
+                  <p style="margin:0 0 6px;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:#89a3bf;">Previous price</p>
+                  <p style="margin:0;font-size:20px;line-height:1.2;color:#ffffff;">${escapeHtml(priceChange.previousPrice)}</p>
+                </div>
+                <div style="min-width:180px;flex:1;border-radius:18px;border:1px solid rgba(126,231,255,0.18);background:rgba(126,231,255,0.08);padding:14px 16px;">
+                  <p style="margin:0 0 6px;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:#8ed9ff;">Current price</p>
+                  <p style="margin:0;font-size:20px;line-height:1.2;color:#ffffff;">${escapeHtml(priceChange.currentPrice)}</p>
+                </div>
+              </div>
+            `
+            : ""
+        }
       </div>
     `
     : "";
@@ -70,12 +97,12 @@ export async function sendChangeEmail({ email, url, checkedAt, diffSummary }) {
       ${priceCard}
       <div style="border-radius:22px;border:1px solid rgba(190,224,255,0.12);background:rgba(255,255,255,0.04);padding:18px 20px;">
         <p style="margin:0 0 10px;font-size:12px;letter-spacing:0.14em;text-transform:uppercase;color:#8ed9ff;">Website</p>
-        <p style="margin:0 0 18px;font-size:16px;line-height:1.7;color:#ffffff;word-break:break-word;">${url}</p>
+        <p style="margin:0 0 18px;font-size:16px;line-height:1.7;color:#ffffff;word-break:break-word;">${safeUrl}</p>
         <p style="margin:0 0 10px;font-size:12px;letter-spacing:0.14em;text-transform:uppercase;color:#8ed9ff;">Checked at</p>
-        <p style="margin:0;font-size:16px;line-height:1.7;color:#ffffff;">${checkedAt}</p>
+        <p style="margin:0;font-size:16px;line-height:1.7;color:#ffffff;">${safeCheckedAt}</p>
       </div>
       <p style="margin:22px 0 0;font-size:15px;line-height:1.8;color:#bfd2e8;">
-        Log in to your dashboard to review the latest snapshot and decide whether the update matters to you.
+        Log in to your dashboard to review the latest snapshot, compare previous and current content, and decide whether the update matters to you.
       </p>
     `,
     buttonLabel: "Open dashboard",
@@ -87,7 +114,9 @@ export async function sendChangeEmail({ email, url, checkedAt, diffSummary }) {
   return resend.emails.send({
     from: buildFromAddress(),
     to: email,
-    subject: isPriceAlert ? "Watchli detected a product price change" : "Watchli detected a page change",
+    subject: isPriceAlert
+      ? `Watchli price alert: ${priceChange.previousPrice || "old"} -> ${priceChange.currentPrice || "new"}`
+      : "Watchli detected a page change",
     html,
     text: `${isPriceAlert ? "Watchli detected a product price change." : "Watchli detected a page change."}
 
