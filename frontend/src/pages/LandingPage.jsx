@@ -109,18 +109,18 @@ export function LandingPage() {
       </header>
 
       <main className="relative z-10">
-        <section className="mx-auto grid max-w-7xl gap-12 px-6 pb-24 pt-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
+        <section className="mx-auto grid max-w-7xl gap-14 px-6 pb-24 pt-10 lg:grid-cols-[minmax(0,1.12fr)_minmax(460px,0.88fr)] lg:items-center xl:gap-20">
           <div>
             <div className="data-chip inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm text-slate-200">
               <Sparkles className="h-4 w-4 text-cyan-300" />
               Track product pages and catch price changes faster
             </div>
 
-            <h1 className="display-font mt-8 max-w-4xl text-5xl font-bold leading-[0.95] tracking-tight text-white sm:text-6xl lg:text-7xl">
+            <h1 className="display-font mt-8 max-w-5xl text-5xl font-bold leading-[0.92] tracking-tight text-white sm:text-6xl lg:text-[5.4rem] xl:text-[6.2rem]">
               A glossy price watcher for products you do not want to miss.
             </h1>
 
-            <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-300">
+            <p className="mt-7 max-w-2xl text-lg leading-8 text-slate-300 xl:max-w-3xl">
               Watchli monitors shopping and product pages, looks for likely prices, and
               tells you when the listing changes so you can catch drops, increases, or edits quickly.
             </p>
@@ -141,13 +141,13 @@ export function LandingPage() {
               </Link>
             </div>
 
-            <div className="mt-10 grid gap-4 sm:grid-cols-3">
+            <div className="mt-12 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
               {[
                 ["5 products free", "Start with the items you care about most"],
                 ["Price-aware alerts", "Get notified when a product page appears to change price"],
                 ["Cron-ready backend", "Prepared for automatic checks later"]
               ].map(([title, body]) => (
-                <div key={title} className="glass-panel-soft rounded-3xl p-4">
+                <div key={title} className="glass-panel-soft rounded-3xl p-5">
                   <p className="display-font text-lg font-semibold text-white">{title}</p>
                   <p className="mt-2 text-sm leading-6 text-slate-300">{body}</p>
                 </div>
@@ -155,7 +155,7 @@ export function LandingPage() {
             </div>
           </div>
 
-          <div className="relative">
+          <div className="relative lg:pl-2">
             <div className="glass-panel rounded-[34px] p-5">
               <div className="rounded-[28px] border border-white/10 bg-[linear-gradient(180deg,rgba(9,17,30,0.95),rgba(8,15,26,0.82))] p-6">
                 <div className="flex items-center justify-between">
