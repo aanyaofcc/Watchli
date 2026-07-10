@@ -31,10 +31,5 @@ app.use(router);
 
 app.listen(config.port, () => {
   console.log(`Watchli backend listening on http://localhost:${config.port}`);
-  console.log("Firebase config present:", {
-    projectId: Boolean(config.firebaseProjectId),
-    clientEmail: Boolean(config.firebaseClientEmail),
-    privateKey: Boolean(config.firebasePrivateKey)
-  });
   startScheduler();
 });
