@@ -116,13 +116,11 @@ export function LandingPage() {
               Track product pages and catch price changes faster
             </div>
 
-            <h1 className="display-font mt-8 max-w-4xl text-5xl font-bold leading-[0.98] tracking-tight text-white sm:text-6xl lg:text-[5.8rem] xl:text-[6.4rem]">
-              <span className="block">A glossy price watcher</span>
-              <span className="mt-2 block">for products you do not</span>
-              <span className="mt-2 block">want to miss.</span>
+            <h1 className="display-font mt-8 max-w-4xl text-5xl font-bold leading-[0.95] tracking-tight text-white sm:text-6xl lg:text-7xl">
+              A glossy price watcher for products you do not want to miss.
             </h1>
 
-            <p className="mt-7 max-w-2xl text-lg leading-9 text-slate-300">
+            <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-300">
               Watchli monitors shopping and product pages, looks for likely prices, and
               tells you when the listing changes so you can catch drops, increases, or edits quickly.
             </p>
@@ -157,7 +155,7 @@ export function LandingPage() {
             </div>
           </div>
 
-          <div className="relative lg:-translate-y-6">
+          <div className="relative">
             <div className="glass-panel rounded-[34px] p-5">
               <div className="rounded-[28px] border border-white/10 bg-[linear-gradient(180deg,rgba(9,17,30,0.95),rgba(8,15,26,0.82))] p-6">
                 <div className="flex items-center justify-between">
@@ -174,7 +172,7 @@ export function LandingPage() {
                   </div>
                 </div>
 
-                <div className="mt-6 grid gap-4 sm:grid-cols-[1fr_minmax(240px,0.9fr)]">
+                <div className="mt-6 grid gap-4 sm:grid-cols-[1.1fr_0.9fr]">
                   <div className="glass-panel-soft rounded-3xl p-5">
                     <div className="flex items-center justify-between text-sm text-slate-300">
                       <span>Tracked pages</span>
