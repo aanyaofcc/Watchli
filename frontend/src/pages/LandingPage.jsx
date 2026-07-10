@@ -172,7 +172,7 @@ export function LandingPage() {
                   </div>
                 </div>
 
-                <div className="mt-6 grid gap-4 sm:grid-cols-[1.1fr_0.9fr]">
+                <div className="mt-6 grid gap-4 sm:grid-cols-[1fr_minmax(240px,0.9fr)]">
                   <div className="glass-panel-soft rounded-3xl p-5">
                     <div className="flex items-center justify-between text-sm text-slate-300">
                       <span>Tracked pages</span>
