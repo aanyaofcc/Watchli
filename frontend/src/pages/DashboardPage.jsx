@@ -235,8 +235,8 @@ export function DashboardPage() {
   };
 
   return (
-    <div className="space-y-6 sm:space-y-8">
-      <section className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+    <div className="space-y-5 sm:space-y-6">
+      <section className="grid gap-4 lg:grid-cols-[1.08fr_0.92fr]">
         <div className="glass-panel rounded-[32px] p-5 sm:p-8">
           <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
             <div>
@@ -255,7 +255,7 @@ export function DashboardPage() {
             get alerted when the price or listing details appear to change.
           </p>
 
-          <form className="mt-8 space-y-4" onSubmit={handleAddWebsite}>
+          <form className="mt-6 space-y-4" onSubmit={handleAddWebsite}>
             <label className="block">
               <span className="mb-2 block text-sm text-slate-200">Add Product Page</span>
               <div className="flex flex-col gap-3 sm:flex-row">
@@ -277,7 +277,7 @@ export function DashboardPage() {
             </label>
           </form>
 
-          <div className="mt-5 flex flex-wrap items-center gap-3 text-sm text-slate-300">
+          <div className="mt-4 flex flex-wrap items-center gap-2 text-sm text-slate-300">
             <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5">
               {account.websiteCount} of {account.websiteLimit} slots used
             </span>
@@ -299,7 +299,7 @@ export function DashboardPage() {
           ) : null}
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
           <div className="glass-panel-soft rounded-3xl p-5 sm:p-6">
             <div className="flex items-center gap-3">
               <Globe className="h-5 w-5 text-cyan-300" />
@@ -326,7 +326,7 @@ export function DashboardPage() {
               type="button"
               onClick={handleSendTestEmail}
               disabled={sendingEmail}
-              className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-slate-200 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+              className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-slate-200 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
             >
               <Mail className="h-4 w-4" />
               {sendingEmail ? "Sending..." : "Send Test Email"}
@@ -343,7 +343,7 @@ export function DashboardPage() {
                 </h2>
               </div>
             </div>
-            <p className="mt-4 text-sm leading-6 text-slate-300">
+            <p className="mt-3 text-sm leading-6 text-slate-300">
               Watchli now surfaces likely price signals from product pages and highlights
               before-and-after text so you can spot listing changes faster.
             </p>
@@ -359,7 +359,7 @@ export function DashboardPage() {
                 </h2>
               </div>
             </div>
-            <div className="mt-5 space-y-3">
+            <div className="mt-4 space-y-2.5">
               {[
                 "Up to 100 watched product pages",
                 "$7/month subscription billing",
@@ -377,7 +377,7 @@ export function DashboardPage() {
             <button
               type="button"
               onClick={handleUpgradeClick}
-              className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-amber-300/20 bg-amber-300/10 px-4 py-3 text-sm font-medium text-amber-100 transition hover:bg-amber-300/15 sm:w-auto"
+              className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-amber-300/20 bg-amber-300/10 px-4 py-3 text-sm font-medium text-amber-100 transition hover:bg-amber-300/15 sm:w-auto"
             >
               <Zap className="h-4 w-4" />
               {account.premium ? "View Pro plan" : "Upgrade to Pro"}
@@ -397,7 +397,7 @@ export function DashboardPage() {
       </section>
 
       <section className="space-y-4">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between">
           <h2 className="display-font text-2xl font-semibold text-white">
             Your watched product pages
           </h2>
@@ -413,14 +413,14 @@ export function DashboardPage() {
         </div>
 
         {loadingWebsites ? (
-          <div className="glass-panel-soft rounded-3xl p-10 text-center text-slate-300">
+          <div className="glass-panel-soft rounded-3xl p-8 text-center text-slate-300">
             <div className="inline-flex items-center gap-2">
               <LoaderCircle className="h-5 w-5 animate-spin text-cyan-300" />
               Loading your watched websites...
             </div>
           </div>
         ) : websites.length === 0 ? (
-          <div className="glass-panel-soft rounded-3xl border border-dashed p-10 text-center text-slate-300">
+          <div className="glass-panel-soft rounded-3xl border border-dashed p-8 text-center text-slate-300">
             Add your first product page to start tracking price changes.
           </div>
         ) : (

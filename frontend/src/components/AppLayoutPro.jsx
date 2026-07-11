@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { Crown, Eye, LogOut } from "lucide-react";
 import { useAuth } from "../providers/AuthProvider";
-import { SiteFooterPro } from "./SiteFooterPro";
+import { SiteFooterDense } from "./SiteFooterDense";
 
 export function AppLayoutPro({ children }) {
   const { logout } = useAuth();
@@ -17,7 +17,7 @@ export function AppLayoutPro({ children }) {
       <div className="aurora-orb left-[-80px] top-20 h-64 w-64 bg-cyan-400/20" />
       <div className="aurora-orb right-[-80px] top-32 h-72 w-72 bg-blue-500/20" />
       <header className="relative z-10 border-b border-white/10 bg-slate-950/55 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-4 sm:px-6 md:flex-row md:items-center md:justify-between">
+        <div className="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-3.5 sm:px-6 md:flex-row md:items-center md:justify-between">
           <Link to="/" className="flex items-center gap-3 text-lg font-semibold">
             <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-white/10 bg-white/10">
               <Eye className="h-5 w-5 text-cyan-300" />
@@ -46,8 +46,8 @@ export function AppLayoutPro({ children }) {
           </div>
         </div>
       </header>
-      <main className="relative z-10 mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-10">{children}</main>
-      <SiteFooterPro compact width="max-w-6xl" />
+      <main className="relative z-10 mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-8">{children}</main>
+      <SiteFooterDense compact width="max-w-6xl" />
     </div>
   );
 }

@@ -10,7 +10,7 @@ import {
   Sparkles,
   Zap
 } from "lucide-react";
-import { SiteFooterPro } from "../components/SiteFooterPro";
+import { SiteFooterDense } from "../components/SiteFooterDense";
 
 const steps = [
   {
@@ -73,7 +73,7 @@ export function LandingPagePro() {
       <div className="aurora-orb right-[-60px] top-36 h-72 w-72 bg-blue-500/25" />
       <div className="aurora-orb bottom-24 left-1/2 h-56 w-56 -translate-x-1/2 bg-teal-300/15" />
 
-      <header className="relative z-10 mx-auto flex max-w-7xl flex-col gap-5 px-4 py-5 sm:px-6 md:flex-row md:items-center md:justify-between md:py-6">
+      <header className="relative z-10 mx-auto flex max-w-7xl flex-col gap-4 px-4 py-4 sm:px-6 md:flex-row md:items-center md:justify-between md:py-5">
         <div className="flex items-center gap-3">
           <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-white/10 bg-white/10 shadow-soft">
             <Eye className="h-5 w-5 text-cyan-200" />
@@ -110,7 +110,7 @@ export function LandingPagePro() {
       </header>
 
       <main className="relative z-10">
-        <section className="mx-auto grid max-w-7xl gap-10 px-4 pb-20 pt-6 sm:px-6 sm:pt-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
+        <section className="mx-auto grid max-w-7xl gap-8 px-4 pb-16 pt-4 sm:px-6 sm:pt-8 lg:grid-cols-[1.02fr_0.98fr] lg:items-center lg:gap-8">
           <div>
             <div className="data-chip inline-flex max-w-full items-center gap-2 rounded-full px-4 py-2 text-sm text-slate-200">
               <Sparkles className="h-4 w-4 text-cyan-300" />
@@ -126,7 +126,7 @@ export function LandingPagePro() {
               tells you when the listing changes so you can catch drops, increases, or edits quickly.
             </p>
 
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+            <div className="mt-7 flex flex-col gap-3 sm:flex-row">
               <Link
                 to="/signup"
                 className="glow-button inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-cyan-300 via-sky-300 to-teal-300 px-6 py-3.5 font-semibold text-slate-950 transition hover:scale-[1.02]"
@@ -142,13 +142,13 @@ export function LandingPagePro() {
               </Link>
             </div>
 
-            <div className="mt-8 grid gap-4 sm:mt-10 sm:grid-cols-3">
+            <div className="mt-8 grid gap-3 sm:mt-9 sm:grid-cols-3">
               {[
                 ["5 products free", "Start with the items you care about most"],
                 ["Price-aware alerts", "Get notified when a product page appears to change price"],
                 ["Cron-ready backend", "Prepared for automatic checks later"]
               ].map(([title, body]) => (
-                <div key={title} className="glass-panel-soft rounded-3xl p-4">
+                <div key={title} className="glass-panel-soft rounded-3xl p-4 sm:p-5">
                   <p className="display-font text-lg font-semibold text-white">{title}</p>
                   <p className="mt-2 text-sm leading-6 text-slate-300">{body}</p>
                 </div>
@@ -157,8 +157,8 @@ export function LandingPagePro() {
           </div>
 
           <div className="relative">
-            <div className="glass-panel rounded-[28px] p-3 sm:rounded-[34px] sm:p-5">
-              <div className="rounded-[24px] border border-white/10 bg-[linear-gradient(180deg,rgba(9,17,30,0.95),rgba(8,15,26,0.82))] p-4 sm:rounded-[28px] sm:p-6">
+            <div className="glass-panel rounded-[28px] p-3 sm:rounded-[34px] sm:p-4">
+              <div className="rounded-[24px] border border-white/10 bg-[linear-gradient(180deg,rgba(19,33,53,0.94),rgba(14,25,42,0.8))] p-4 sm:rounded-[28px] sm:p-5">
                 <div className="flex items-start justify-between gap-4">
                   <div>
                     <p className="text-xs uppercase tracking-[0.24em] text-cyan-300/80">
@@ -173,13 +173,13 @@ export function LandingPagePro() {
                   </div>
                 </div>
 
-                <div className="mt-6 grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
+                <div className="mt-5 grid gap-3 lg:grid-cols-[1.15fr_0.85fr]">
                   <div className="glass-panel-soft rounded-3xl p-4 sm:p-5">
                     <div className="flex items-center justify-between text-sm text-slate-300">
                       <span>Tracked pages</span>
                       <span className="display-font text-lg font-semibold text-white">3</span>
                     </div>
-                    <div className="mt-5 space-y-3">
+                    <div className="mt-4 space-y-3">
                       {dashboardPreview.map((item) => (
                         <div
                           key={item.url}
@@ -205,7 +205,7 @@ export function LandingPagePro() {
                     </div>
                   </div>
 
-                  <div className="space-y-4">
+                  <div className="space-y-3">
                     <div className="glass-panel-soft rounded-3xl p-5">
                       <p className="text-sm text-slate-400">Latest signal</p>
                       <p className="mt-3 display-font text-xl font-bold text-white sm:text-2xl">
@@ -236,17 +236,17 @@ export function LandingPagePro() {
           </div>
         </section>
 
-        <section id="how-it-works" className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
-          <div className="mb-8 max-w-2xl">
+        <section id="how-it-works" className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
+          <div className="mb-6 max-w-2xl">
             <p className="text-sm uppercase tracking-[0.24em] text-cyan-300">How it works</p>
             <h2 className="display-font mt-3 text-3xl font-bold text-white sm:text-4xl">
               Focus on product pages where price changes matter
             </h2>
           </div>
 
-          <div className="grid gap-6 lg:grid-cols-3">
+          <div className="grid gap-4 lg:grid-cols-3">
             {steps.map((step, index) => (
-              <div key={step.title} className="glass-panel rounded-[30px] p-6">
+              <div key={step.title} className="glass-panel rounded-[30px] p-5 sm:p-6">
                 <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-300/25 to-blue-400/20 text-lg font-bold text-cyan-100">
                   {index + 1}
                 </div>
@@ -259,10 +259,10 @@ export function LandingPagePro() {
           </div>
         </section>
 
-        <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
-          <div className="grid gap-6 lg:grid-cols-3">
+        <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
+          <div className="grid gap-4 lg:grid-cols-3">
             {features.map(({ icon: Icon, title, body }) => (
-              <div key={title} className="glass-panel-soft rounded-[30px] p-6">
+              <div key={title} className="glass-panel-soft rounded-[30px] p-5 sm:p-6">
                 <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/6 ring-1 ring-white/10">
                   <Icon className="h-5 w-5 text-cyan-200" />
                 </div>
@@ -275,8 +275,8 @@ export function LandingPagePro() {
           </div>
         </section>
 
-        <section id="pricing" className="mx-auto max-w-7xl px-4 py-12 pb-24 sm:px-6">
-          <div className="mb-8 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+        <section id="pricing" className="mx-auto max-w-7xl px-4 py-8 pb-20 sm:px-6">
+          <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <div>
               <p className="text-sm uppercase tracking-[0.24em] text-cyan-300">Pricing preview</p>
               <h2 className="display-font mt-3 text-3xl font-bold text-white sm:text-4xl">
@@ -289,7 +289,7 @@ export function LandingPagePro() {
             </p>
           </div>
 
-          <div className="grid gap-6 lg:grid-cols-2">
+          <div className="grid gap-4 lg:grid-cols-2">
             {plans.map((plan, index) => (
               <div
                 key={plan.name}
@@ -350,7 +350,7 @@ export function LandingPagePro() {
           </div>
         </section>
       </main>
-      <SiteFooterPro />
+      <SiteFooterDense />
     </div>
   );
 }
