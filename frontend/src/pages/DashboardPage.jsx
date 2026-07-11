@@ -329,7 +329,7 @@ export function DashboardPage() {
           ) : null}
         </div>
 
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
+        <div className="grid gap-3 sm:grid-cols-2">
           <div className="glass-panel-soft rounded-3xl p-5 sm:p-6">
             <div className="flex items-center gap-3">
               <Globe className="h-5 w-5 text-cyan-300" />
@@ -378,52 +378,56 @@ export function DashboardPage() {
                 "Run a manual check or wait for scheduled checks to see the latest product movement here."}
             </p>
           </div>
+        </div>
+      </section>
 
-          <div className="glass-panel-soft rounded-3xl p-5 sm:p-6">
-            <div className="flex items-center gap-3">
-              <ScanSearch className="h-5 w-5 text-cyan-300" />
-              <div>
-                <p className="text-sm text-slate-400">Change intelligence</p>
-                <h2 className="display-font text-xl font-semibold text-white">
-                  Before-and-after previews enabled
-                </h2>
-              </div>
+      <section className="grid gap-4 lg:grid-cols-[0.92fr_1.08fr]">
+        <div className="glass-panel-soft rounded-3xl p-5 sm:p-6">
+          <div className="flex items-center gap-3">
+            <ScanSearch className="h-5 w-5 text-cyan-300" />
+            <div>
+              <p className="text-sm text-slate-400">Change intelligence</p>
+              <h2 className="display-font text-xl font-semibold text-white">
+                Before-and-after previews enabled
+              </h2>
             </div>
-            <p className="mt-3 text-sm leading-6 text-slate-300">
-              Watchli now surfaces likely price signals from product pages and highlights
-              before-and-after text so you can spot listing changes faster.
-            </p>
           </div>
+          <p className="mt-3 text-sm leading-6 text-slate-300">
+            Watchli now surfaces likely price signals from product pages and highlights
+            before-and-after text so you can spot listing changes faster.
+          </p>
+        </div>
 
-          <div className="glass-panel-soft rounded-3xl p-5 sm:p-6 sm:col-span-2 lg:col-span-1">
-            <div className="flex items-center gap-3">
-              <Crown className="h-5 w-5 text-amber-300" />
-              <div>
-                <p className="text-sm text-slate-400">Upgrade path</p>
-                <h2 className="display-font text-xl font-semibold text-white">
-                  Watchli Pro
-                </h2>
+        <div className="glass-panel-soft rounded-3xl p-5 sm:p-6">
+          <div className="flex items-center gap-3">
+            <Crown className="h-5 w-5 text-amber-300" />
+            <div>
+              <p className="text-sm text-slate-400">Upgrade path</p>
+              <h2 className="display-font text-xl font-semibold text-white">
+                Watchli Pro
+              </h2>
+            </div>
+          </div>
+          <div className="mt-4 grid gap-2.5 md:grid-cols-3">
+            {[
+              "Up to 100 watched product pages",
+              "$7/month subscription billing",
+              "Future faster checks and premium features"
+            ].map((feature) => (
+              <div
+                key={feature}
+                className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-slate-200"
+              >
+                <Lock className="h-4 w-4 shrink-0 text-amber-200" />
+                {feature}
               </div>
-            </div>
-            <div className="mt-4 space-y-2.5">
-              {[
-                "Up to 100 watched product pages",
-                "$7/month subscription billing",
-                "Future faster checks and premium features"
-              ].map((feature) => (
-                <div
-                  key={feature}
-                  className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-slate-200"
-                >
-                  <Lock className="h-4 w-4 text-amber-200" />
-                  {feature}
-                </div>
-              ))}
-            </div>
+            ))}
+          </div>
+          <div className="mt-4 flex flex-col gap-3 sm:flex-row">
             <button
               type="button"
               onClick={handleUpgradeClick}
-              className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-amber-300/20 bg-amber-300/10 px-4 py-3 text-sm font-medium text-amber-100 transition hover:bg-amber-300/15 sm:w-auto"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-amber-300/20 bg-amber-300/10 px-4 py-3 text-sm font-medium text-amber-100 transition hover:bg-amber-300/15 sm:w-auto"
             >
               <Zap className="h-4 w-4" />
               {account.premium ? "View Pro plan" : "Upgrade to Pro"}
@@ -433,7 +437,7 @@ export function DashboardPage() {
                 type="button"
                 onClick={() => void handleManageBilling()}
                 disabled={openingBilling}
-                className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-slate-200 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-slate-200 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
               >
                 {openingBilling ? "Opening..." : "Manage Billing"}
               </button>
