@@ -102,7 +102,7 @@ export function LandingPagePro() {
           </Link>
           <Link
             to="/signup"
-            className="glow-button rounded-full bg-gradient-to-r from-cyan-300 via-sky-300 to-teal-300 px-5 py-2.5 text-center text-sm font-semibold text-slate-950 transition hover:scale-[1.02]"
+            className="glow-button rounded-full bg-gradient-to-r from-[#8fb2c3] via-[#7f9fb7] to-[#8cb4a8] px-5 py-2.5 text-center text-sm font-semibold text-slate-950 transition hover:scale-[1.02] hover:from-[#9bbccc] hover:via-[#8aabc2] hover:to-[#96beb2]"
           >
             Start Watching
           </Link>
@@ -129,7 +129,7 @@ export function LandingPagePro() {
             <div className="mt-7 flex flex-col gap-3 sm:flex-row">
               <Link
                 to="/signup"
-                className="glow-button inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-cyan-300 via-sky-300 to-teal-300 px-6 py-3.5 font-semibold text-slate-950 transition hover:scale-[1.02]"
+                className="glow-button inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#8fb2c3] via-[#7f9fb7] to-[#8cb4a8] px-6 py-3.5 font-semibold text-slate-950 transition hover:scale-[1.02] hover:from-[#9bbccc] hover:via-[#8aabc2] hover:to-[#96beb2]"
               >
                 Start Watching
                 <ArrowRight className="h-4 w-4" />
@@ -337,7 +337,7 @@ export function LandingPagePro() {
                       className={`inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-medium transition ${
                         index === 0
                           ? "border border-white/10 bg-white/5 text-white hover:bg-white/10"
-                          : "bg-gradient-to-r from-cyan-300 via-sky-300 to-teal-300 text-slate-950 hover:scale-[1.01]"
+                          : "bg-gradient-to-r from-[#8fb2c3] via-[#7f9fb7] to-[#8cb4a8] text-slate-950 hover:scale-[1.01] hover:from-[#9bbccc] hover:via-[#8aabc2] hover:to-[#96beb2]"
                       }`}
                     >
                       {index === 0 ? "Start Free" : "See Pro"}

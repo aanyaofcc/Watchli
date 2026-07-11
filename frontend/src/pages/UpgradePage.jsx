@@ -141,7 +141,7 @@ export function UpgradePage() {
               type="button"
               onClick={handleUpgrade}
               disabled={checkingOut || loading || account?.premium}
-              className="glow-button inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-cyan-300 via-sky-300 to-teal-300 px-5 py-3 font-semibold text-slate-950 transition hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-60"
+              className="glow-button inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#8fb2c3] via-[#7f9fb7] to-[#8cb4a8] px-5 py-3 font-semibold text-slate-950 transition hover:scale-[1.01] hover:from-[#9bbccc] hover:via-[#8aabc2] hover:to-[#96beb2] disabled:cursor-not-allowed disabled:opacity-60"
             >
               {checkingOut ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <Crown className="h-4 w-4" />}
               {account?.premium ? "You are on Pro" : checkingOut ? "Opening checkout..." : "Upgrade to Pro"}

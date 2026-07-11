@@ -269,7 +269,7 @@ export function DashboardPage() {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="glow-button w-full rounded-2xl bg-gradient-to-r from-cyan-300 via-sky-300 to-teal-300 px-5 py-3 font-semibold text-slate-950 transition hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+                  className="glow-button w-full rounded-2xl bg-gradient-to-r from-[#8fb2c3] via-[#7f9fb7] to-[#8cb4a8] px-5 py-3 font-semibold text-slate-950 transition hover:scale-[1.01] hover:from-[#9bbccc] hover:via-[#8aabc2] hover:to-[#96beb2] disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
                 >
                   {submitting ? "Adding..." : "Add Website"}
                 </button>
