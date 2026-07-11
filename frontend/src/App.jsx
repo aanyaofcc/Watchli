@@ -7,6 +7,7 @@ import { SignupPage } from "./pages/SignupPage";
 import { DashboardPage } from "./pages/DashboardPage";
 import { UpgradePage } from "./pages/UpgradePage";
 import { PrivacyPolicyPage, TermsOfServicePage } from "./pages/LegalPage";
+import { SettingsPage } from "./pages/SettingsPage";
 
 function ProtectedRoute({ children }) {
   const { user, loading } = useAuth();
@@ -50,6 +51,16 @@ export default function App() {
           <ProtectedRoute>
             <AppLayoutPro>
               <UpgradePage />
+            </AppLayoutPro>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/settings"
+        element={
+          <ProtectedRoute>
+            <AppLayoutPro>
+              <SettingsPage />
             </AppLayoutPro>
           </ProtectedRoute>
         }
