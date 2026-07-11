@@ -118,7 +118,7 @@ export function LandingPagePro() {
             </div>
 
             <h1 className="display-font mt-6 max-w-4xl text-4xl font-bold leading-[0.95] tracking-tight text-white sm:mt-8 sm:text-6xl lg:text-7xl">
-              A glossy price watcher for products you do not want to miss.
+              Catch price drops, sellouts, and product changes before everyone else.
             </h1>
 
             <p className="mt-5 max-w-2xl text-base leading-7 text-slate-300 sm:mt-6 sm:text-lg sm:leading-8">
