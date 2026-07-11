@@ -266,7 +266,7 @@ export function DashboardPage() {
         </div>
       </section>
 
-      <section className="grid gap-4 lg:grid-cols-[1.08fr_0.92fr]">
+      <section className="grid gap-4 lg:grid-cols-[1.08fr_0.92fr] lg:items-start">
         <div className="glass-panel rounded-[32px] p-5 sm:p-8">
           <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
             <div>
