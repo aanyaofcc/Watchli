@@ -1,4 +1,13 @@
-import { Clock3, DollarSign, History, RefreshCw, TextSearch, Trash2 } from "lucide-react";
+import {
+  Clock3,
+  DollarSign,
+  ExternalLink,
+  History,
+  PackageSearch,
+  RefreshCw,
+  TextSearch,
+  Trash2
+} from "lucide-react";
 
 function formatDate(value) {
   if (!value) {
@@ -103,26 +112,47 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
     Changed: "bg-amber-500/15 text-amber-100 border-amber-400/20",
     Error: "bg-rose-500/15 text-rose-100 border-rose-400/20"
   };
+  const availability = website.latestAvailabilityStatus || website.lastDiffSummary?.currentAvailabilityStatus || "unknown";
+  const availabilityLabel =
+    availability === "sold_out"
+      ? "Sold out"
+      : availability === "unavailable"
+        ? "Unavailable"
+        : availability === "available"
+          ? "Available"
+          : "Availability unknown";
+  const availabilityClasses =
+    availability === "sold_out" || availability === "unavailable"
+      ? "border-amber-300/20 bg-amber-300/10 text-amber-100"
+      : availability === "available"
+        ? "border-emerald-300/20 bg-emerald-300/10 text-emerald-100"
+        : "border-white/10 bg-white/5 text-slate-300";
 
   return (
     <article className="glass-panel rounded-[30px] p-4 sm:p-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
         <div className="min-w-0 flex-1">
-          <p className="text-sm uppercase tracking-[0.18em] text-slate-400">Watched website</p>
-          {website.latestProductTitle ? (
-            <p className="mt-2 text-sm font-medium text-cyan-100">{website.latestProductTitle}</p>
-          ) : null}
-          <h3 className="display-font mt-2 break-all text-xl font-semibold text-white">
-            {website.url}
+          <div className="flex flex-wrap items-center gap-2">
+            <p className="text-sm uppercase tracking-[0.18em] text-slate-400">Watched website</p>
+            <div
+              className={`inline-flex rounded-full border px-3 py-1 text-xs font-medium ${statusClasses[website.status] || statusClasses.Watching}`}
+            >
+              {website.status}
+            </div>
+            <div className={`inline-flex rounded-full border px-3 py-1 text-xs font-medium ${availabilityClasses}`}>
+              {availabilityLabel}
+            </div>
+          </div>
+          <h3 className="display-font mt-3 break-words text-2xl font-semibold text-white">
+            {website.latestProductTitle || "Tracked product page"}
           </h3>
-          <div
-            className={`mt-4 inline-flex rounded-full border px-3 py-1 text-xs font-medium ${statusClasses[website.status] || statusClasses.Watching}`}
-          >
-            {website.status}
+          <div className="mt-2 flex items-start gap-2 text-sm text-slate-300">
+            <ExternalLink className="mt-0.5 h-4 w-4 shrink-0 text-slate-500" />
+            <p className="break-all">{website.url}</p>
           </div>
         </div>
 
-        <div className="grid gap-3 text-sm text-slate-300 md:text-right">
+        <div className="grid gap-3 text-sm text-slate-300 md:min-w-[220px] md:text-right">
           <p className="inline-flex items-center gap-2 md:justify-end">
             <Clock3 className="h-4 w-4 text-slate-500" />
             Last checked: {formatDate(website.lastChecked)}
@@ -131,31 +161,45 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
         </div>
       </div>
 
-      <div className="mt-5 flex flex-wrap items-center gap-3">
-        {website.latestPrimaryPrice ? (
-          <div className="inline-flex items-center gap-2 rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-1.5 text-sm text-cyan-100">
-            <DollarSign className="h-4 w-4" />
-            Tracked price: {website.latestPrimaryPrice}
-          </div>
-        ) : (
-          <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-slate-300">
-            <DollarSign className="h-4 w-4" />
-            No clear price detected yet
-          </div>
-        )}
+      <div className="mt-5 grid gap-3 md:grid-cols-[1.05fr_0.95fr]">
+        <div className="glass-panel-soft rounded-3xl p-4">
+          <p className="text-xs uppercase tracking-[0.16em] text-slate-400">Current price</p>
+          {website.latestPrimaryPrice ? (
+            <div className="mt-2 inline-flex items-center gap-2 rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-1.5 text-sm text-cyan-100">
+              <DollarSign className="h-4 w-4" />
+              Tracked price: {website.latestPrimaryPrice}
+            </div>
+          ) : (
+            <div className="mt-2 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-slate-300">
+              <DollarSign className="h-4 w-4" />
+              No clear price detected yet
+            </div>
+          )}
 
-        {website.latestPrimaryPriceSource ? (
-          <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-slate-300">
-            Source: {website.latestPrimaryPriceSource}
-          </div>
-        ) : null}
+          {website.latestPrimaryPriceSource ? (
+            <p className="mt-3 text-sm text-slate-400">Source: {website.latestPrimaryPriceSource}</p>
+          ) : null}
+        </div>
 
-        {website.lastDiffSummary?.priceChange?.changed ? (
-          <div className="inline-flex items-center gap-2 rounded-full border border-amber-300/20 bg-amber-300/10 px-3 py-1.5 text-sm text-amber-100">
-            <DollarSign className="h-4 w-4" />
-            Price alert: {getPriceSummary(website.lastDiffSummary.priceChange)}
-          </div>
-        ) : null}
+        <div className="glass-panel-soft rounded-3xl p-4">
+          <p className="text-xs uppercase tracking-[0.16em] text-slate-400">Latest signal</p>
+          {website.lastDiffSummary?.priceChange?.changed ? (
+            <div className="mt-2 inline-flex items-center gap-2 rounded-full border border-amber-300/20 bg-amber-300/10 px-3 py-1.5 text-sm text-amber-100">
+              <DollarSign className="h-4 w-4" />
+              {getPriceSummary(website.lastDiffSummary.priceChange)}
+            </div>
+          ) : (
+            <div className="mt-2 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-slate-300">
+              <PackageSearch className="h-4 w-4" />
+              Monitoring for changes
+            </div>
+          )}
+          <p className="mt-3 text-sm text-slate-300">
+            {website.lastDiffSummary?.priceChange?.changed
+              ? website.lastDiffSummary.priceChange.label
+              : "Watchli will alert you when price, stock, or content changes are detected."}
+          </p>
+        </div>
       </div>
 
       {website.lastDiffSummary?.priceChange?.changed ? (

@@ -109,6 +109,29 @@ export function UpgradePage() {
         </div>
       ) : null}
 
+      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="glass-panel-soft rounded-3xl p-5">
+          <p className="text-sm text-slate-400">Monthly price</p>
+          <p className="display-font mt-2 text-3xl font-semibold text-white">$7</p>
+          <p className="mt-2 text-sm text-slate-300">Straightforward monthly billing</p>
+        </div>
+        <div className="glass-panel-soft rounded-3xl p-5">
+          <p className="text-sm text-slate-400">Watch limit</p>
+          <p className="display-font mt-2 text-3xl font-semibold text-white">100</p>
+          <p className="mt-2 text-sm text-slate-300">Tracked product pages on Pro</p>
+        </div>
+        <div className="glass-panel-soft rounded-3xl p-5">
+          <p className="text-sm text-slate-400">Priority</p>
+          <p className="display-font mt-2 text-3xl font-semibold text-white">Faster</p>
+          <p className="mt-2 text-sm text-slate-300">Positioned for premium checks as Watchli grows</p>
+        </div>
+        <div className="glass-panel-soft rounded-3xl p-5">
+          <p className="text-sm text-slate-400">Best for</p>
+          <p className="display-font mt-2 text-3xl font-semibold text-white">Power users</p>
+          <p className="mt-2 text-sm text-slate-300">Shoppers and researchers watching more products</p>
+        </div>
+      </section>
+
       <section className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
         <div className="glass-panel rounded-[32px] p-8">
           <div className="inline-flex items-center gap-2 rounded-full border border-cyan-300/20 bg-cyan-300/10 px-4 py-2 text-sm text-cyan-100">
@@ -123,6 +146,21 @@ export function UpgradePage() {
             Pro gives Watchli a real paid tier: more watched products, billing support,
             and room for faster checks as the monitoring engine grows.
           </p>
+
+          <div className="mt-6 grid gap-3 sm:grid-cols-2">
+            <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-4">
+              <p className="text-xs uppercase tracking-[0.16em] text-slate-400">What changes right away</p>
+              <p className="mt-2 text-sm leading-6 text-slate-300">
+                Your watch limit jumps from 5 to 100 and the app starts treating your account as Pro across the dashboard.
+              </p>
+            </div>
+            <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-4">
+              <p className="text-xs uppercase tracking-[0.16em] text-slate-400">What comes next</p>
+              <p className="mt-2 text-sm leading-6 text-slate-300">
+                Premium plan groundwork is ready for faster checks, richer alerting, and more serious monitoring workflows.
+              </p>
+            </div>
+          </div>
 
           <div className="mt-8 space-y-3">
             {perks.map((perk) => (
@@ -189,6 +227,18 @@ export function UpgradePage() {
                   <p className="text-sm text-slate-400">Check cadence</p>
                   <p className="display-font mt-2 text-2xl font-semibold text-white">
                     {account?.checkFrequency || "Daily checks"}
+                  </p>
+                </div>
+
+                <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-5">
+                  <p className="text-sm text-slate-400">Upgrade outcome</p>
+                  <p className="display-font mt-2 text-2xl font-semibold text-white">
+                    {account?.premium ? "Pro unlocked" : "Free starter tier"}
+                  </p>
+                  <p className="mt-2 text-sm text-slate-300">
+                    {account?.premium
+                      ? "Your account is using premium limits and billing management."
+                      : "Upgrade when you need more tracked products and a stronger monitoring setup."}
                   </p>
                 </div>
               </div>

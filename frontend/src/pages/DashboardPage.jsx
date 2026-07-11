@@ -48,6 +48,11 @@ export function DashboardPage() {
   const [historyLoading, setHistoryLoading] = useState(false);
   const [historyError, setHistoryError] = useState("");
   const [openingBilling, setOpeningBilling] = useState(false);
+  const changedWebsites = websites.filter((website) => website.status === "Changed");
+  const availableWebsites = websites.filter(
+    (website) => (website.latestAvailabilityStatus || "unknown") === "available"
+  );
+  const priceAwareWebsites = websites.filter((website) => website.latestPrimaryPrice);
 
   const loadWebsites = async ({ showRefreshing = false } = {}) => {
     if (!user) {
@@ -236,6 +241,31 @@ export function DashboardPage() {
 
   return (
     <div className="space-y-5 sm:space-y-6">
+      <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="glass-panel-soft rounded-3xl p-5">
+          <p className="text-sm text-slate-400">Tracked products</p>
+          <p className="display-font mt-2 text-3xl font-semibold text-white">{websites.length}</p>
+          <p className="mt-2 text-sm text-slate-300">
+            {account.websiteSlotsRemaining} slot{account.websiteSlotsRemaining === 1 ? "" : "s"} left on your plan
+          </p>
+        </div>
+        <div className="glass-panel-soft rounded-3xl p-5">
+          <p className="text-sm text-slate-400">Price-aware pages</p>
+          <p className="display-font mt-2 text-3xl font-semibold text-white">{priceAwareWebsites.length}</p>
+          <p className="mt-2 text-sm text-slate-300">Pages with a current tracked price signal</p>
+        </div>
+        <div className="glass-panel-soft rounded-3xl p-5">
+          <p className="text-sm text-slate-400">Recent changes</p>
+          <p className="display-font mt-2 text-3xl font-semibold text-white">{changedWebsites.length}</p>
+          <p className="mt-2 text-sm text-slate-300">Products currently marked as changed</p>
+        </div>
+        <div className="glass-panel-soft rounded-3xl p-5">
+          <p className="text-sm text-slate-400">Available now</p>
+          <p className="display-font mt-2 text-3xl font-semibold text-white">{availableWebsites.length}</p>
+          <p className="mt-2 text-sm text-slate-300">Tracked products that still appear available</p>
+        </div>
+      </section>
+
       <section className="grid gap-4 lg:grid-cols-[1.08fr_0.92fr]">
         <div className="glass-panel rounded-[32px] p-5 sm:p-8">
           <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
@@ -331,6 +361,22 @@ export function DashboardPage() {
               <Mail className="h-4 w-4" />
               {sendingEmail ? "Sending..." : "Send Test Email"}
             </button>
+          </div>
+
+          <div className="glass-panel-soft rounded-3xl p-5 sm:p-6">
+            <div className="flex items-center gap-3">
+              <Zap className="h-5 w-5 text-cyan-300" />
+              <div>
+                <p className="text-sm text-slate-400">Recent alert pulse</p>
+                <h2 className="display-font text-xl font-semibold text-white">
+                  {changedWebsites[0]?.latestProductTitle || changedWebsites[0]?.url || "No fresh alert yet"}
+                </h2>
+              </div>
+            </div>
+            <p className="mt-3 text-sm leading-6 text-slate-300">
+              {changedWebsites[0]?.lastDiffSummary?.priceChange?.label ||
+                "Run a manual check or wait for scheduled checks to see the latest product movement here."}
+            </p>
           </div>
 
           <div className="glass-panel-soft rounded-3xl p-5 sm:p-6">
