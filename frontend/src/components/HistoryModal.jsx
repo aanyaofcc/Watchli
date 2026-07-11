@@ -105,6 +105,30 @@ function getPriceSummary(priceChange) {
   return priceChange.label || "";
 }
 
+function getPriceDirectionLabel(priceChange) {
+  if (!priceChange?.changed) {
+    return "";
+  }
+
+  if (priceChange.direction === "down") {
+    return "Price dropped";
+  }
+
+  if (priceChange.direction === "up") {
+    return "Price increased";
+  }
+
+  if (priceChange.direction === "appeared") {
+    return "Price found";
+  }
+
+  if (priceChange.direction === "removed") {
+    return "Price removed";
+  }
+
+  return "Price changed";
+}
+
 export function HistoryModal({
   website,
   snapshots,
@@ -187,7 +211,30 @@ export function HistoryModal({
                   </div>
 
                   {snapshot.status === "changed" && snapshot.diffSummary ? (
-                    <div className="mt-5 grid gap-4 xl:grid-cols-2">
+                    <div className="mt-5 space-y-4">
+                      {snapshot.diffSummary?.priceChange?.changed ? (
+                        <div className="rounded-3xl border border-amber-300/20 bg-amber-300/10 p-4">
+                          <p className="text-xs uppercase tracking-[0.16em] text-amber-200">
+                            {getPriceDirectionLabel(snapshot.diffSummary.priceChange)}
+                          </p>
+                          <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                            <div className="rounded-2xl border border-white/10 bg-slate-950/30 p-3">
+                              <p className="text-xs uppercase tracking-[0.14em] text-slate-400">Previous price</p>
+                              <p className="mt-1 text-lg font-semibold text-white">
+                                {snapshot.diffSummary.priceChange.previousPrice || "Not available"}
+                              </p>
+                            </div>
+                            <div className="rounded-2xl border border-cyan-300/20 bg-cyan-300/10 p-3">
+                              <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">Current price</p>
+                              <p className="mt-1 text-lg font-semibold text-white">
+                                {snapshot.diffSummary.priceChange.currentPrice || "Not available"}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      ) : null}
+
+                      <div className="grid gap-4 xl:grid-cols-2">
                       <div className="rounded-3xl border border-rose-400/20 bg-rose-500/5 p-4">
                         <p className="mb-3 text-sm font-medium text-rose-200">Previous</p>
                         <SegmentPreview
@@ -203,6 +250,7 @@ export function HistoryModal({
                           fallback={snapshot.diffSummary.currentPreview}
                         />
                         <PricePills prices={snapshot.diffSummary.currentPrices} />
+                      </div>
                       </div>
                     </div>
                   ) : snapshot.snapshotText ? (

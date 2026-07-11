@@ -30,6 +30,8 @@ function buildSegments(words, changeStart, changeEnd) {
 function summarizePriceChange(previousPriceData, currentPriceData) {
   const previousPrimary = previousPriceData?.primaryPrice || "";
   const currentPrimary = currentPriceData?.primaryPrice || "";
+  const previousValue = previousPriceData?.primaryPriceValue;
+  const currentValue = currentPriceData?.primaryPriceValue;
   const previousDetected = previousPriceData?.priceDetected;
   const currentDetected = currentPriceData?.priceDetected;
 
@@ -41,9 +43,13 @@ function summarizePriceChange(previousPriceData, currentPriceData) {
     return {
       changed: true,
       type: "appeared",
+      direction: "appeared",
       previousPrice: "",
       currentPrice: currentPrimary,
       label: `Price detected: ${currentPrimary}`,
+      previousValue: null,
+      currentValue: currentValue ?? null,
+      amount: null,
       reliable: currentPriceData?.primaryPriceConfidence >= 75
     };
   }
@@ -52,20 +58,48 @@ function summarizePriceChange(previousPriceData, currentPriceData) {
     return {
       changed: true,
       type: "removed",
+      direction: "removed",
       previousPrice: previousPrimary,
       currentPrice: "",
       label: `Price removed: ${previousPrimary}`,
+      previousValue: previousValue ?? null,
+      currentValue: null,
+      amount: null,
       reliable: previousPriceData?.primaryPriceConfidence >= 75
     };
   }
 
   if (previousPrimary !== currentPrimary) {
+    const hasNumericValues =
+      typeof previousValue === "number" &&
+      Number.isFinite(previousValue) &&
+      typeof currentValue === "number" &&
+      Number.isFinite(currentValue);
+    const rawAmount = hasNumericValues ? currentValue - previousValue : null;
+    const direction = hasNumericValues
+      ? rawAmount > 0
+        ? "up"
+        : rawAmount < 0
+          ? "down"
+          : "changed"
+      : "changed";
+    const movementLabel =
+      direction === "up"
+        ? `Price went up from ${previousPrimary} to ${currentPrimary}`
+        : direction === "down"
+          ? `Price went down from ${previousPrimary} to ${currentPrimary}`
+          : `Price changed from ${previousPrimary} to ${currentPrimary}`;
+
     return {
       changed: true,
       type: "updated",
+      direction,
       previousPrice: previousPrimary,
       currentPrice: currentPrimary,
-      label: `Price changed from ${previousPrimary} to ${currentPrimary}`,
+      label: movementLabel,
+      previousValue: previousValue ?? null,
+      currentValue: currentValue ?? null,
+      amount: rawAmount,
       reliable:
         (previousPriceData?.primaryPriceConfidence || 0) >= 75 &&
         (currentPriceData?.primaryPriceConfidence || 0) >= 75
@@ -75,9 +109,13 @@ function summarizePriceChange(previousPriceData, currentPriceData) {
   return {
     changed: false,
     type: "unchanged",
+    direction: "unchanged",
     previousPrice: previousPrimary,
     currentPrice: currentPrimary,
     label: `Price still ${currentPrimary}`,
+    previousValue: previousValue ?? null,
+    currentValue: currentValue ?? null,
+    amount: 0,
     reliable:
       (previousPriceData?.primaryPriceConfidence || 0) >= 75 &&
       (currentPriceData?.primaryPriceConfidence || 0) >= 75

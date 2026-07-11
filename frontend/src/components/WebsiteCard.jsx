@@ -34,6 +34,30 @@ function getPriceSummary(priceChange) {
   return priceChange.label || "";
 }
 
+function getPriceDirectionLabel(priceChange) {
+  if (!priceChange?.changed) {
+    return "";
+  }
+
+  if (priceChange.direction === "down") {
+    return "Price dropped";
+  }
+
+  if (priceChange.direction === "up") {
+    return "Price increased";
+  }
+
+  if (priceChange.direction === "appeared") {
+    return "Price found";
+  }
+
+  if (priceChange.direction === "removed") {
+    return "Price removed";
+  }
+
+  return "Price changed";
+}
+
 export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy }) {
   const statusClasses = {
     Watching: "bg-emerald-500/15 text-emerald-200 border-emerald-400/20",
@@ -98,9 +122,24 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
       {website.lastDiffSummary?.priceChange?.changed ? (
         <div className="mt-5 rounded-3xl border border-amber-300/20 bg-amber-300/10 p-4">
           <p className="text-xs uppercase tracking-[0.16em] text-amber-200">Latest price change</p>
-          <p className="mt-2 text-base font-semibold text-white">
+          <p className="mt-2 text-base font-semibold text-white">{getPriceDirectionLabel(website.lastDiffSummary.priceChange)}</p>
+          <p className="mt-1 text-sm text-amber-100">
             {website.lastDiffSummary.priceChange.label}
           </p>
+          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+            <div className="rounded-2xl border border-white/10 bg-slate-950/30 p-3">
+              <p className="text-xs uppercase tracking-[0.14em] text-slate-400">Previous price</p>
+              <p className="mt-1 text-lg font-semibold text-white">
+                {website.lastDiffSummary.priceChange.previousPrice || "Not available"}
+              </p>
+            </div>
+            <div className="rounded-2xl border border-cyan-300/20 bg-cyan-300/10 p-3">
+              <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">Current price</p>
+              <p className="mt-1 text-lg font-semibold text-white">
+                {website.lastDiffSummary.priceChange.currentPrice || "Not available"}
+              </p>
+            </div>
+          </div>
         </div>
       ) : null}
 
