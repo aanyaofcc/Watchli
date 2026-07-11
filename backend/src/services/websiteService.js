@@ -101,7 +101,10 @@ async function saveSnapshotRecord({
     primaryPriceCurrency: priceData?.primaryPriceCurrency || "",
     primaryPriceSource: priceData?.primaryPriceSource || "",
     primaryPriceConfidence: priceData?.primaryPriceConfidence || 0,
-    productTitle: priceData?.productTitle || ""
+    productTitle: priceData?.productTitle || "",
+    availabilityStatus: priceData?.availabilityStatus || "unknown",
+    availabilityLabel: priceData?.availabilityLabel || "",
+    available: priceData?.available ?? null
   };
 
   await Promise.all([
@@ -177,6 +180,10 @@ export async function createWebsiteForUser({ userId, url }) {
     latestPrimaryPriceCurrency: "",
     latestPrimaryPriceSource: "",
     latestPrimaryPriceConfidence: 0,
+    latestAvailabilityStatus: "unknown",
+    latestAvailabilityLabel: "",
+    previousAvailabilityStatus: "unknown",
+    previousAvailabilityLabel: "",
     lastDiffSummary: null
   };
   const batch = db.batch();
@@ -287,6 +294,10 @@ export async function checkWebsite({ websiteId, userId }) {
           latestPrimaryPriceCurrency: priceData.primaryPriceCurrency,
           latestPrimaryPriceSource: priceData.primaryPriceSource,
           latestPrimaryPriceConfidence: priceData.primaryPriceConfidence,
+          latestAvailabilityStatus: priceData.availabilityStatus,
+          latestAvailabilityLabel: priceData.availabilityLabel,
+          previousAvailabilityStatus: "unknown",
+          previousAvailabilityLabel: "",
           lastDiffSummary: null
         }
       });
@@ -307,7 +318,9 @@ export async function checkWebsite({ websiteId, userId }) {
       primaryPriceCurrency: website.latestPrimaryPriceCurrency || "",
       primaryPriceSource: website.latestPrimaryPriceSource || "",
       primaryPriceConfidence: website.latestPrimaryPriceConfidence || 0,
-      detectedPrices: website.latestDetectedPrices || []
+      detectedPrices: website.latestDetectedPrices || [],
+      availabilityStatus: website.latestAvailabilityStatus || "unknown",
+      availabilityLabel: website.latestAvailabilityLabel || ""
     };
     const diffSummary = createDiffSummary(
       website.latestSnapshotText || "",
@@ -359,6 +372,10 @@ export async function checkWebsite({ websiteId, userId }) {
           latestPrimaryPriceCurrency: priceData.primaryPriceCurrency,
           latestPrimaryPriceSource: priceData.primaryPriceSource,
           latestPrimaryPriceConfidence: priceData.primaryPriceConfidence,
+          latestAvailabilityStatus: priceData.availabilityStatus,
+          latestAvailabilityLabel: priceData.availabilityLabel,
+          previousAvailabilityStatus: website.latestAvailabilityStatus || "unknown",
+          previousAvailabilityLabel: website.latestAvailabilityLabel || "",
           lastDiffSummary: diffSummary
         }
       });
@@ -410,6 +427,8 @@ export async function checkWebsite({ websiteId, userId }) {
         latestPrimaryPriceCurrency: priceData.primaryPriceCurrency,
         latestPrimaryPriceSource: priceData.primaryPriceSource,
         latestPrimaryPriceConfidence: priceData.primaryPriceConfidence,
+        latestAvailabilityStatus: priceData.availabilityStatus,
+        latestAvailabilityLabel: priceData.availabilityLabel,
         lastDiffSummary: diffSummary
       }
     });

@@ -56,13 +56,13 @@ export async function sendChangeEmail({ email, url, checkedAt, diffSummary }) {
   }
 
   const priceChange = diffSummary?.priceChange;
-  const isPriceAlert = Boolean(priceChange?.changed && priceChange?.currentPrice);
+  const isPriceAlert = Boolean(priceChange?.changed);
   const safeUrl = escapeHtml(url);
   const safeCheckedAt = escapeHtml(checkedAt);
-  const emailTitle = isPriceAlert ? "A watched product price changed" : "A watched page just changed";
-  const emailEyebrow = isPriceAlert ? "Price change detected" : "Change detected";
+  const emailTitle = isPriceAlert ? "A watched product update was detected" : "A watched page just changed";
+  const emailEyebrow = isPriceAlert ? "Product update detected" : "Change detected";
   const emailIntro = isPriceAlert
-    ? "Watchli spotted a likely product price update on one of the pages you're tracking."
+    ? "Watchli spotted a meaningful product update on one of the pages you're tracking."
     : "Watchli detected a content update on one of the pages you're monitoring.";
   const priceCard = priceChange?.changed
     ? `
@@ -115,7 +115,7 @@ export async function sendChangeEmail({ email, url, checkedAt, diffSummary }) {
     from: buildFromAddress(),
     to: email,
     subject: isPriceAlert
-      ? `Watchli price alert: ${priceChange.previousPrice || "old"} -> ${priceChange.currentPrice || "new"}`
+      ? `Watchli alert: ${priceChange.label || "Product update detected"}`
       : "Watchli detected a page change",
     html,
     text: `${isPriceAlert ? "Watchli detected a product price change." : "Watchli detected a page change."}

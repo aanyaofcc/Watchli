@@ -91,6 +91,14 @@ function getPriceSummary(priceChange) {
   }
 
   if (priceChange.type === "updated") {
+    if (priceChange.direction === "down" && priceChange.amount) {
+      return `Decreased by ${formatDollarAmount(Math.abs(priceChange.amount))}`;
+    }
+
+    if (priceChange.direction === "up" && priceChange.amount) {
+      return `Increased by ${formatDollarAmount(priceChange.amount)}`;
+    }
+
     return `${priceChange.previousPrice} -> ${priceChange.currentPrice}`;
   }
 
@@ -102,6 +110,14 @@ function getPriceSummary(priceChange) {
     return `Removed ${priceChange.previousPrice}`;
   }
 
+  if (priceChange.type === "sold_out") {
+    return "Item is sold out";
+  }
+
+  if (priceChange.type === "unavailable") {
+    return "No longer available";
+  }
+
   return priceChange.label || "";
 }
 
@@ -111,11 +127,15 @@ function getPriceDirectionLabel(priceChange) {
   }
 
   if (priceChange.direction === "down") {
-    return "Price dropped";
+    return priceChange.amount
+      ? `Price decreased by ${formatDollarAmount(Math.abs(priceChange.amount))}`
+      : "Price dropped";
   }
 
   if (priceChange.direction === "up") {
-    return "Price increased";
+    return priceChange.amount
+      ? `Price increased by ${formatDollarAmount(priceChange.amount)}`
+      : "Price increased";
   }
 
   if (priceChange.direction === "appeared") {
@@ -126,7 +146,26 @@ function getPriceDirectionLabel(priceChange) {
     return "Price removed";
   }
 
+  if (priceChange.direction === "sold_out") {
+    return "Item sold out";
+  }
+
+  if (priceChange.direction === "unavailable") {
+    return "Item no longer available";
+  }
+
   return "Price changed";
+}
+
+function formatDollarAmount(value) {
+  if (typeof value !== "number" || !Number.isFinite(value)) {
+    return "";
+  }
+
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD"
+  }).format(value);
 }
 
 export function HistoryModal({

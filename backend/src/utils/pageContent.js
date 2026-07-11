@@ -2,6 +2,19 @@ import * as cheerio from "cheerio";
 import crypto from "crypto";
 
 const PRICE_REGEX = /(?:\$|USD\s?)(?:\d{1,3}(?:,\d{3})*|\d+)(?:\.\d{2})?/gi;
+const SOLD_OUT_PATTERNS = [
+  /\bsold\s*out\b/i,
+  /\bout\s*of\s*stock\b/i,
+  /\bcurrently\s*unavailable\b/i,
+  /\btemporarily\s*out\s*of\s*stock\b/i
+];
+const UNAVAILABLE_PATTERNS = [
+  /\bno\s*longer\s*available\b/i,
+  /\bitem\s*unavailable\b/i,
+  /\bproduct\s*unavailable\b/i,
+  /\bunavailable\b/i,
+  /\bdiscontinued\b/i
+];
 
 function safeJsonParse(value) {
   try {
@@ -264,12 +277,48 @@ export function extractPageText(html) {
   return normalizeWhitespace(text);
 }
 
+function detectAvailability(text) {
+  const normalized = normalizeWhitespace(text || "");
+
+  if (!normalized) {
+    return {
+      status: "unknown",
+      label: "",
+      available: null
+    };
+  }
+
+  if (UNAVAILABLE_PATTERNS.some((pattern) => pattern.test(normalized))) {
+    return {
+      status: "unavailable",
+      label: "No longer available",
+      available: false
+    };
+  }
+
+  if (SOLD_OUT_PATTERNS.some((pattern) => pattern.test(normalized))) {
+    return {
+      status: "sold_out",
+      label: "Sold out",
+      available: false
+    };
+  }
+
+  return {
+    status: "available",
+    label: "Available",
+    available: true
+  };
+}
+
 export function extractProductSignals(html) {
   const $ = cheerio.load(html);
   const candidates = [];
   const productTitle =
     firstText($("meta[property='og:title']").attr("content")) ||
     firstText($("title").text());
+  const pageText = extractPageText(html);
+  const availability = detectAvailability(pageText);
 
   $("script[type='application/ld+json']").each((_, element) => {
     const parsed = safeJsonParse($(element).contents().text());
@@ -290,7 +339,10 @@ export function extractProductSignals(html) {
     primaryPriceCurrency: primaryCandidate?.currency || "",
     primaryPriceSource: primaryCandidate?.source || "",
     primaryPriceConfidence: primaryCandidate?.score || 0,
-    detectedPrices: uniqueCandidates.slice(0, 5).map((candidate) => candidate.display)
+    detectedPrices: uniqueCandidates.slice(0, 5).map((candidate) => candidate.display),
+    availabilityStatus: availability.status,
+    availabilityLabel: availability.label,
+    available: availability.available
   };
 }
 

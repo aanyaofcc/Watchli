@@ -34,6 +34,40 @@ function summarizePriceChange(previousPriceData, currentPriceData) {
   const currentValue = currentPriceData?.primaryPriceValue;
   const previousDetected = previousPriceData?.priceDetected;
   const currentDetected = currentPriceData?.priceDetected;
+  const previousAvailability = previousPriceData?.availabilityStatus || "unknown";
+  const currentAvailability = currentPriceData?.availabilityStatus || "unknown";
+
+  if (previousAvailability !== currentAvailability) {
+    if (currentAvailability === "sold_out") {
+      return {
+        changed: true,
+        type: "sold_out",
+        direction: "sold_out",
+        previousPrice: previousPrimary,
+        currentPrice: currentPrimary,
+        label: "Item is now sold out",
+        previousValue: previousValue ?? null,
+        currentValue: currentValue ?? null,
+        amount: null,
+        reliable: true
+      };
+    }
+
+    if (currentAvailability === "unavailable") {
+      return {
+        changed: true,
+        type: "unavailable",
+        direction: "unavailable",
+        previousPrice: previousPrimary,
+        currentPrice: currentPrimary,
+        label: "Item is no longer available",
+        previousValue: previousValue ?? null,
+        currentValue: currentValue ?? null,
+        amount: null,
+        reliable: true
+      };
+    }
+  }
 
   if (!previousDetected && !currentDetected) {
     return null;
@@ -85,9 +119,9 @@ function summarizePriceChange(previousPriceData, currentPriceData) {
       : "changed";
     const movementLabel =
       direction === "up"
-        ? `Price went up from ${previousPrimary} to ${currentPrimary}`
+        ? `Price increased by ${formatPriceDelta(rawAmount)} from ${previousPrimary} to ${currentPrimary}`
         : direction === "down"
-          ? `Price went down from ${previousPrimary} to ${currentPrimary}`
+          ? `Price decreased by ${formatPriceDelta(Math.abs(rawAmount))} from ${previousPrimary} to ${currentPrimary}`
           : `Price changed from ${previousPrimary} to ${currentPrimary}`;
 
     return {
@@ -120,6 +154,17 @@ function summarizePriceChange(previousPriceData, currentPriceData) {
       (previousPriceData?.primaryPriceConfidence || 0) >= 75 &&
       (currentPriceData?.primaryPriceConfidence || 0) >= 75
   };
+}
+
+function formatPriceDelta(amount) {
+  if (typeof amount !== "number" || !Number.isFinite(amount)) {
+    return "";
+  }
+
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD"
+  }).format(amount);
 }
 
 export function createDiffSummary(
@@ -167,6 +212,10 @@ export function createDiffSummary(
     currentPrices: currentPriceData?.detectedPrices || [],
     previousPrimaryPrice: previousPriceData?.primaryPrice || "",
     currentPrimaryPrice: currentPriceData?.primaryPrice || "",
+    previousAvailabilityStatus: previousPriceData?.availabilityStatus || "unknown",
+    currentAvailabilityStatus: currentPriceData?.availabilityStatus || "unknown",
+    previousAvailabilityLabel: previousPriceData?.availabilityLabel || "",
+    currentAvailabilityLabel: currentPriceData?.availabilityLabel || "",
     changedWordCount: Math.max(
       0,
       previousLength - prefixLength - suffixLength,
