@@ -8,7 +8,7 @@ export const config = {
   firebaseClientEmail: process.env.FIREBASE_CLIENT_EMAIL,
   firebasePrivateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n"),
   resendApiKey: process.env.RESEND_API_KEY,
-  emailFrom: process.env.EMAIL_FROM,
+  emailFrom: process.env.EMAIL_FROM || "alerts@watchliweb.com",
   appUrl: process.env.APP_URL || "http://localhost:5173",
   stripeSecretKey: process.env.STRIPE_SECRET_KEY || "",
   stripeProPriceId: process.env.STRIPE_PRICE_ID_PRO_MONTHLY || "",

@@ -38,7 +38,7 @@ FIREBASE_PROJECT_ID=
 FIREBASE_CLIENT_EMAIL=
 FIREBASE_PRIVATE_KEY=
 RESEND_API_KEY=
-EMAIL_FROM=
+EMAIL_FROM=alerts@watchliweb.com
 APP_URL=http://localhost:5173
 STRIPE_SECRET_KEY=
 STRIPE_PRICE_ID_PRO_MONTHLY=
@@ -164,7 +164,7 @@ If you set `CRON_SECRET`, external calls to `/api/check-all` must include that h
 
 ### 5. Test email notifications
 
-- Make sure `RESEND_API_KEY` and `EMAIL_FROM` are set.
+- Make sure `RESEND_API_KEY` is set, and use `EMAIL_FROM=alerts@watchliweb.com` or another verified Watchli sender.
 - Use the dashboard once a change is detected, or call the test email endpoint:
 
 ```bash
