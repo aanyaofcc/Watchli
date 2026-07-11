@@ -346,6 +346,25 @@ export function LandingPage() {
             ))}
           </div>
         </section>
+
+        <footer className="mx-auto max-w-7xl border-t border-white/10 px-6 py-8 text-sm text-slate-400">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <p>
+              © 2026 Watchli. Monitor product pages and get alerts when they change. Contact:{" "}
+              <a className="text-cyan-200 hover:text-cyan-100" href="mailto:contactwatchli@gmail.com">
+                contactwatchli@gmail.com
+              </a>
+            </p>
+            <div className="flex items-center gap-4">
+              <Link to="/privacy" className="transition hover:text-white">
+                Privacy Policy
+              </Link>
+              <Link to="/terms" className="transition hover:text-white">
+                Terms of Service
+              </Link>
+            </div>
+          </div>
+        </footer>
       </main>
     </div>
   );
