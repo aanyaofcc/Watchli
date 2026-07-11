@@ -235,22 +235,22 @@ export function DashboardPage() {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       <section className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-        <div className="glass-panel rounded-[32px] p-8">
-          <div className="flex flex-wrap items-center justify-between gap-4">
+        <div className="glass-panel rounded-[32px] p-5 sm:p-8">
+          <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
             <div>
               <p className="text-sm uppercase tracking-[0.16em] text-cyan-300">Dashboard</p>
-              <h1 className="display-font mt-3 text-3xl font-semibold text-white">
+              <h1 className="display-font mt-3 break-words text-2xl font-semibold text-white sm:text-3xl">
                 Welcome back{user?.email ? `, ${user.email}` : ""}
               </h1>
             </div>
-            <div className="data-chip rounded-full px-4 py-2 text-sm text-slate-200">
+            <div className="data-chip w-fit rounded-full px-4 py-2 text-sm text-slate-200">
               {account.planLabel}
             </div>
           </div>
 
-          <p className="mt-4 max-w-2xl text-slate-300">
+          <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-300 sm:text-base">
             Add a product or shopping page, let Watchli capture its readable content, and
             get alerted when the price or listing details appear to change.
           </p>
@@ -269,7 +269,7 @@ export function DashboardPage() {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="glow-button rounded-2xl bg-gradient-to-r from-cyan-300 via-sky-300 to-teal-300 px-5 py-3 font-semibold text-slate-950 transition hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-60"
+                  className="glow-button w-full rounded-2xl bg-gradient-to-r from-cyan-300 via-sky-300 to-teal-300 px-5 py-3 font-semibold text-slate-950 transition hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
                 >
                   {submitting ? "Adding..." : "Add Website"}
                 </button>
@@ -299,8 +299,8 @@ export function DashboardPage() {
           ) : null}
         </div>
 
-        <div className="grid gap-4">
-          <div className="glass-panel-soft rounded-3xl p-6">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
+          <div className="glass-panel-soft rounded-3xl p-5 sm:p-6">
             <div className="flex items-center gap-3">
               <Globe className="h-5 w-5 text-cyan-300" />
               <div>
@@ -312,7 +312,7 @@ export function DashboardPage() {
             </div>
           </div>
 
-          <div className="glass-panel-soft rounded-3xl p-6">
+          <div className="glass-panel-soft rounded-3xl p-5 sm:p-6">
             <div className="flex items-center gap-3">
               <Bell className="h-5 w-5 text-cyan-300" />
               <div>
@@ -326,14 +326,14 @@ export function DashboardPage() {
               type="button"
               onClick={handleSendTestEmail}
               disabled={sendingEmail}
-              className="mt-5 inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-slate-200 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-60"
+              className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-slate-200 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
             >
               <Mail className="h-4 w-4" />
               {sendingEmail ? "Sending..." : "Send Test Email"}
             </button>
           </div>
 
-          <div className="glass-panel-soft rounded-3xl p-6">
+          <div className="glass-panel-soft rounded-3xl p-5 sm:p-6">
             <div className="flex items-center gap-3">
               <ScanSearch className="h-5 w-5 text-cyan-300" />
               <div>
@@ -349,7 +349,7 @@ export function DashboardPage() {
             </p>
           </div>
 
-          <div className="glass-panel-soft rounded-3xl p-6">
+          <div className="glass-panel-soft rounded-3xl p-5 sm:p-6 sm:col-span-2 lg:col-span-1">
             <div className="flex items-center gap-3">
               <Crown className="h-5 w-5 text-amber-300" />
               <div>
@@ -377,7 +377,7 @@ export function DashboardPage() {
             <button
               type="button"
               onClick={handleUpgradeClick}
-              className="mt-5 inline-flex items-center gap-2 rounded-2xl border border-amber-300/20 bg-amber-300/10 px-4 py-3 text-sm font-medium text-amber-100 transition hover:bg-amber-300/15"
+              className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-amber-300/20 bg-amber-300/10 px-4 py-3 text-sm font-medium text-amber-100 transition hover:bg-amber-300/15 sm:w-auto"
             >
               <Zap className="h-4 w-4" />
               {account.premium ? "View Pro plan" : "Upgrade to Pro"}
@@ -387,7 +387,7 @@ export function DashboardPage() {
                 type="button"
                 onClick={() => void handleManageBilling()}
                 disabled={openingBilling}
-                className="mt-3 inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-slate-200 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-60"
+                className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-slate-200 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
               >
                 {openingBilling ? "Opening..." : "Manage Billing"}
               </button>
@@ -397,7 +397,7 @@ export function DashboardPage() {
       </section>
 
       <section className="space-y-4">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <h2 className="display-font text-2xl font-semibold text-white">
             Your watched product pages
           </h2>
@@ -405,7 +405,7 @@ export function DashboardPage() {
             type="button"
             onClick={() => void loadWebsites({ showRefreshing: true })}
             disabled={refreshingWebsites || loadingWebsites}
-            className="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-slate-200 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-60"
+            className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-slate-200 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
           >
             <RefreshCw className={`h-4 w-4 ${refreshingWebsites ? "animate-spin" : ""}`} />
             Refresh

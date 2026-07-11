@@ -66,7 +66,7 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
   };
 
   return (
-    <article className="glass-panel rounded-[30px] p-6">
+    <article className="glass-panel rounded-[30px] p-4 sm:p-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
         <div className="min-w-0 flex-1">
           <p className="text-sm uppercase tracking-[0.18em] text-slate-400">Watched website</p>
@@ -88,7 +88,7 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
             <Clock3 className="h-4 w-4 text-slate-500" />
             Last checked: {formatDate(website.lastChecked)}
           </p>
-          <p>Last changed: {formatDate(website.lastChanged)}</p>
+          <p className="break-words">Last changed: {formatDate(website.lastChanged)}</p>
         </div>
       </div>
 
@@ -129,13 +129,13 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
             <div className="rounded-2xl border border-white/10 bg-slate-950/30 p-3">
               <p className="text-xs uppercase tracking-[0.14em] text-slate-400">Previous price</p>
-              <p className="mt-1 text-lg font-semibold text-white">
+              <p className="mt-1 break-words text-lg font-semibold text-white">
                 {website.lastDiffSummary.priceChange.previousPrice || "Not available"}
               </p>
             </div>
             <div className="rounded-2xl border border-cyan-300/20 bg-cyan-300/10 p-3">
               <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">Current price</p>
-              <p className="mt-1 text-lg font-semibold text-white">
+              <p className="mt-1 break-words text-lg font-semibold text-white">
                 {website.lastDiffSummary.priceChange.currentPrice || "Not available"}
               </p>
             </div>

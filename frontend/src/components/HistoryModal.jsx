@@ -142,8 +142,8 @@ export function HistoryModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 px-4 py-8 backdrop-blur-md">
-      <div className="glass-panel relative max-h-[90vh] w-full max-w-5xl overflow-hidden rounded-[32px]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 px-3 py-4 backdrop-blur-md sm:px-4 sm:py-8">
+      <div className="glass-panel relative max-h-[92vh] w-full max-w-5xl overflow-hidden rounded-[28px] sm:rounded-[32px]">
         <button
           type="button"
           onClick={onClose}
@@ -152,9 +152,9 @@ export function HistoryModal({
           <X className="h-4 w-4" />
         </button>
 
-        <div className="border-b border-white/10 px-6 py-6 md:px-8">
+        <div className="border-b border-white/10 px-4 py-5 sm:px-6 md:px-8">
           <p className="text-sm uppercase tracking-[0.18em] text-cyan-300">Website history</p>
-          <h2 className="display-font mt-3 break-all text-3xl font-semibold text-white">
+          <h2 className="display-font mt-3 break-all text-2xl font-semibold text-white sm:text-3xl">
             {website.url}
           </h2>
           <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-300">
@@ -162,7 +162,7 @@ export function HistoryModal({
           </p>
         </div>
 
-        <div className="max-h-[72vh] overflow-y-auto px-6 py-6 md:px-8">
+        <div className="max-h-[74vh] overflow-y-auto px-4 py-5 sm:px-6 md:px-8">
           {loading ? (
             <div className="flex items-center justify-center py-16 text-slate-300">
               <div className="inline-flex items-center gap-2">
@@ -235,22 +235,22 @@ export function HistoryModal({
                       ) : null}
 
                       <div className="grid gap-4 xl:grid-cols-2">
-                      <div className="rounded-3xl border border-rose-400/20 bg-rose-500/5 p-4">
-                        <p className="mb-3 text-sm font-medium text-rose-200">Previous</p>
-                        <SegmentPreview
-                          segments={snapshot.diffSummary.previousSegments}
-                          fallback={snapshot.diffSummary.previousPreview}
-                        />
-                        <PricePills prices={snapshot.diffSummary.previousPrices} />
-                      </div>
-                      <div className="rounded-3xl border border-emerald-400/20 bg-emerald-500/5 p-4">
-                        <p className="mb-3 text-sm font-medium text-emerald-200">Current</p>
-                        <SegmentPreview
-                          segments={snapshot.diffSummary.currentSegments}
-                          fallback={snapshot.diffSummary.currentPreview}
-                        />
-                        <PricePills prices={snapshot.diffSummary.currentPrices} />
-                      </div>
+                        <div className="rounded-3xl border border-rose-400/20 bg-rose-500/5 p-4">
+                          <p className="mb-3 text-sm font-medium text-rose-200">Previous</p>
+                          <SegmentPreview
+                            segments={snapshot.diffSummary.previousSegments}
+                            fallback={snapshot.diffSummary.previousPreview}
+                          />
+                          <PricePills prices={snapshot.diffSummary.previousPrices} />
+                        </div>
+                        <div className="rounded-3xl border border-emerald-400/20 bg-emerald-500/5 p-4">
+                          <p className="mb-3 text-sm font-medium text-emerald-200">Current</p>
+                          <SegmentPreview
+                            segments={snapshot.diffSummary.currentSegments}
+                            fallback={snapshot.diffSummary.currentPreview}
+                          />
+                          <PricePills prices={snapshot.diffSummary.currentPrices} />
+                        </div>
                       </div>
                     </div>
                   ) : snapshot.snapshotText ? (

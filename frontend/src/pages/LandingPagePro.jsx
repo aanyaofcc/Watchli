@@ -73,7 +73,7 @@ export function LandingPagePro() {
       <div className="aurora-orb right-[-60px] top-36 h-72 w-72 bg-blue-500/25" />
       <div className="aurora-orb bottom-24 left-1/2 h-56 w-56 -translate-x-1/2 bg-teal-300/15" />
 
-      <header className="relative z-10 mx-auto flex max-w-7xl items-center justify-between px-6 py-6">
+      <header className="relative z-10 mx-auto flex max-w-7xl flex-col gap-5 px-4 py-5 sm:px-6 md:flex-row md:items-center md:justify-between md:py-6">
         <div className="flex items-center gap-3">
           <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-white/10 bg-white/10 shadow-soft">
             <Eye className="h-5 w-5 text-cyan-200" />
@@ -93,16 +93,16 @@ export function LandingPagePro() {
           </a>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex w-full flex-col gap-3 sm:flex-row md:w-auto">
           <Link
             to="/login"
-            className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-slate-100 transition hover:bg-white/10"
+            className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-center text-sm text-slate-100 transition hover:bg-white/10"
           >
             Log In
           </Link>
           <Link
             to="/signup"
-            className="glow-button rounded-full bg-gradient-to-r from-cyan-300 via-sky-300 to-teal-300 px-5 py-2.5 text-sm font-semibold text-slate-950 transition hover:scale-[1.02]"
+            className="glow-button rounded-full bg-gradient-to-r from-cyan-300 via-sky-300 to-teal-300 px-5 py-2.5 text-center text-sm font-semibold text-slate-950 transition hover:scale-[1.02]"
           >
             Start Watching
           </Link>
@@ -110,18 +110,18 @@ export function LandingPagePro() {
       </header>
 
       <main className="relative z-10">
-        <section className="mx-auto grid max-w-7xl gap-12 px-6 pb-24 pt-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
+        <section className="mx-auto grid max-w-7xl gap-10 px-4 pb-20 pt-6 sm:px-6 sm:pt-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
           <div>
-            <div className="data-chip inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm text-slate-200">
+            <div className="data-chip inline-flex max-w-full items-center gap-2 rounded-full px-4 py-2 text-sm text-slate-200">
               <Sparkles className="h-4 w-4 text-cyan-300" />
-              Track product pages and catch price changes faster
+              <span className="truncate sm:whitespace-normal">Track product pages and catch price changes faster</span>
             </div>
 
-            <h1 className="display-font mt-8 max-w-4xl text-5xl font-bold leading-[0.95] tracking-tight text-white sm:text-6xl lg:text-7xl">
+            <h1 className="display-font mt-6 max-w-4xl text-4xl font-bold leading-[0.95] tracking-tight text-white sm:mt-8 sm:text-6xl lg:text-7xl">
               A glossy price watcher for products you do not want to miss.
             </h1>
 
-            <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-300">
+            <p className="mt-5 max-w-2xl text-base leading-7 text-slate-300 sm:mt-6 sm:text-lg sm:leading-8">
               Watchli monitors shopping and product pages, looks for likely prices, and
               tells you when the listing changes so you can catch drops, increases, or edits quickly.
             </p>
@@ -142,7 +142,7 @@ export function LandingPagePro() {
               </Link>
             </div>
 
-            <div className="mt-10 grid gap-4 sm:grid-cols-3">
+            <div className="mt-8 grid gap-4 sm:mt-10 sm:grid-cols-3">
               {[
                 ["5 products free", "Start with the items you care about most"],
                 ["Price-aware alerts", "Get notified when a product page appears to change price"],
@@ -157,24 +157,24 @@ export function LandingPagePro() {
           </div>
 
           <div className="relative">
-            <div className="glass-panel rounded-[34px] p-5">
-              <div className="rounded-[28px] border border-white/10 bg-[linear-gradient(180deg,rgba(9,17,30,0.95),rgba(8,15,26,0.82))] p-6">
-                <div className="flex items-center justify-between">
+            <div className="glass-panel rounded-[28px] p-3 sm:rounded-[34px] sm:p-5">
+              <div className="rounded-[24px] border border-white/10 bg-[linear-gradient(180deg,rgba(9,17,30,0.95),rgba(8,15,26,0.82))] p-4 sm:rounded-[28px] sm:p-6">
+                <div className="flex items-start justify-between gap-4">
                   <div>
                     <p className="text-xs uppercase tracking-[0.24em] text-cyan-300/80">
                       Live overview
                     </p>
-                    <h2 className="display-font mt-2 text-2xl font-bold text-white">
+                    <h2 className="display-font mt-2 text-xl font-bold text-white sm:text-2xl">
                       Monitoring dashboard
                     </h2>
                   </div>
-                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-cyan-400/10 ring-1 ring-cyan-300/20">
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-cyan-400/10 ring-1 ring-cyan-300/20 sm:h-12 sm:w-12">
                     <BellRing className="h-5 w-5 text-cyan-200" />
                   </div>
                 </div>
 
-                <div className="mt-6 grid gap-4 sm:grid-cols-[1.1fr_0.9fr]">
-                  <div className="glass-panel-soft rounded-3xl p-5">
+                <div className="mt-6 grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
+                  <div className="glass-panel-soft rounded-3xl p-4 sm:p-5">
                     <div className="flex items-center justify-between text-sm text-slate-300">
                       <span>Tracked pages</span>
                       <span className="display-font text-lg font-semibold text-white">3</span>
@@ -185,13 +185,13 @@ export function LandingPagePro() {
                           key={item.url}
                           className="rounded-2xl border border-white/10 bg-white/[0.04] p-4"
                         >
-                          <div className="flex items-center justify-between gap-4">
+                          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                             <div className="min-w-0">
                               <p className="text-sm text-slate-400">{item.label}</p>
-                              <p className="truncate text-sm text-white">{item.url}</p>
+                              <p className="break-all text-sm text-white sm:truncate">{item.url}</p>
                             </div>
                             <span
-                              className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                              className={`w-fit rounded-full px-3 py-1 text-xs font-semibold ${
                                 item.status === "Changed"
                                   ? "bg-amber-400/15 text-amber-200"
                                   : "bg-emerald-400/15 text-emerald-200"
@@ -208,7 +208,7 @@ export function LandingPagePro() {
                   <div className="space-y-4">
                     <div className="glass-panel-soft rounded-3xl p-5">
                       <p className="text-sm text-slate-400">Latest signal</p>
-                      <p className="mt-3 display-font text-2xl font-bold text-white">
+                      <p className="mt-3 display-font text-xl font-bold text-white sm:text-2xl">
                         Sneaker price updated
                       </p>
                       <p className="mt-3 text-sm leading-6 text-slate-300">
@@ -217,13 +217,15 @@ export function LandingPagePro() {
                     </div>
 
                     <div className="glass-panel-soft rounded-3xl p-5">
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-start gap-3">
                         <div className="rounded-2xl bg-cyan-300/10 p-3">
                           <Zap className="h-5 w-5 text-cyan-200" />
                         </div>
                         <div>
                           <p className="text-sm text-slate-400">How it works</p>
-                          <p className="text-white">Readable text + price signals + change compare</p>
+                          <p className="text-sm leading-6 text-white sm:text-base">
+                            Readable text + price signals + change compare
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -234,10 +236,10 @@ export function LandingPagePro() {
           </div>
         </section>
 
-        <section id="how-it-works" className="mx-auto max-w-7xl px-6 py-10">
+        <section id="how-it-works" className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
           <div className="mb-8 max-w-2xl">
             <p className="text-sm uppercase tracking-[0.24em] text-cyan-300">How it works</p>
-            <h2 className="display-font mt-3 text-4xl font-bold text-white">
+            <h2 className="display-font mt-3 text-3xl font-bold text-white sm:text-4xl">
               Focus on product pages where price changes matter
             </h2>
           </div>
@@ -257,7 +259,7 @@ export function LandingPagePro() {
           </div>
         </section>
 
-        <section className="mx-auto max-w-7xl px-6 py-12">
+        <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
           <div className="grid gap-6 lg:grid-cols-3">
             {features.map(({ icon: Icon, title, body }) => (
               <div key={title} className="glass-panel-soft rounded-[30px] p-6">
@@ -273,11 +275,11 @@ export function LandingPagePro() {
           </div>
         </section>
 
-        <section id="pricing" className="mx-auto max-w-7xl px-6 py-12 pb-24">
+        <section id="pricing" className="mx-auto max-w-7xl px-4 py-12 pb-24 sm:px-6">
           <div className="mb-8 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <div>
               <p className="text-sm uppercase tracking-[0.24em] text-cyan-300">Pricing preview</p>
-              <h2 className="display-font mt-3 text-4xl font-bold text-white">
+              <h2 className="display-font mt-3 text-3xl font-bold text-white sm:text-4xl">
                 Start with a few products, scale later
               </h2>
             </div>
@@ -297,13 +299,13 @@ export function LandingPagePro() {
                     : "bg-gradient-to-br from-white/10 to-white/5"
                 }`}
               >
-                <div className="glass-panel h-full rounded-[31px] p-8">
-                  <div className="flex items-start justify-between gap-4">
+                <div className="glass-panel h-full rounded-[31px] p-6 sm:p-8">
+                  <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                     <div>
                       <p className="text-sm uppercase tracking-[0.2em] text-slate-400">
                         {plan.name}
                       </p>
-                      <h3 className="display-font mt-3 text-4xl font-bold text-white">
+                      <h3 className="display-font mt-3 text-3xl font-bold text-white sm:text-4xl">
                         {plan.price}
                       </h3>
                       <p className="mt-3 max-w-md text-slate-300">{plan.description}</p>
