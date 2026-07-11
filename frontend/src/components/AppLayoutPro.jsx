@@ -1,9 +1,9 @@
 import { Link, useNavigate } from "react-router-dom";
 import { Crown, Eye, LogOut } from "lucide-react";
 import { useAuth } from "../providers/AuthProvider";
-import { SiteFooter } from "./SiteFooter";
+import { SiteFooterPro } from "./SiteFooterPro";
 
-export function AppLayout({ children }) {
+export function AppLayoutPro({ children }) {
   const { logout } = useAuth();
   const navigate = useNavigate();
 
@@ -47,24 +47,7 @@ export function AppLayout({ children }) {
         </div>
       </header>
       <main className="relative z-10 mx-auto max-w-6xl px-6 py-10">{children}</main>
-      <footer className="relative z-10 border-t border-white/10 bg-slate-950/35">
-        <div className="mx-auto flex max-w-6xl flex-col gap-3 px-6 py-5 text-sm text-slate-400 sm:flex-row sm:items-center sm:justify-between">
-          <p>
-            © 2026 Watchli. Website monitoring for product and price changes. Contact:{" "}
-            <a className="text-cyan-200 hover:text-cyan-100" href="mailto:contactwatchli@gmail.com">
-              contactwatchli@gmail.com
-            </a>
-          </p>
-          <div className="flex items-center gap-4">
-            <Link to="/privacy" className="transition hover:text-white">
-              Privacy Policy
-            </Link>
-            <Link to="/terms" className="transition hover:text-white">
-              Terms of Service
-            </Link>
-          </div>
-        </div>
-      </footer>
+      <SiteFooterPro compact width="max-w-6xl" />
     </div>
   );
 }

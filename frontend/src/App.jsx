@@ -1,7 +1,7 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import { useAuth } from "./providers/AuthProvider";
-import { AppLayout } from "./components/AppLayout";
-import { LandingPage } from "./pages/LandingPage";
+import { AppLayoutPro } from "./components/AppLayoutPro";
+import { LandingPagePro } from "./pages/LandingPagePro";
 import { LoginPage } from "./pages/LoginPage";
 import { SignupPage } from "./pages/SignupPage";
 import { DashboardPage } from "./pages/DashboardPage";
@@ -29,7 +29,7 @@ function ProtectedRoute({ children }) {
 export default function App() {
   return (
     <Routes>
-      <Route path="/" element={<LandingPage />} />
+      <Route path="/" element={<LandingPagePro />} />
       <Route path="/privacy" element={<PrivacyPolicyPage />} />
       <Route path="/terms" element={<TermsOfServicePage />} />
       <Route path="/login" element={<LoginPage />} />
@@ -38,9 +38,9 @@ export default function App() {
         path="/dashboard"
         element={
           <ProtectedRoute>
-            <AppLayout>
+            <AppLayoutPro>
               <DashboardPage />
-            </AppLayout>
+            </AppLayoutPro>
           </ProtectedRoute>
         }
       />
@@ -48,9 +48,9 @@ export default function App() {
         path="/upgrade"
         element={
           <ProtectedRoute>
-            <AppLayout>
+            <AppLayoutPro>
               <UpgradePage />
-            </AppLayout>
+            </AppLayoutPro>
           </ProtectedRoute>
         }
       />
