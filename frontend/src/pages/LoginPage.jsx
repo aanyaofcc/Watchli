@@ -48,7 +48,7 @@ export function LoginPage() {
 
     try {
       await resetPassword(formData.email.trim());
-      setSuccess("Password reset email sent. Check your inbox for the reset link.");
+      setSuccess("Password reset email sent. Check your inbox for the reset link, and look in spam or junk if you do not see it.");
     } catch (resetError) {
       setError(resetError.message || "Could not send reset email.");
     } finally {
