@@ -17,14 +17,14 @@ function logoFrameClassName(size) {
 function logoImageClassName(size) {
   switch (size) {
     case "footer":
-      return "w-[66px]";
+      return "w-[58px]";
     case "legal":
-      return "w-[70px]";
+      return "w-[62px]";
     case "dashboard":
-      return "w-[70px]";
+      return "w-[62px]";
     case "hero":
     default:
-      return "w-[70px]";
+      return "w-[62px]";
   }
 }
 
