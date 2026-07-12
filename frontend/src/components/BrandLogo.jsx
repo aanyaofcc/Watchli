@@ -36,7 +36,7 @@ export function BrandLogo({ size = "hero", className = "", alt = "Watchli" }) {
       <img
         src="/watchli.png"
         alt={alt}
-        className={`absolute left-1/2 top-1/2 max-w-none -translate-x-1/2 -translate-y-[46%] ${logoImageClassName(size)}`.trim()}
+        className={`absolute left-1/2 top-1/2 max-w-none -translate-x-1/2 -translate-y-[49%] ${logoImageClassName(size)}`.trim()}
       />
     </div>
   );
