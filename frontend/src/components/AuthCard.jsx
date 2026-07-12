@@ -1,3 +1,5 @@
+import { useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
 import { Link } from "react-router-dom";
 
 export function AuthCard({
@@ -17,6 +19,8 @@ export function AuthCard({
   onSecondaryAction,
   secondaryActionDisabled
 }) {
+  const [showPassword, setShowPassword] = useState(false);
+
   return (
     <div className="glass-panel mx-auto w-full max-w-md rounded-[30px] p-8">
       <div className="mb-8">
@@ -43,16 +47,26 @@ export function AuthCard({
 
         <label className="block">
           <span className="mb-2 block text-sm text-slate-200">Password</span>
-          <input
-            type="password"
-            name="password"
-            value={formData.password}
-            onChange={onChange}
-            required
-            minLength={6}
-            className="w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-white outline-none transition placeholder:text-slate-500 focus:border-cyan-300"
-            placeholder="Minimum 6 characters"
-          />
+          <div className="relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              name="password"
+              value={formData.password}
+              onChange={onChange}
+              required
+              minLength={6}
+              className="w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 pr-12 text-white outline-none transition placeholder:text-slate-500 focus:border-cyan-300"
+              placeholder="Minimum 6 characters"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword((current) => !current)}
+              className="absolute inset-y-0 right-0 flex items-center px-4 text-slate-400 transition hover:text-white"
+              aria-label={showPassword ? "Hide password" : "Show password"}
+            >
+              {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+            </button>
+          </div>
         </label>
 
         {secondaryActionLabel && onSecondaryAction ? (
