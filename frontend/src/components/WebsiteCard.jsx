@@ -137,7 +137,7 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
             <div
               className={`inline-flex rounded-full border px-3 py-1 text-xs font-medium ${statusClasses[website.status] || statusClasses.Watching}`}
             >
-              {website.status}
+              {website.statusLabel || website.status}
             </div>
             <div className={`inline-flex rounded-full border px-3 py-1 text-xs font-medium ${availabilityClasses}`}>
               {availabilityLabel}
@@ -194,10 +194,10 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
               Monitoring for changes
             </div>
           )}
-          <p className="mt-3 text-sm text-slate-300">
+            <p className="mt-3 text-sm text-slate-300">
             {website.lastDiffSummary?.priceChange?.changed
               ? website.lastDiffSummary.priceChange.label
-              : "Watchli will alert you when price, stock, or content changes are detected."}
+              : "Watchli is standing by for price, availability, or content changes on this page."}
           </p>
         </div>
       </div>
@@ -243,7 +243,7 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
           className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-slate-200 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-60"
         >
           <History className="h-4 w-4" />
-          View History
+          View check history
         </button>
         <button
           type="button"
@@ -296,7 +296,7 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
         <div className="mt-6 rounded-3xl border border-white/10 bg-white/[0.04] p-4">
           <div className="mb-3 flex items-center gap-2 text-sm text-slate-300">
             <TextSearch className="h-4 w-4 text-cyan-300" />
-            Latest snapshot preview
+            Latest saved snapshot
           </div>
           <p className="line-clamp-4 text-sm leading-7 text-slate-200">
             {website.latestSnapshotText}

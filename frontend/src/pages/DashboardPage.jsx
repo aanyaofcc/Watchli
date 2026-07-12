@@ -20,6 +20,22 @@ function isValidUrl(url) {
   return /^https?:\/\//i.test(url);
 }
 
+function formatStatusLabel(status) {
+  if (status === "Changed") {
+    return "Needs review";
+  }
+
+  if (status === "Watching") {
+    return "Watching";
+  }
+
+  if (status === "Error") {
+    return "Check failed";
+  }
+
+  return status || "Unknown";
+}
+
 export function DashboardPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -49,10 +65,16 @@ export function DashboardPage() {
   const [historyError, setHistoryError] = useState("");
   const [openingBilling, setOpeningBilling] = useState(false);
   const changedWebsites = websites.filter((website) => website.status === "Changed");
+  const errorWebsites = websites.filter((website) => website.status === "Error");
   const availableWebsites = websites.filter(
     (website) => (website.latestAvailabilityStatus || "unknown") === "available"
   );
   const priceAwareWebsites = websites.filter((website) => website.latestPrimaryPrice);
+  const mostRecentWebsite = [...websites].sort((left, right) => {
+    const leftDate = new Date(left.lastChanged || left.lastChecked || left.createdAt || 0).getTime();
+    const rightDate = new Date(right.lastChanged || right.lastChecked || right.createdAt || 0).getTime();
+    return rightDate - leftDate;
+  })[0];
 
   const loadWebsites = async ({ showRefreshing = false } = {}) => {
     if (!user) {
@@ -378,6 +400,23 @@ export function DashboardPage() {
                 "Run a manual check or wait for scheduled checks to see the latest product movement here."}
             </p>
           </div>
+
+          <div className="glass-panel-soft rounded-3xl p-5 sm:p-6">
+            <div className="flex items-center gap-3">
+              <RefreshCw className="h-5 w-5 text-cyan-300" />
+              <div>
+                <p className="text-sm text-slate-400">Watch health</p>
+                <h2 className="display-font text-xl font-semibold text-white">
+                  {errorWebsites.length > 0 ? `${errorWebsites.length} need attention` : "All watches healthy"}
+                </h2>
+              </div>
+            </div>
+            <p className="mt-3 text-sm leading-6 text-slate-300">
+              {errorWebsites.length > 0
+                ? "One or more pages could not be checked recently. Refresh or run a manual check to retry them."
+                : "Your tracked pages are checking normally and no recent fetch errors are blocking updates."}
+            </p>
+          </div>
         </div>
       </section>
 
@@ -448,18 +487,27 @@ export function DashboardPage() {
 
       <section className="space-y-4">
         <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between">
-          <h2 className="display-font text-2xl font-semibold text-white">
-            Your watched product pages
-          </h2>
-          <button
-            type="button"
-            onClick={() => void loadWebsites({ showRefreshing: true })}
-            disabled={refreshingWebsites || loadingWebsites}
-            className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-slate-200 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
-          >
-            <RefreshCw className={`h-4 w-4 ${refreshingWebsites ? "animate-spin" : ""}`} />
-            Refresh
-          </button>
+          <div>
+            <h2 className="display-font text-2xl font-semibold text-white">
+              Your watched product pages
+            </h2>
+            <p className="mt-1 text-sm text-slate-400">
+              {websites.length > 0
+                ? `Latest activity: ${mostRecentWebsite?.latestProductTitle || mostRecentWebsite?.url || "Tracked page"}`
+                : "Start by adding a product page you want Watchli to monitor."}
+            </p>
+          </div>
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <button
+              type="button"
+              onClick={() => void loadWebsites({ showRefreshing: true })}
+              disabled={refreshingWebsites || loadingWebsites}
+              className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-slate-200 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+            >
+              <RefreshCw className={`h-4 w-4 ${refreshingWebsites ? "animate-spin" : ""}`} />
+              Refresh
+            </button>
+          </div>
         </div>
 
         {loadingWebsites ? (
@@ -470,15 +518,30 @@ export function DashboardPage() {
             </div>
           </div>
         ) : websites.length === 0 ? (
-          <div className="glass-panel-soft rounded-3xl border border-dashed p-8 text-center text-slate-300">
-            Add your first product page to start tracking price changes.
+          <div className="glass-panel-soft rounded-3xl border border-dashed p-8 text-center">
+            <p className="display-font text-2xl font-semibold text-white">No watched pages yet</p>
+            <p className="mx-auto mt-3 max-w-xl text-sm leading-7 text-slate-300">
+              Paste in a product page above and Watchli will save the first snapshot, detect likely prices,
+              and keep checking for changes you care about.
+            </p>
+            <div className="mt-5 flex flex-wrap justify-center gap-2 text-sm text-slate-300">
+              <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5">
+                Add a public product URL
+              </span>
+              <span className="rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-1.5 text-cyan-100">
+                Run manual checks anytime
+              </span>
+            </div>
           </div>
         ) : (
           <div className="grid gap-4">
             {websites.map((website) => (
               <WebsiteCard
                 key={website.id}
-                website={website}
+                website={{
+                  ...website,
+                  statusLabel: formatStatusLabel(website.status)
+                }}
                 onCheck={handleCheckWebsite}
                 onDelete={handleDeleteWebsite}
                 onViewHistory={handleViewHistory}

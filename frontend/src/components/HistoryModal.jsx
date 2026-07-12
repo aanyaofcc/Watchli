@@ -23,7 +23,15 @@ function StatusBadge({ status }) {
     <span
       className={`inline-flex rounded-full border px-3 py-1 text-xs font-medium ${statusClasses[status] || statusClasses.unchanged}`}
     >
-      {status}
+      {status === "initial"
+        ? "Initial snapshot"
+        : status === "changed"
+          ? "Change detected"
+          : status === "unchanged"
+            ? "No change"
+            : status === "error"
+              ? "Check failed"
+              : status}
     </span>
   );
 }
@@ -215,7 +223,7 @@ export function HistoryModal({
             </div>
           ) : snapshots.length === 0 ? (
             <div className="rounded-3xl border border-dashed border-white/10 px-5 py-10 text-center text-sm text-slate-300">
-              No snapshot history yet. Run a check to start building it.
+              No check history yet. Run a manual check to capture the first saved snapshot for this page.
             </div>
           ) : (
             <div className="space-y-5">
@@ -275,7 +283,7 @@ export function HistoryModal({
 
                       <div className="grid gap-4 xl:grid-cols-2">
                         <div className="rounded-3xl border border-rose-400/20 bg-rose-500/5 p-4">
-                          <p className="mb-3 text-sm font-medium text-rose-200">Previous</p>
+                          <p className="mb-3 text-sm font-medium text-rose-200">Previous snapshot</p>
                           <SegmentPreview
                             segments={snapshot.diffSummary.previousSegments}
                             fallback={snapshot.diffSummary.previousPreview}
@@ -283,7 +291,7 @@ export function HistoryModal({
                           <PricePills prices={snapshot.diffSummary.previousPrices} />
                         </div>
                         <div className="rounded-3xl border border-emerald-400/20 bg-emerald-500/5 p-4">
-                          <p className="mb-3 text-sm font-medium text-emerald-200">Current</p>
+                          <p className="mb-3 text-sm font-medium text-emerald-200">Current snapshot</p>
                           <SegmentPreview
                             segments={snapshot.diffSummary.currentSegments}
                             fallback={snapshot.diffSummary.currentPreview}
@@ -294,7 +302,7 @@ export function HistoryModal({
                     </div>
                   ) : snapshot.snapshotText ? (
                     <div className="mt-5 rounded-3xl border border-white/10 bg-slate-950/40 p-4">
-                      <p className="mb-3 text-sm font-medium text-slate-300">Snapshot preview</p>
+                      <p className="mb-3 text-sm font-medium text-slate-300">Saved snapshot preview</p>
                       <p className="line-clamp-5 text-sm leading-7 text-slate-200">
                         {snapshot.snapshotText}
                       </p>
