@@ -7,10 +7,10 @@ function logoFrameClassName(size) {
     case "legal":
       return "h-[44px] w-[124px] sm:h-[50px] sm:w-[142px]";
     case "dashboard":
-      return "h-[40px] w-[112px] sm:h-[44px] sm:w-[124px]";
+      return "h-11 w-11";
     case "hero":
     default:
-      return "h-[48px] w-[132px] sm:h-[54px] sm:w-[150px]";
+      return "h-11 w-11";
   }
 }
 
@@ -21,10 +21,10 @@ function logoImageClassName(size) {
     case "legal":
       return "w-[178px] sm:w-[204px]";
     case "dashboard":
-      return "w-[164px] sm:w-[182px]";
+      return "w-[96px]";
     case "hero":
     default:
-      return "w-[188px] sm:w-[214px]";
+      return "w-[96px]";
   }
 }
 
@@ -36,7 +36,7 @@ export function BrandLogo({ size = "hero", className = "", alt = "Watchli" }) {
       <img
         src="/watchli.png"
         alt={alt}
-        className={`absolute left-1/2 top-1/2 max-w-none -translate-x-1/2 -translate-y-[44%] ${logoImageClassName(size)}`.trim()}
+        className={`absolute left-1/2 top-1/2 max-w-none -translate-x-1/2 -translate-y-[43%] ${logoImageClassName(size)}`.trim()}
       />
     </div>
   );
@@ -45,7 +45,7 @@ export function BrandLogo({ size = "hero", className = "", alt = "Watchli" }) {
 export function BrandLogoLink({ to = "/", size = "hero", subtitle, className = "" }) {
   return (
     <Link to={to} className={`flex items-center ${className}`.trim()}>
-      <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-1.5 shadow-soft backdrop-blur-sm">
+      <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-0 shadow-soft backdrop-blur-sm">
         <BrandLogo size={size} />
       </div>
       {subtitle ? (
