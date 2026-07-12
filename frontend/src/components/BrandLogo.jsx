@@ -1,33 +1,51 @@
 import { Link } from "react-router-dom";
 
-function logoClassName(size) {
+function logoFrameClassName(size) {
   switch (size) {
     case "footer":
-      return "h-auto w-[180px] sm:w-[220px]";
+      return "h-[42px] w-[118px] sm:h-[48px] sm:w-[136px]";
     case "legal":
-      return "h-auto w-[170px] sm:w-[210px]";
+      return "h-[44px] w-[124px] sm:h-[50px] sm:w-[142px]";
     case "dashboard":
-      return "h-auto w-[150px] sm:w-[180px]";
+      return "h-[40px] w-[112px] sm:h-[44px] sm:w-[124px]";
     case "hero":
     default:
-      return "h-auto w-[190px] sm:w-[230px]";
+      return "h-[48px] w-[132px] sm:h-[54px] sm:w-[150px]";
+  }
+}
+
+function logoImageClassName(size) {
+  switch (size) {
+    case "footer":
+      return "w-[172px] sm:w-[198px]";
+    case "legal":
+      return "w-[178px] sm:w-[204px]";
+    case "dashboard":
+      return "w-[164px] sm:w-[182px]";
+    case "hero":
+    default:
+      return "w-[188px] sm:w-[214px]";
   }
 }
 
 export function BrandLogo({ size = "hero", className = "", alt = "Watchli" }) {
   return (
-    <img
-      src="/watchli.png"
-      alt={alt}
-      className={`${logoClassName(size)} ${className}`.trim()}
-    />
+    <div
+      className={`relative overflow-hidden rounded-xl ${logoFrameClassName(size)} ${className}`.trim()}
+    >
+      <img
+        src="/watchli.png"
+        alt={alt}
+        className={`absolute left-1/2 top-1/2 max-w-none -translate-x-1/2 -translate-y-[44%] ${logoImageClassName(size)}`.trim()}
+      />
+    </div>
   );
 }
 
 export function BrandLogoLink({ to = "/", size = "hero", subtitle, className = "" }) {
   return (
     <Link to={to} className={`flex items-center ${className}`.trim()}>
-      <div className="rounded-[22px] border border-white/10 bg-white/[0.06] px-3 py-2 shadow-soft backdrop-blur-sm">
+      <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-1.5 shadow-soft backdrop-blur-sm">
         <BrandLogo size={size} />
       </div>
       {subtitle ? (
