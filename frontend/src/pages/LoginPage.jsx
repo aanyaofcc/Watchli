@@ -4,11 +4,13 @@ import { AuthCard } from "../components/AuthCard";
 import { useAuth } from "../providers/AuthProvider";
 
 export function LoginPage() {
-  const { login } = useAuth();
+  const { login, resetPassword } = useAuth();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
+  const [resettingPassword, setResettingPassword] = useState(false);
 
   const handleChange = (event) => {
     setFormData((current) => ({
@@ -20,6 +22,7 @@ export function LoginPage() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     setError("");
+    setSuccess("");
     setLoading(true);
 
     try {
@@ -29,6 +32,27 @@ export function LoginPage() {
       setError(submitError.message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleForgotPassword = async () => {
+    if (!formData.email.trim()) {
+      setError("Enter your email first, then click Forgot password.");
+      setSuccess("");
+      return;
+    }
+
+    setError("");
+    setSuccess("");
+    setResettingPassword(true);
+
+    try {
+      await resetPassword(formData.email.trim());
+      setSuccess("Password reset email sent. Check your inbox for the reset link.");
+    } catch (resetError) {
+      setError(resetError.message || "Could not send reset email.");
+    } finally {
+      setResettingPassword(false);
     }
   };
 
@@ -61,7 +85,11 @@ export function LoginPage() {
           onChange={handleChange}
           onSubmit={handleSubmit}
           error={error}
-            loading={loading}
+          success={success}
+          loading={loading}
+          secondaryActionLabel={resettingPassword ? "Sending reset..." : "Forgot password?"}
+          onSecondaryAction={handleForgotPassword}
+          secondaryActionDisabled={resettingPassword}
           />
         </div>
         <div className="mt-8 flex items-center justify-center gap-4 text-sm text-slate-400">

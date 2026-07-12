@@ -11,7 +11,11 @@ export function AuthCard({
   onChange,
   onSubmit,
   error,
-  loading
+  loading,
+  success,
+  secondaryActionLabel,
+  onSecondaryAction,
+  secondaryActionDisabled
 }) {
   return (
     <div className="glass-panel mx-auto w-full max-w-md rounded-[30px] p-8">
@@ -51,9 +55,28 @@ export function AuthCard({
           />
         </label>
 
+        {secondaryActionLabel && onSecondaryAction ? (
+          <div className="flex justify-end">
+            <button
+              type="button"
+              onClick={onSecondaryAction}
+              disabled={secondaryActionDisabled}
+              className="text-sm text-cyan-300 transition hover:text-cyan-200 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {secondaryActionLabel}
+            </button>
+          </div>
+        ) : null}
+
         {error ? (
           <p className="rounded-2xl border border-rose-400/30 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">
             {error}
+          </p>
+        ) : null}
+
+        {success ? (
+          <p className="rounded-2xl border border-emerald-400/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-100">
+            {success}
           </p>
         ) : null}
 
