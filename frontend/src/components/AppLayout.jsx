@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
-import { Crown, Eye, LogOut } from "lucide-react";
+import { Crown, LogOut } from "lucide-react";
 import { useAuth } from "../providers/AuthProvider";
+import { BrandLogoLink } from "./BrandLogo";
 import { SiteFooter } from "./SiteFooter";
 
 export function AppLayout({ children }) {
@@ -18,15 +19,7 @@ export function AppLayout({ children }) {
       <div className="aurora-orb right-[-80px] top-32 h-72 w-72 bg-blue-500/20" />
       <header className="relative z-10 border-b border-white/10 bg-slate-950/55 backdrop-blur-xl">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-          <Link to="/" className="flex items-center gap-3 text-lg font-semibold">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-white/10 bg-white/10">
-              <Eye className="h-5 w-5 text-cyan-300" />
-            </div>
-            <div>
-              <p className="display-font text-lg font-bold text-white">Watchli</p>
-              <p className="text-xs uppercase tracking-[0.22em] text-slate-400">Dashboard</p>
-            </div>
-          </Link>
+          <BrandLogoLink to="/" size="dashboard" />
           <div className="flex items-center gap-3">
             <Link
               to="/upgrade"

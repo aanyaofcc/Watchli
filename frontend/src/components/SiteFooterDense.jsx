@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
-import { Eye, Mail } from "lucide-react";
+import { Mail } from "lucide-react";
+import { BrandLogoLink } from "./BrandLogo";
 
 export function SiteFooterDense({ compact = false, width = "max-w-7xl" }) {
   return (
@@ -7,17 +8,7 @@ export function SiteFooterDense({ compact = false, width = "max-w-7xl" }) {
       <div className={`mx-auto ${width} px-4 sm:px-6 ${compact ? "py-5" : "py-8"}`}>
         <div className="grid gap-6 md:grid-cols-[1.3fr_0.8fr_0.8fr] md:items-start">
           <div className="max-w-md">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-white/10">
-                <Eye className="h-4 w-4 text-cyan-300" />
-              </div>
-              <div>
-                <p className="display-font text-base font-bold text-white">Watchli</p>
-                <p className="text-xs uppercase tracking-[0.22em] text-slate-500">
-                  Website watcher
-                </p>
-              </div>
-            </div>
+            <BrandLogoLink to="/" size="footer" />
             <p className="mt-3 text-sm leading-7 text-slate-400">
               Track product pages, catch price changes, and receive alerts without
               refreshing tabs all day.

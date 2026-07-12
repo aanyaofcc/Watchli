@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Eye } from "lucide-react";
+import { BrandLogoLink } from "../components/BrandLogo";
 
 function LegalShell({ eyebrow, title, lastUpdated, children }) {
   return (
@@ -9,15 +9,7 @@ function LegalShell({ eyebrow, title, lastUpdated, children }) {
 
       <header className="relative z-10 border-b border-white/10 bg-slate-950/55 backdrop-blur-xl">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-5">
-          <Link to="/" className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-white/10 bg-white/10">
-              <Eye className="h-5 w-5 text-cyan-300" />
-            </div>
-            <div>
-              <p className="display-font text-lg font-bold text-white">Watchli</p>
-              <p className="text-xs uppercase tracking-[0.22em] text-slate-400">Legal</p>
-            </div>
-          </Link>
+          <BrandLogoLink to="/" size="legal" />
           <Link
             to="/"
             className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-slate-200 transition hover:bg-white/10"

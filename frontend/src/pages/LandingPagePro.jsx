@@ -3,13 +3,13 @@ import {
   ArrowRight,
   BellRing,
   Crown,
-  Eye,
   Globe,
   LayoutDashboard,
   ShieldCheck,
   Sparkles,
   Zap
 } from "lucide-react";
+import { BrandLogoLink } from "../components/BrandLogo";
 import { SiteFooterDense } from "../components/SiteFooterDense";
 
 const steps = [
@@ -74,15 +74,7 @@ export function LandingPagePro() {
       <div className="aurora-orb bottom-24 left-1/2 h-56 w-56 -translate-x-1/2 bg-teal-300/15" />
 
       <header className="relative z-10 mx-auto flex max-w-7xl flex-col gap-4 px-4 py-4 sm:px-6 md:flex-row md:items-center md:justify-between md:py-5">
-        <div className="flex items-center gap-3">
-          <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-white/10 bg-white/10 shadow-soft">
-            <Eye className="h-5 w-5 text-cyan-200" />
-          </div>
-          <div>
-            <p className="display-font text-lg font-bold tracking-wide">Watchli</p>
-            <p className="text-xs uppercase tracking-[0.26em] text-slate-400">Website watcher</p>
-          </div>
-        </div>
+        <BrandLogoLink to="/" size="hero" />
 
         <div className="hidden items-center gap-6 text-sm text-slate-300 md:flex">
           <a href="#how-it-works" className="transition hover:text-white">
