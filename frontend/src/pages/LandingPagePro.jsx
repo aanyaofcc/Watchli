@@ -102,18 +102,18 @@ export function LandingPagePro() {
       </header>
 
       <main className="relative z-10">
-        <section className="mx-auto grid max-w-7xl gap-8 px-4 pb-16 pt-4 sm:px-6 sm:pt-8 lg:grid-cols-[1.02fr_0.98fr] lg:items-center lg:gap-8">
-          <div>
+        <section className="mx-auto max-w-7xl px-4 pb-20 pt-6 sm:px-6 sm:pb-24 sm:pt-10">
+          <div className="max-w-4xl">
             <div className="data-chip reveal-up inline-flex max-w-full items-center gap-2 rounded-full px-4 py-2 text-sm text-slate-200">
               <Sparkles className="h-4 w-4 text-cyan-300" />
               <span className="truncate sm:whitespace-normal">Track product pages and catch price changes faster</span>
             </div>
 
-            <h1 className="display-font reveal-up delay-1 mt-6 max-w-4xl text-4xl font-bold leading-[0.95] tracking-tight text-white sm:mt-8 sm:text-6xl lg:text-7xl">
+            <h1 className="display-font reveal-up delay-1 mt-6 max-w-5xl text-4xl font-bold leading-[0.95] tracking-tight text-white sm:mt-8 sm:text-6xl lg:text-7xl">
               Catch price drops, sellouts, and product changes before everyone else.
             </h1>
 
-            <p className="reveal-up delay-2 mt-5 max-w-2xl text-base leading-7 text-slate-300 sm:mt-6 sm:text-lg sm:leading-8">
+            <p className="reveal-up delay-2 mt-5 max-w-3xl text-base leading-7 text-slate-300 sm:mt-6 sm:text-lg sm:leading-8">
               Watchli monitors shopping and product pages, looks for likely prices, and
               tells you when the listing changes so you can catch drops, increases, or edits quickly.
             </p>
@@ -146,6 +146,18 @@ export function LandingPagePro() {
                 </div>
               ))}
             </div>
+          </div>
+        </section>
+
+        <section className="mx-auto max-w-7xl px-4 pb-8 sm:px-6">
+          <div className="mb-6 max-w-3xl">
+            <p className="text-sm uppercase tracking-[0.24em] text-cyan-300">Product preview</p>
+            <h2 className="display-font mt-3 text-3xl font-bold text-white sm:text-4xl">
+              See the monitoring dashboard before you sign up
+            </h2>
+            <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-300 sm:text-base">
+              Watchli highlights tracked pages, recent alerts, and the latest status in one calm dashboard built for product monitoring.
+            </p>
           </div>
 
           <div className="reveal-soft delay-2 relative">
