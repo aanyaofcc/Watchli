@@ -69,11 +69,11 @@ const dashboardPreview = [
 export function LandingPagePro() {
   return (
     <div className="tech-shell min-h-screen text-white">
-      <div className="aurora-orb left-[-80px] top-20 h-64 w-64 bg-cyan-400/30" />
-      <div className="aurora-orb right-[-60px] top-36 h-72 w-72 bg-blue-500/25" />
-      <div className="aurora-orb bottom-24 left-1/2 h-56 w-56 -translate-x-1/2 bg-teal-300/15" />
+      <div className="aurora-orb float-gentle left-[-80px] top-20 h-64 w-64 bg-cyan-400/30" />
+      <div className="aurora-orb float-gentle right-[-60px] top-36 h-72 w-72 bg-blue-500/25" />
+      <div className="aurora-orb float-gentle bottom-24 left-1/2 h-56 w-56 -translate-x-1/2 bg-teal-300/15" />
 
-      <header className="relative z-10 mx-auto flex max-w-7xl flex-col gap-4 px-4 py-4 sm:px-6 md:flex-row md:items-center md:justify-between md:py-5">
+      <header className="reveal-soft relative z-10 mx-auto flex max-w-7xl flex-col gap-4 px-4 py-4 sm:px-6 md:flex-row md:items-center md:justify-between md:py-5">
         <BrandLogoLink to="/" size="hero" />
 
         <div className="hidden items-center gap-6 text-sm text-slate-300 md:flex">
@@ -104,21 +104,21 @@ export function LandingPagePro() {
       <main className="relative z-10">
         <section className="mx-auto grid max-w-7xl gap-8 px-4 pb-16 pt-4 sm:px-6 sm:pt-8 lg:grid-cols-[1.02fr_0.98fr] lg:items-center lg:gap-8">
           <div>
-            <div className="data-chip inline-flex max-w-full items-center gap-2 rounded-full px-4 py-2 text-sm text-slate-200">
+            <div className="data-chip reveal-up inline-flex max-w-full items-center gap-2 rounded-full px-4 py-2 text-sm text-slate-200">
               <Sparkles className="h-4 w-4 text-cyan-300" />
               <span className="truncate sm:whitespace-normal">Track product pages and catch price changes faster</span>
             </div>
 
-            <h1 className="display-font mt-6 max-w-4xl text-4xl font-bold leading-[0.95] tracking-tight text-white sm:mt-8 sm:text-6xl lg:text-7xl">
+            <h1 className="display-font reveal-up delay-1 mt-6 max-w-4xl text-4xl font-bold leading-[0.95] tracking-tight text-white sm:mt-8 sm:text-6xl lg:text-7xl">
               Catch price drops, sellouts, and product changes before everyone else.
             </h1>
 
-            <p className="mt-5 max-w-2xl text-base leading-7 text-slate-300 sm:mt-6 sm:text-lg sm:leading-8">
+            <p className="reveal-up delay-2 mt-5 max-w-2xl text-base leading-7 text-slate-300 sm:mt-6 sm:text-lg sm:leading-8">
               Watchli monitors shopping and product pages, looks for likely prices, and
               tells you when the listing changes so you can catch drops, increases, or edits quickly.
             </p>
 
-            <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+            <div className="reveal-up delay-3 mt-7 flex flex-col gap-3 sm:flex-row">
               <Link
                 to="/signup"
                 className="glow-button inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#8fb2c3] via-[#7f9fb7] to-[#8cb4a8] px-6 py-3.5 font-semibold text-slate-950 transition hover:scale-[1.02] hover:from-[#9bbccc] hover:via-[#8aabc2] hover:to-[#96beb2]"
@@ -140,7 +140,7 @@ export function LandingPagePro() {
                 ["Price-aware alerts", "Get notified when a product page appears to change price"],
                 ["Cron-ready backend", "Prepared for automatic checks later"]
               ].map(([title, body]) => (
-                <div key={title} className="glass-panel-soft rounded-3xl p-4 sm:p-5">
+                <div key={title} className="glass-panel-soft reveal-up delay-4 rounded-3xl p-4 sm:p-5">
                   <p className="display-font text-lg font-semibold text-white">{title}</p>
                   <p className="mt-2 text-sm leading-6 text-slate-300">{body}</p>
                 </div>
@@ -148,7 +148,7 @@ export function LandingPagePro() {
             </div>
           </div>
 
-          <div className="relative">
+          <div className="reveal-soft delay-2 relative">
             <div className="glass-panel rounded-[28px] p-3 sm:rounded-[34px] sm:p-4">
               <div className="rounded-[24px] border border-white/10 bg-[linear-gradient(180deg,rgba(19,33,53,0.94),rgba(14,25,42,0.8))] p-4 sm:rounded-[28px] sm:p-5">
                 <div className="flex items-start justify-between gap-4">
@@ -238,7 +238,7 @@ export function LandingPagePro() {
 
           <div className="grid gap-4 lg:grid-cols-3">
             {steps.map((step, index) => (
-              <div key={step.title} className="glass-panel rounded-[30px] p-5 sm:p-6">
+              <div key={step.title} className="glass-panel reveal-up rounded-[30px] p-5 sm:p-6">
                 <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-300/25 to-blue-400/20 text-lg font-bold text-cyan-100">
                   {index + 1}
                 </div>
@@ -254,7 +254,7 @@ export function LandingPagePro() {
         <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
           <div className="grid gap-4 lg:grid-cols-3">
             {features.map(({ icon: Icon, title, body }) => (
-              <div key={title} className="glass-panel-soft rounded-[30px] p-5 sm:p-6">
+              <div key={title} className="glass-panel-soft reveal-up rounded-[30px] p-5 sm:p-6">
                 <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/6 ring-1 ring-white/10">
                   <Icon className="h-5 w-5 text-cyan-200" />
                 </div>
@@ -291,7 +291,7 @@ export function LandingPagePro() {
                     : "bg-gradient-to-br from-white/10 to-white/5"
                 }`}
               >
-                <div className="glass-panel h-full rounded-[31px] p-6 sm:p-8">
+                <div className="glass-panel reveal-up h-full rounded-[31px] p-6 sm:p-8">
                   <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                     <div>
                       <p className="text-sm uppercase tracking-[0.2em] text-slate-400">

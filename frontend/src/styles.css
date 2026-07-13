@@ -112,3 +112,86 @@ h4,
   border: 1px solid rgba(217, 236, 255, 0.16);
   backdrop-filter: blur(12px);
 }
+
+.reveal-up {
+  animation: revealUp 0.82s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  will-change: transform, opacity;
+}
+
+.reveal-soft {
+  animation: revealSoft 1s ease both;
+  will-change: transform, opacity;
+}
+
+.float-gentle {
+  animation: floatGentle 7s ease-in-out infinite;
+  will-change: transform;
+}
+
+.delay-1 {
+  animation-delay: 0.08s;
+}
+
+.delay-2 {
+  animation-delay: 0.16s;
+}
+
+.delay-3 {
+  animation-delay: 0.24s;
+}
+
+.delay-4 {
+  animation-delay: 0.32s;
+}
+
+.delay-5 {
+  animation-delay: 0.4s;
+}
+
+@keyframes revealUp {
+  from {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes revealSoft {
+  from {
+    opacity: 0;
+    transform: scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes floatGentle {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal-up,
+  .reveal-soft,
+  .float-gentle,
+  .delay-1,
+  .delay-2,
+  .delay-3,
+  .delay-4,
+  .delay-5 {
+    animation: none !important;
+  }
+}
