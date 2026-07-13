@@ -20,6 +20,17 @@ import { auth, db } from "../lib/firebase";
 
 const AuthContext = createContext(null);
 
+function getPasswordResetSettings() {
+  if (typeof window === "undefined") {
+    return undefined;
+  }
+
+  return {
+    url: `${window.location.origin}/login?reset=complete`,
+    handleCodeInApp: false
+  };
+}
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -50,7 +61,8 @@ export function AuthProvider({ children }) {
   const login = (email, password) =>
     signInWithEmailAndPassword(auth, email, password);
 
-  const resetPassword = (email) => sendPasswordResetEmail(auth, email);
+  const resetPassword = (email) =>
+    sendPasswordResetEmail(auth, email, getPasswordResetSettings());
 
   const logout = () => signOut(auth);
 

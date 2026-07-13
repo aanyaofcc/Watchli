@@ -1,16 +1,23 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { AuthCard } from "../components/AuthCard";
 import { useAuth } from "../providers/AuthProvider";
 
 export function LoginPage() {
   const { login, resetPassword } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
   const [resettingPassword, setResettingPassword] = useState(false);
+
+  useEffect(() => {
+    if (searchParams.get("reset") === "complete") {
+      setSuccess("Your password was reset successfully. You can log in with your new password now.");
+    }
+  }, [searchParams]);
 
   const handleChange = (event) => {
     setFormData((current) => ({

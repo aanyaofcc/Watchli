@@ -1,13 +1,29 @@
 import { useEffect, useState } from "react";
-import { CheckCircle2, CreditCard, LoaderCircle, Settings, ShieldCheck, Sparkles, UserRound } from "lucide-react";
+import { CheckCircle2, CreditCard, LoaderCircle, MailCheck, Settings, ShieldCheck, Sparkles, UserRound } from "lucide-react";
 import { Link } from "react-router-dom";
-import { sendPasswordResetEmail, updateProfile } from "firebase/auth";
+import { updateProfile } from "firebase/auth";
 import { auth } from "../lib/firebase";
 import { createBillingPortalSession, createCheckoutSession, fetchMyWebsites } from "../lib/api";
 import { useAuth } from "../providers/AuthProvider";
 
+function formatDate(value) {
+  if (!value) {
+    return "Not available";
+  }
+
+  const date = typeof value?.toDate === "function" ? value.toDate() : new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return "Not available";
+  }
+
+  return new Intl.DateTimeFormat("en-US", {
+    dateStyle: "medium"
+  }).format(date);
+}
+
 export function SettingsPage() {
-  const { user } = useAuth();
+  const { user, resetPassword } = useAuth();
   const [account, setAccount] = useState(null);
   const [displayName, setDisplayName] = useState(user?.displayName || "");
   const [loading, setLoading] = useState(true);
@@ -78,8 +94,8 @@ export function SettingsPage() {
     setSendingReset(true);
 
     try {
-      await sendPasswordResetEmail(auth, user.email);
-      setSuccess("Password reset email sent.");
+      await resetPassword(user.email);
+      setSuccess("Password reset email sent. Check your inbox, and look in spam or junk if you do not see it.");
     } catch (resetError) {
       setError(resetError.message || "Could not send password reset email.");
     } finally {
@@ -218,6 +234,34 @@ export function SettingsPage() {
               {sendingReset ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <Settings className="h-4 w-4" />}
               Send password reset email
             </button>
+            <p className="mt-3 text-xs leading-6 text-slate-400">
+              Reset emails return to your Watchli login page after the password update. If the email does not appear right away, check spam or junk.
+            </p>
+          </div>
+
+          <div className="glass-panel-soft rounded-3xl p-5 sm:p-6">
+            <div className="flex items-center gap-3">
+              <div className="rounded-2xl bg-white/10 p-3">
+                <MailCheck className="h-5 w-5 text-slate-100" />
+              </div>
+              <div>
+                <p className="text-sm text-slate-400">Account overview</p>
+                <h2 className="display-font text-xl font-semibold text-white">Identity and support</h2>
+              </div>
+            </div>
+            <div className="mt-5 grid gap-3 sm:grid-cols-2">
+              <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+                <p className="text-sm text-slate-400">Account email</p>
+                <p className="mt-2 break-all text-sm text-white">{user?.email || "Not available"}</p>
+              </div>
+              <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+                <p className="text-sm text-slate-400">Member since</p>
+                <p className="mt-2 text-sm text-white">{formatDate(user?.metadata?.creationTime)}</p>
+              </div>
+            </div>
+            <p className="mt-4 text-sm leading-6 text-slate-300">
+              Want more branded password reset emails? Update the Firebase Authentication email template so the sender name, support links, and copy match Watchli.
+            </p>
           </div>
         </div>
 
@@ -265,6 +309,23 @@ export function SettingsPage() {
                       {account?.checkFrequency || "Daily"}
                     </p>
                     <p className="mt-2 text-sm text-slate-300">Current plan pacing</p>
+                  </div>
+                </div>
+
+                <div className="mt-6 grid gap-3 md:grid-cols-2">
+                  <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-4">
+                    <p className="text-sm text-slate-400">Billing experience</p>
+                    <p className="mt-2 text-sm leading-6 text-slate-200">
+                      {account?.premium
+                        ? "Your subscription is active and ready to manage through the customer billing portal."
+                        : "You are currently on free access. Upgrade when you want more tracked pages and premium plan headroom."}
+                    </p>
+                  </div>
+                  <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-4">
+                    <p className="text-sm text-slate-400">Reset email branding</p>
+                    <p className="mt-2 text-sm leading-6 text-slate-200">
+                      Firebase sends password reset emails. For the most trustworthy look, customize the email template in Firebase Console and keep your Watchli sender branding consistent.
+                    </p>
                   </div>
                 </div>
 
