@@ -103,8 +103,8 @@ export function LandingPagePro() {
 
       <main className="relative z-10">
         <section className="mx-auto max-w-7xl px-4 pb-20 pt-6 sm:px-6 sm:pb-24 sm:pt-10">
-          <div className="max-w-4xl">
-            <div className="data-chip reveal-up inline-flex max-w-full items-center gap-2 rounded-full px-4 py-2 text-sm text-slate-200">
+          <div className="mx-auto max-w-5xl text-center">
+            <div className="data-chip reveal-up mx-auto inline-flex max-w-full items-center gap-2 rounded-full px-4 py-2 text-sm text-slate-200">
               <Sparkles className="h-4 w-4 text-cyan-300" />
               <span className="truncate sm:whitespace-normal">Track product pages and catch price changes faster</span>
             </div>
@@ -113,12 +113,12 @@ export function LandingPagePro() {
               Catch price drops, sellouts, and product changes before everyone else.
             </h1>
 
-            <p className="reveal-up delay-2 mt-5 max-w-3xl text-base leading-7 text-slate-300 sm:mt-6 sm:text-lg sm:leading-8">
+            <p className="reveal-up delay-2 mx-auto mt-5 max-w-3xl text-base leading-7 text-slate-300 sm:mt-6 sm:text-lg sm:leading-8">
               Watchli monitors shopping and product pages, looks for likely prices, and
               tells you when the listing changes so you can catch drops, increases, or edits quickly.
             </p>
 
-            <div className="reveal-up delay-3 mt-7 flex flex-col gap-3 sm:flex-row">
+            <div className="reveal-up delay-3 mt-7 flex flex-col gap-3 sm:flex-row sm:justify-center">
               <Link
                 to="/signup"
                 className="glow-button inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#8fb2c3] via-[#7f9fb7] to-[#8cb4a8] px-6 py-3.5 font-semibold text-slate-950 transition hover:scale-[1.02] hover:from-[#9bbccc] hover:via-[#8aabc2] hover:to-[#96beb2]"
@@ -134,7 +134,7 @@ export function LandingPagePro() {
               </Link>
             </div>
 
-            <div className="mt-8 grid gap-3 sm:mt-9 sm:grid-cols-3">
+            <div className="mt-8 grid gap-3 text-left sm:mt-9 sm:grid-cols-3">
               {[
                 ["5 products free", "Start with the items you care about most"],
                 ["Price-aware alerts", "Get notified when a product page appears to change price"],
