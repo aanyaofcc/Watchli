@@ -1,9 +1,20 @@
-import { useEffect, useState } from "react";
-import { CheckCircle2, CreditCard, LoaderCircle, MailCheck, Settings, ShieldCheck, Sparkles, UserRound } from "lucide-react";
-import { Link } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import {
+  AlertTriangle,
+  CheckCircle2,
+  CreditCard,
+  LoaderCircle,
+  MailCheck,
+  Settings,
+  ShieldCheck,
+  Sparkles,
+  Trash2,
+  UserRound
+} from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 import { updateProfile } from "firebase/auth";
 import { auth } from "../lib/firebase";
-import { createBillingPortalSession, createCheckoutSession, fetchMyWebsites } from "../lib/api";
+import { createBillingPortalSession, createCheckoutSession, deleteAccount, fetchMyWebsites } from "../lib/api";
 import { useAuth } from "../providers/AuthProvider";
 
 function formatDate(value) {
@@ -23,16 +34,30 @@ function formatDate(value) {
 }
 
 export function SettingsPage() {
-  const { user, resetPassword } = useAuth();
+  const navigate = useNavigate();
+  const { user, resetPassword, logout } = useAuth();
   const [account, setAccount] = useState(null);
   const [displayName, setDisplayName] = useState(user?.displayName || "");
+  const [deleteConfirmation, setDeleteConfirmation] = useState("");
   const [loading, setLoading] = useState(true);
   const [savingProfile, setSavingProfile] = useState(false);
   const [openingBilling, setOpeningBilling] = useState(false);
   const [checkingOut, setCheckingOut] = useState(false);
   const [sendingReset, setSendingReset] = useState(false);
+  const [deletingAccount, setDeletingAccount] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+
+  const confirmationTarget = user?.email || user?.uid || "";
+  const usagePercent = useMemo(() => {
+    const limit = account?.websiteLimit || 0;
+
+    if (!limit) {
+      return 0;
+    }
+
+    return Math.min(100, Math.round(((account?.websiteCount || 0) / limit) * 100));
+  }, [account?.websiteCount, account?.websiteLimit]);
 
   useEffect(() => {
     let active = true;
@@ -131,6 +156,41 @@ export function SettingsPage() {
     }
   };
 
+  const handleDeleteAccount = async () => {
+    setError("");
+    setSuccess("");
+
+    if (!confirmationTarget) {
+      setError("Could not verify this account for deletion.");
+      return;
+    }
+
+    if (deleteConfirmation.trim() !== confirmationTarget) {
+      setError(`Type ${confirmationTarget} exactly to confirm account deletion.`);
+      return;
+    }
+
+    setDeletingAccount(true);
+
+    try {
+      await deleteAccount(deleteConfirmation.trim());
+
+      try {
+        await logout();
+      } catch {
+        // Ignore local sign-out errors after the auth record is removed.
+      }
+
+      navigate("/", {
+        replace: true,
+        state: { deletedAccount: true }
+      });
+    } catch (deleteError) {
+      setError(deleteError.message || "Could not delete your account.");
+      setDeletingAccount(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <section className="glass-panel rounded-[32px] p-6 sm:p-8">
@@ -166,8 +226,54 @@ export function SettingsPage() {
         </div>
       ) : null}
 
-      <section className="grid gap-4 lg:grid-cols-[0.95fr_1.05fr]">
+      <section className="grid gap-4 xl:grid-cols-[0.9fr_1.1fr]">
         <div className="space-y-4">
+          <div className="glass-panel rounded-[32px] p-5 sm:p-6">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+              <div>
+                <p className="text-sm text-slate-400">Account health</p>
+                <h2 className="display-font mt-2 text-2xl font-semibold text-white">Your Watchli workspace</h2>
+              </div>
+              <div className="inline-flex items-center gap-2 rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-1.5 text-xs font-medium text-cyan-100">
+                <Sparkles className="h-4 w-4" />
+                {account?.planLabel || "Free plan"}
+              </div>
+            </div>
+
+            <div className="mt-5 grid gap-3 sm:grid-cols-3">
+              <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+                <p className="text-sm text-slate-400">Tracked products</p>
+                <p className="display-font mt-2 text-2xl font-semibold text-white">{account?.websiteCount || 0}</p>
+                <p className="mt-2 text-sm text-slate-300">Currently active in your dashboard</p>
+              </div>
+              <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+                <p className="text-sm text-slate-400">Available slots</p>
+                <p className="display-font mt-2 text-2xl font-semibold text-white">{account?.websiteSlotsRemaining ?? 5}</p>
+                <p className="mt-2 text-sm text-slate-300">Remaining before you hit your limit</p>
+              </div>
+              <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+                <p className="text-sm text-slate-400">Check cadence</p>
+                <p className="display-font mt-2 text-2xl font-semibold text-white">{account?.checkFrequency || "Daily"}</p>
+                <p className="mt-2 text-sm text-slate-300">How often Watchli is set to check</p>
+              </div>
+            </div>
+
+            <div className="mt-5 rounded-2xl border border-white/10 bg-slate-950/35 p-4">
+              <div className="flex items-center justify-between gap-3 text-sm">
+                <span className="text-slate-300">Plan usage</span>
+                <span className="text-slate-400">
+                  {account?.websiteCount || 0} / {account?.websiteLimit || 5}
+                </span>
+              </div>
+              <div className="mt-3 h-2.5 overflow-hidden rounded-full bg-white/8">
+                <div
+                  className="h-full rounded-full bg-gradient-to-r from-cyan-300 via-sky-300 to-emerald-200"
+                  style={{ width: `${usagePercent}%` }}
+                />
+              </div>
+            </div>
+          </div>
+
           <div className="glass-panel-soft rounded-3xl p-5 sm:p-6">
             <div className="flex items-center gap-3">
               <div className="rounded-2xl bg-cyan-300/10 p-3">
@@ -263,6 +369,48 @@ export function SettingsPage() {
               Want more branded password reset emails? Update the Firebase Authentication email template so the sender name, support links, and copy match Watchli.
             </p>
           </div>
+
+          <div className="rounded-3xl border border-rose-400/25 bg-[linear-gradient(180deg,rgba(127,29,29,0.22),rgba(69,10,10,0.14))] p-5 sm:p-6">
+            <div className="flex items-center gap-3">
+              <div className="rounded-2xl bg-rose-500/15 p-3">
+                <AlertTriangle className="h-5 w-5 text-rose-200" />
+              </div>
+              <div>
+                <p className="text-sm text-rose-200/80">Danger zone</p>
+                <h2 className="display-font text-xl font-semibold text-white">Delete account</h2>
+              </div>
+            </div>
+
+            <p className="mt-4 text-sm leading-6 text-slate-200">
+              This permanently removes your Watchli account, tracked websites, saved snapshots, and profile data.
+              {account?.premium
+                ? " If you have an active Pro subscription, Watchli will attempt to cancel it during deletion."
+                : ""}
+            </p>
+
+            <label className="mt-5 block">
+              <span className="mb-2 block text-sm text-rose-100">
+                Type <span className="font-semibold text-white">{confirmationTarget}</span> to confirm
+              </span>
+              <input
+                type="text"
+                value={deleteConfirmation}
+                onChange={(event) => setDeleteConfirmation(event.target.value)}
+                placeholder={confirmationTarget}
+                className="w-full rounded-2xl border border-rose-300/20 bg-slate-950/55 px-4 py-3 text-white outline-none transition placeholder:text-slate-500 focus:border-rose-300"
+              />
+            </label>
+
+            <button
+              type="button"
+              onClick={handleDeleteAccount}
+              disabled={deletingAccount}
+              className="mt-4 inline-flex items-center justify-center gap-2 rounded-2xl bg-rose-500/90 px-5 py-3 font-semibold text-white transition hover:bg-rose-500 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {deletingAccount ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
+              Delete account permanently
+            </button>
+          </div>
         </div>
 
         <div className="space-y-4">
@@ -326,6 +474,24 @@ export function SettingsPage() {
                     <p className="mt-2 text-sm leading-6 text-slate-200">
                       Firebase sends password reset emails. For the most trustworthy look, customize the email template in Firebase Console and keep your Watchli sender branding consistent.
                     </p>
+                  </div>
+                </div>
+
+                <div className="mt-6 rounded-3xl border border-white/10 bg-white/[0.04] p-5">
+                  <p className="text-sm text-slate-400">Recommended next steps</p>
+                  <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                    <div className="rounded-2xl border border-white/10 bg-slate-950/30 p-4">
+                      <p className="text-sm font-medium text-white">Improve account trust</p>
+                      <p className="mt-2 text-sm leading-6 text-slate-300">
+                        Keep your display name updated and customize Firebase auth emails so support and branding match Watchli.
+                      </p>
+                    </div>
+                    <div className="rounded-2xl border border-white/10 bg-slate-950/30 p-4">
+                      <p className="text-sm font-medium text-white">Stay on top of billing</p>
+                      <p className="mt-2 text-sm leading-6 text-slate-300">
+                        If you move to Pro, use the billing portal here to manage payment details and subscriptions in one place.
+                      </p>
+                    </div>
                   </div>
                 </div>
 

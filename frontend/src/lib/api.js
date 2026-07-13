@@ -44,6 +44,13 @@ export function deleteWebsite(websiteId) {
   });
 }
 
+export function deleteAccount(confirmation) {
+  return request("/api/account", {
+    method: "DELETE",
+    body: { confirmation }
+  });
+}
+
 export function sendTestEmail(email) {
   return post("/api/send-test-email", { email });
 }

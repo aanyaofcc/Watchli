@@ -13,16 +13,16 @@ function ensureStripeConfigured() {
   }
 }
 
-async function stripeRequest(path, body) {
+async function stripeRequest(path, body, method = "POST") {
   ensureStripeConfigured();
 
   const response = await fetch(`${STRIPE_API_BASE_URL}${path}`, {
-    method: "POST",
+    method,
     headers: {
       Authorization: `Bearer ${config.stripeSecretKey}`,
       "Content-Type": "application/x-www-form-urlencoded"
     },
-    body: new URLSearchParams(body)
+    body: method === "GET" || method === "DELETE" ? undefined : new URLSearchParams(body)
   });
   const payload = await response.json();
 
@@ -31,6 +31,18 @@ async function stripeRequest(path, body) {
   }
 
   return payload;
+}
+
+export async function cancelUserSubscriptionForDeletion(userData = {}) {
+  if (!config.stripeSecretKey || !config.stripeProPriceId) {
+    return;
+  }
+
+  if (!userData.stripeSubscriptionId) {
+    return;
+  }
+
+  await stripeRequest(`/subscriptions/${userData.stripeSubscriptionId}`, {}, "DELETE");
 }
 
 async function updateUserBilling(userId, data) {

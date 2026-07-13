@@ -15,6 +15,7 @@ import {
   createBillingPortalSession,
   createCheckoutSession
 } from "./services/billingService.js";
+import { deleteAccountForUser } from "./services/accountService.js";
 
 export const router = express.Router();
 const rateLimitStore = new Map();
@@ -77,6 +78,12 @@ const billingRateLimit = createRateLimiter({
   keyPrefix: "billing",
   windowMs: 60 * 1000,
   maxRequests: 10
+});
+
+const deleteAccountRateLimit = createRateLimiter({
+  keyPrefix: "delete-account",
+  windowMs: 15 * 60 * 1000,
+  maxRequests: 3
 });
 
 async function requireAuth(request, response, next) {
@@ -227,6 +234,30 @@ router.get("/api/my-websites", requireAuth, async (request, response) => {
     return response.json(result);
   } catch (error) {
     return response.status(500).json({ error: error.message });
+  }
+});
+
+router.delete("/api/account", requireAuth, deleteAccountRateLimit, async (request, response) => {
+  try {
+    const { confirmation } = request.body || {};
+    const expectedConfirmation = request.authUser.email || request.authUser.uid;
+
+    if (!confirmation || confirmation.trim() !== expectedConfirmation) {
+      return response.status(400).json({
+        error: request.authUser.email
+          ? "Type your account email exactly to confirm account deletion."
+          : "Confirmation did not match this account."
+      });
+    }
+
+    const result = await deleteAccountForUser({
+      userId: request.authUser.uid,
+      email: request.authUser.email || ""
+    });
+
+    return response.json(result);
+  } catch (error) {
+    return response.status(400).json({ error: error.message || "Could not delete account." });
   }
 });
 
