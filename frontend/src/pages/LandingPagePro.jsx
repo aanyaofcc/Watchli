@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
   ArrowRight,
@@ -67,6 +68,35 @@ const dashboardPreview = [
 ];
 
 export function LandingPagePro() {
+  useEffect(() => {
+    const elements = document.querySelectorAll("[data-scroll-reveal]");
+
+    if (!elements.length) {
+      return undefined;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) {
+            return;
+          }
+
+          entry.target.classList.add("is-visible");
+          observer.unobserve(entry.target);
+        });
+      },
+      {
+        threshold: 0.16,
+        rootMargin: "0px 0px -8% 0px"
+      }
+    );
+
+    elements.forEach((element) => observer.observe(element));
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <div className="tech-shell min-h-screen text-white">
       <div className="aurora-orb float-gentle left-[-80px] top-20 h-64 w-64 bg-cyan-400/30" />
@@ -150,7 +180,7 @@ export function LandingPagePro() {
         </section>
 
         <section className="mx-auto max-w-7xl px-4 pb-8 sm:px-6">
-          <div className="mb-6 max-w-3xl">
+          <div className="mb-6 max-w-3xl scroll-reveal" data-scroll-reveal>
             <p className="text-sm uppercase tracking-[0.24em] text-cyan-300">Product preview</p>
             <h2 className="display-font mt-3 text-3xl font-bold text-white sm:text-4xl">
               See the monitoring dashboard before you sign up
@@ -160,7 +190,7 @@ export function LandingPagePro() {
             </p>
           </div>
 
-          <div className="reveal-soft delay-2 relative">
+          <div className="relative scroll-reveal scroll-delay-1" data-scroll-reveal>
             <div className="glass-panel rounded-[28px] p-3 sm:rounded-[34px] sm:p-4">
               <div className="rounded-[24px] border border-white/10 bg-[linear-gradient(180deg,rgba(19,33,53,0.94),rgba(14,25,42,0.8))] p-4 sm:rounded-[28px] sm:p-5">
                 <div className="flex items-start justify-between gap-4">
@@ -241,7 +271,7 @@ export function LandingPagePro() {
         </section>
 
         <section id="how-it-works" className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
-          <div className="mb-6 max-w-2xl">
+          <div className="mb-6 max-w-2xl scroll-reveal" data-scroll-reveal>
             <p className="text-sm uppercase tracking-[0.24em] text-cyan-300">How it works</p>
             <h2 className="display-font mt-3 text-3xl font-bold text-white sm:text-4xl">
               Focus on product pages where price changes matter
@@ -250,7 +280,11 @@ export function LandingPagePro() {
 
           <div className="grid gap-4 lg:grid-cols-3">
             {steps.map((step, index) => (
-              <div key={step.title} className="glass-panel reveal-up rounded-[30px] p-5 sm:p-6">
+              <div
+                key={step.title}
+                className={`glass-panel scroll-reveal rounded-[30px] p-5 sm:p-6 scroll-delay-${index + 1}`}
+                data-scroll-reveal
+              >
                 <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-300/25 to-blue-400/20 text-lg font-bold text-cyan-100">
                   {index + 1}
                 </div>
@@ -265,8 +299,12 @@ export function LandingPagePro() {
 
         <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
           <div className="grid gap-4 lg:grid-cols-3">
-            {features.map(({ icon: Icon, title, body }) => (
-              <div key={title} className="glass-panel-soft reveal-up rounded-[30px] p-5 sm:p-6">
+            {features.map(({ icon: Icon, title, body }, index) => (
+              <div
+                key={title}
+                className={`glass-panel-soft scroll-reveal rounded-[30px] p-5 sm:p-6 scroll-delay-${index + 1}`}
+                data-scroll-reveal
+              >
                 <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/6 ring-1 ring-white/10">
                   <Icon className="h-5 w-5 text-cyan-200" />
                 </div>
@@ -281,13 +319,13 @@ export function LandingPagePro() {
 
         <section id="pricing" className="mx-auto max-w-7xl px-4 py-8 pb-20 sm:px-6">
           <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-            <div>
+            <div className="scroll-reveal" data-scroll-reveal>
               <p className="text-sm uppercase tracking-[0.24em] text-cyan-300">Pricing preview</p>
               <h2 className="display-font mt-3 text-3xl font-bold text-white sm:text-4xl">
                 Start with a few products, scale later
               </h2>
             </div>
-            <p className="max-w-2xl text-slate-300">
+            <p className="max-w-2xl scroll-reveal scroll-delay-1 text-slate-300" data-scroll-reveal>
               The MVP stays simple, but the structure is ready for more tracked products,
               faster checks, and Stripe billing when you want to grow.
             </p>
@@ -297,11 +335,12 @@ export function LandingPagePro() {
             {plans.map((plan, index) => (
               <div
                 key={plan.name}
-                className={`rounded-[32px] p-[1px] ${
+                className={`scroll-reveal rounded-[32px] p-[1px] scroll-delay-${index + 1} ${
                   index === 0
                     ? "bg-gradient-to-br from-cyan-300/40 via-white/10 to-white/5"
                     : "bg-gradient-to-br from-white/10 to-white/5"
                 }`}
+                data-scroll-reveal
               >
                 <div className="glass-panel reveal-up h-full rounded-[31px] p-6 sm:p-8">
                   <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
