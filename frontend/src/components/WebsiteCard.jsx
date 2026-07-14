@@ -109,7 +109,7 @@ function formatDollarAmount(value) {
 export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy }) {
   const statusClasses = {
     Watching: "bg-white/[0.04] text-slate-200 border-white/10",
-    Changed: "bg-[#a8c0b2]/12 text-[#d9e8df] border-[#a8c0b2]/18",
+    Changed: "bg-[#88BDF2]/14 text-[#BDDDFC] border-[#88BDF2]/18",
     Error: "bg-rose-500/15 text-rose-100 border-rose-400/20"
   };
   const availability = website.latestAvailabilityStatus || website.lastDiffSummary?.currentAvailabilityStatus || "unknown";
@@ -125,7 +125,7 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
     availability === "sold_out" || availability === "unavailable"
       ? "border-amber-300/18 bg-amber-300/10 text-amber-100"
       : availability === "available"
-        ? "border-[#a8c0b2]/18 bg-[#a8c0b2]/10 text-[#d9e8df]"
+        ? "border-[#88BDF2]/18 bg-[#88BDF2]/10 text-[#BDDDFC]"
         : "border-white/10 bg-white/[0.04] text-slate-300";
 
   return (
@@ -163,7 +163,7 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
 
       <div className="mt-5 flex flex-wrap gap-2.5">
         {website.latestPrimaryPrice ? (
-          <div className="inline-flex items-center gap-2 rounded-full border border-[#a8c0b2]/18 bg-[#a8c0b2]/10 px-3 py-1.5 text-sm text-[#d9e8df]">
+          <div className="inline-flex items-center gap-2 rounded-full border border-[#88BDF2]/18 bg-[#88BDF2]/10 px-3 py-1.5 text-sm text-[#BDDDFC]">
             <DollarSign className="h-4 w-4" />
             {website.latestPrimaryPrice}
           </div>
@@ -180,7 +180,7 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
             Check failed
           </div>
         ) : website.lastDiffSummary?.priceChange?.changed ? (
-          <div className="inline-flex items-center gap-2 rounded-full border border-[#a8c0b2]/18 bg-[#a8c0b2]/10 px-3 py-1.5 text-sm text-[#d9e8df]">
+          <div className="inline-flex items-center gap-2 rounded-full border border-[#88BDF2]/18 bg-[#88BDF2]/10 px-3 py-1.5 text-sm text-[#BDDDFC]">
             <DollarSign className="h-4 w-4" />
             {getPriceSummary(website.lastDiffSummary.priceChange)}
           </div>
@@ -216,8 +216,8 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
       ) : null}
 
       {website.lastDiffSummary?.priceChange?.changed ? (
-        <div className="mt-5 rounded-3xl border border-[#a8c0b2]/18 bg-[#a8c0b2]/10 p-4">
-          <p className="text-xs uppercase tracking-[0.16em] text-[#d9e8df]">Latest price change</p>
+        <div className="mt-5 rounded-3xl border border-[#88BDF2]/18 bg-[#88BDF2]/10 p-4">
+          <p className="text-xs uppercase tracking-[0.16em] text-[#BDDDFC]">Latest price change</p>
           <p className="mt-2 text-base font-semibold text-white">{getPriceDirectionLabel(website.lastDiffSummary.priceChange)}</p>
           <p className="mt-1 text-sm text-slate-200">
             {website.lastDiffSummary.priceChange.label}
@@ -229,8 +229,8 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
                 {website.lastDiffSummary.priceChange.previousPrice || "Not available"}
               </p>
             </div>
-            <div className="rounded-2xl border border-[#a8c0b2]/18 bg-[#a8c0b2]/10 p-3">
-              <p className="text-xs uppercase tracking-[0.14em] text-[#d9e8df]">Current price</p>
+            <div className="rounded-2xl border border-[#88BDF2]/18 bg-[#88BDF2]/10 p-3">
+              <p className="text-xs uppercase tracking-[0.14em] text-[#BDDDFC]">Current price</p>
               <p className="mt-1 break-words text-lg font-semibold text-white">
                 {website.lastDiffSummary.priceChange.currentPrice || "Not available"}
               </p>
@@ -244,7 +244,7 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
           type="button"
           onClick={() => onCheck(website.id)}
           disabled={busy}
-          className="glow-button inline-flex items-center justify-center gap-2 rounded-2xl bg-[#a8c0b2] px-4 py-3 font-semibold text-slate-950 transition hover:bg-[#b8cec1] disabled:cursor-not-allowed disabled:opacity-60"
+          className="glow-button inline-flex items-center justify-center gap-2 rounded-2xl bg-[#88BDF2] px-4 py-3 font-semibold text-[#1d2a36] transition hover:bg-[#9cc8f4] disabled:cursor-not-allowed disabled:opacity-60"
         >
           <RefreshCw className="h-4 w-4" />
           {busy ? "Checking..." : "Check Now"}

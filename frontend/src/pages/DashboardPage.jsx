@@ -269,7 +269,7 @@ export function DashboardPage() {
         <div className="glass-panel rounded-[32px] p-5 sm:p-8">
           <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
             <div>
-              <p className="text-sm uppercase tracking-[0.16em] text-slate-400">Dashboard</p>
+              <p className="text-sm uppercase tracking-[0.16em] text-[#BDDDFC]">Dashboard</p>
               <h1 className="display-font mt-3 break-words text-2xl font-semibold text-white sm:text-3xl">
                 Welcome back{user?.email ? `, ${user.email}` : ""}
               </h1>
@@ -293,12 +293,12 @@ export function DashboardPage() {
                   value={url}
                   onChange={(event) => setUrl(event.target.value)}
                   placeholder="https://store.com/product/example"
-                  className="w-full rounded-2xl border border-white/8 bg-slate-950/45 px-4 py-3 text-white outline-none transition placeholder:text-slate-500 focus:border-[#a8c0b2]"
+                  className="w-full rounded-2xl border border-[#BDDDFC]/16 bg-[#384959]/45 px-4 py-3 text-white outline-none transition placeholder:text-slate-400 focus:border-[#88BDF2]"
                 />
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="glow-button w-full rounded-2xl bg-[#a8c0b2] px-5 py-3 font-semibold text-slate-950 transition hover:bg-[#b8cec1] disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+                  className="glow-button w-full rounded-2xl bg-[#88BDF2] px-5 py-3 font-semibold text-[#1d2a36] transition hover:bg-[#9cc8f4] disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
                 >
                   {submitting ? "Adding..." : "Add Website"}
                 </button>
@@ -310,7 +310,7 @@ export function DashboardPage() {
             <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5">
               {account.websiteCount} of {account.websiteLimit} slots used
             </span>
-            <span className="rounded-full border border-[#a8c0b2]/20 bg-[#a8c0b2]/10 px-3 py-1.5 text-[#d9e8df]">
+            <span className="rounded-full border border-[#BDDDFC]/20 bg-[#BDDDFC]/10 px-3 py-1.5 text-[#BDDDFC]">
               {account.checkFrequency}
             </span>
           </div>
@@ -346,7 +346,7 @@ export function DashboardPage() {
         <div className="space-y-3">
           <div className="glass-panel-soft rounded-3xl p-5 sm:p-6">
             <div className="flex items-center gap-3">
-              <Bell className="h-5 w-5 text-[#c9d6cf]" />
+              <Bell className="h-5 w-5 text-[#BDDDFC]" />
               <div>
                 <p className="text-sm text-slate-400">Quick actions</p>
                 <h2 className="display-font text-xl font-semibold text-white">
@@ -366,7 +366,7 @@ export function DashboardPage() {
                 type="button"
                 onClick={handleSendTestEmail}
                 disabled={sendingEmail}
-                className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-white/8 bg-white/[0.04] px-4 py-3 text-sm text-slate-200 transition hover:bg-white/[0.07] disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-[#BDDDFC]/16 bg-white/[0.05] px-4 py-3 text-sm text-slate-100 transition hover:bg-white/[0.09] disabled:cursor-not-allowed disabled:opacity-60"
               >
                 <Mail className="h-4 w-4" />
                 {sendingEmail ? "Sending..." : "Send Test Email"}
@@ -375,7 +375,7 @@ export function DashboardPage() {
                 type="button"
                 onClick={() => void loadWebsites({ showRefreshing: true })}
                 disabled={refreshingWebsites || loadingWebsites}
-                className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-white/8 bg-white/[0.04] px-4 py-3 text-sm text-slate-200 transition hover:bg-white/[0.07] disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-[#BDDDFC]/16 bg-white/[0.05] px-4 py-3 text-sm text-slate-100 transition hover:bg-white/[0.09] disabled:cursor-not-allowed disabled:opacity-60"
               >
                 <RefreshCw className={`h-4 w-4 ${refreshingWebsites ? "animate-spin" : ""}`} />
                 Refresh dashboard
@@ -385,7 +385,7 @@ export function DashboardPage() {
 
           <div className="glass-panel-soft rounded-3xl p-5 sm:p-6">
             <div className="flex items-center gap-3">
-              <RefreshCw className={`h-5 w-5 text-[#c9d6cf] ${scheduler?.running ? "animate-spin" : ""}`} />
+              <RefreshCw className={`h-5 w-5 text-[#BDDDFC] ${scheduler?.running ? "animate-spin" : ""}`} />
               <div>
                 <p className="text-sm text-slate-400">Automatic checks</p>
                 <h2 className="display-font text-xl font-semibold text-white">
@@ -412,7 +412,7 @@ export function DashboardPage() {
                 <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5">
                   {scheduler.lastRunTotal || 0} checked
                 </span>
-                <span className="rounded-full border border-[#a8c0b2]/20 bg-[#a8c0b2]/10 px-3 py-1.5 text-[#d9e8df]">
+                <span className="rounded-full border border-[#88BDF2]/20 bg-[#88BDF2]/12 px-3 py-1.5 text-[#BDDDFC]">
                   {scheduler.lastRunChanged || 0} changed
                 </span>
                 <span className="rounded-full border border-rose-300/20 bg-rose-300/10 px-3 py-1.5 text-rose-100">
@@ -424,7 +424,7 @@ export function DashboardPage() {
 
           <div className="glass-panel-soft rounded-3xl p-5 sm:p-6">
             <div className="flex items-center gap-3">
-              <Crown className="h-5 w-5 text-[#c9d6cf]" />
+              <Crown className="h-5 w-5 text-[#BDDDFC]" />
               <div>
                 <p className="text-sm text-slate-400">Plan</p>
                 <h2 className="display-font text-xl font-semibold text-white">
@@ -441,7 +441,7 @@ export function DashboardPage() {
               <button
                 type="button"
                 onClick={handleUpgradeClick}
-                className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-[#a8c0b2]/20 bg-[#a8c0b2]/10 px-4 py-3 text-sm font-medium text-[#d9e8df] transition hover:bg-[#a8c0b2]/14"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-[#88BDF2]/20 bg-[#88BDF2]/14 px-4 py-3 text-sm font-medium text-white transition hover:bg-[#88BDF2]/22"
               >
                 <Zap className="h-4 w-4" />
                 {account.premium ? "View Pro plan" : "Upgrade to Pro"}
@@ -451,7 +451,7 @@ export function DashboardPage() {
                   type="button"
                   onClick={() => void handleManageBilling()}
                   disabled={openingBilling}
-                  className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-white/8 bg-white/[0.04] px-4 py-3 text-sm text-slate-200 transition hover:bg-white/[0.07] disabled:cursor-not-allowed disabled:opacity-60"
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-[#BDDDFC]/16 bg-white/[0.05] px-4 py-3 text-sm text-slate-100 transition hover:bg-white/[0.09] disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {openingBilling ? "Opening..." : "Manage Billing"}
                 </button>
