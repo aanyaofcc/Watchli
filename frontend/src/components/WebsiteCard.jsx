@@ -183,7 +183,12 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
 
         <div className="glass-panel-soft rounded-3xl p-4">
           <p className="text-xs uppercase tracking-[0.16em] text-slate-400">Latest signal</p>
-          {website.lastDiffSummary?.priceChange?.changed ? (
+          {website.status === "Error" ? (
+            <div className="mt-2 inline-flex items-center gap-2 rounded-full border border-rose-400/20 bg-rose-500/10 px-3 py-1.5 text-sm text-rose-100">
+              <PackageSearch className="h-4 w-4" />
+              Check failed
+            </div>
+          ) : website.lastDiffSummary?.priceChange?.changed ? (
             <div className="mt-2 inline-flex items-center gap-2 rounded-full border border-amber-300/20 bg-amber-300/10 px-3 py-1.5 text-sm text-amber-100">
               <DollarSign className="h-4 w-4" />
               {getPriceSummary(website.lastDiffSummary.priceChange)}
@@ -195,12 +200,21 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
             </div>
           )}
             <p className="mt-3 text-sm text-slate-300">
-            {website.lastDiffSummary?.priceChange?.changed
+            {website.status === "Error"
+              ? website.lastErrorMessage || "The website could not be checked successfully."
+              : website.lastDiffSummary?.priceChange?.changed
               ? website.lastDiffSummary.priceChange.label
               : "Watchli is standing by for price, availability, or content changes on this page."}
           </p>
         </div>
       </div>
+
+      {website.status === "Error" && website.lastErrorMessage ? (
+        <div className="mt-5 rounded-3xl border border-rose-400/25 bg-rose-500/10 p-4">
+          <p className="text-xs uppercase tracking-[0.16em] text-rose-200">Failure reason</p>
+          <p className="mt-2 text-sm leading-6 text-rose-100">{website.lastErrorMessage}</p>
+        </div>
+      ) : null}
 
       {website.lastDiffSummary?.priceChange?.changed ? (
         <div className="mt-5 rounded-3xl border border-amber-300/20 bg-amber-300/10 p-4">

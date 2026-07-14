@@ -84,7 +84,8 @@ async function saveSnapshotRecord({
   snapshotText,
   checkedAt,
   diffSummary,
-  priceData
+  priceData,
+  errorMessage = ""
 }) {
   const snapshotId = db.collection(WEBSITES_COLLECTION).doc().id;
   const snapshotData = {
@@ -104,7 +105,8 @@ async function saveSnapshotRecord({
     productTitle: priceData?.productTitle || "",
     availabilityStatus: priceData?.availabilityStatus || "unknown",
     availabilityLabel: priceData?.availabilityLabel || "",
-    available: priceData?.available ?? null
+    available: priceData?.available ?? null,
+    errorMessage
   };
 
   await Promise.all([
@@ -117,12 +119,19 @@ async function fetchHtml(url) {
   const response = await fetch(url, {
     signal: AbortSignal.timeout(15000),
     headers: {
-      "User-Agent": "WatchliBot/1.0 (+https://watchli.local)"
+      "User-Agent":
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
+      Accept:
+        "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+      "Accept-Language": "en-US,en;q=0.9",
+      "Cache-Control": "no-cache",
+      Pragma: "no-cache",
+      Referer: "https://www.google.com/"
     }
   });
 
   if (!response.ok) {
-    throw new Error(`Failed to fetch page: ${response.status}`);
+    throw new Error(`Website returned ${response.status} ${response.statusText}`.trim());
   }
 
   return response.text();
@@ -298,7 +307,8 @@ export async function checkWebsite({ websiteId, userId }) {
           latestAvailabilityLabel: priceData.availabilityLabel,
           previousAvailabilityStatus: "unknown",
           previousAvailabilityLabel: "",
-          lastDiffSummary: null
+          lastDiffSummary: null,
+          lastErrorMessage: ""
         }
       });
 
@@ -376,7 +386,8 @@ export async function checkWebsite({ websiteId, userId }) {
           latestAvailabilityLabel: priceData.availabilityLabel,
           previousAvailabilityStatus: website.latestAvailabilityStatus || "unknown",
           previousAvailabilityLabel: website.latestAvailabilityLabel || "",
-          lastDiffSummary: diffSummary
+          lastDiffSummary: diffSummary,
+          lastErrorMessage: ""
         }
       });
 
@@ -429,7 +440,8 @@ export async function checkWebsite({ websiteId, userId }) {
         latestPrimaryPriceConfidence: priceData.primaryPriceConfidence,
         latestAvailabilityStatus: priceData.availabilityStatus,
         latestAvailabilityLabel: priceData.availabilityLabel,
-        lastDiffSummary: diffSummary
+        lastDiffSummary: diffSummary,
+        lastErrorMessage: ""
       }
     });
 
@@ -440,6 +452,8 @@ export async function checkWebsite({ websiteId, userId }) {
         : "No change detected."
     };
   } catch (error) {
+    const errorMessage = error.message || "Website check failed.";
+
     await saveSnapshotRecord({
       db,
       websiteId,
@@ -449,7 +463,8 @@ export async function checkWebsite({ websiteId, userId }) {
       snapshotText: "",
       checkedAt: adminDb.firestore.FieldValue.serverTimestamp(),
       diffSummary: null,
-      priceData: null
+      priceData: null,
+      errorMessage
     });
 
     await updateWebsiteRecords({
@@ -458,11 +473,12 @@ export async function checkWebsite({ websiteId, userId }) {
       userId,
       data: {
         status: "Error",
-        lastChecked: adminDb.firestore.FieldValue.serverTimestamp()
+        lastChecked: adminDb.firestore.FieldValue.serverTimestamp(),
+        lastErrorMessage: errorMessage
       }
     });
 
-    throw new Error(error.message || "Website check failed.");
+    throw new Error(errorMessage);
   }
 }
 

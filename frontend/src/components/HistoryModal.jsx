@@ -300,6 +300,13 @@ export function HistoryModal({
                         </div>
                       </div>
                     </div>
+                  ) : snapshot.status === "error" ? (
+                    <div className="mt-5 rounded-3xl border border-rose-400/25 bg-rose-500/10 p-4">
+                      <p className="text-sm font-medium text-rose-100">This check did not complete successfully.</p>
+                      <p className="mt-2 text-sm leading-6 text-rose-100/90">
+                        {snapshot.errorMessage || "No detailed error message was saved for this failed check."}
+                      </p>
+                    </div>
                   ) : snapshot.snapshotText ? (
                     <div className="mt-5 rounded-3xl border border-white/10 bg-slate-950/40 p-4">
                       <p className="mb-3 text-sm font-medium text-slate-300">Saved snapshot preview</p>
