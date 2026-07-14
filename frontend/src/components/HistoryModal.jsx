@@ -200,7 +200,7 @@ export function HistoryModal({
         </button>
 
         <div className="border-b border-white/10 px-4 py-5 sm:px-6 md:px-8">
-          <p className="text-sm uppercase tracking-[0.18em] text-cyan-300">Watch details</p>
+          <p className="text-sm uppercase tracking-[0.18em] text-slate-400">Watch details</p>
           <h2 className="display-font mt-3 break-all text-2xl font-semibold text-white sm:text-3xl">
             {website.latestProductTitle || website.url}
           </h2>
@@ -266,11 +266,11 @@ export function HistoryModal({
                       </p>
                     </div>
                     {snapshot.diffSummary?.priceChange?.changed ? (
-                      <div className="text-right">
-                        <p className="text-sm font-medium text-amber-100">
+                  <div className="text-right">
+                        <p className="text-sm font-medium text-[#d9e8df]">
                           Price alert: {getPriceSummary(snapshot.diffSummary.priceChange)}
                         </p>
-                        <p className="mt-1 text-xs text-amber-200/80">
+                        <p className="mt-1 text-xs text-slate-400">
                           {snapshot.diffSummary.priceChange.label}
                         </p>
                       </div>
@@ -285,8 +285,8 @@ export function HistoryModal({
                   {snapshot.status === "changed" && snapshot.diffSummary ? (
                     <div className="mt-5 space-y-4">
                       {snapshot.diffSummary?.priceChange?.changed ? (
-                        <div className="rounded-3xl border border-amber-300/20 bg-amber-300/10 p-4">
-                          <p className="text-xs uppercase tracking-[0.16em] text-amber-200">
+                        <div className="rounded-3xl border border-[#a8c0b2]/18 bg-[#a8c0b2]/10 p-4">
+                          <p className="text-xs uppercase tracking-[0.16em] text-[#d9e8df]">
                             {getPriceDirectionLabel(snapshot.diffSummary.priceChange)}
                           </p>
                           <div className="mt-3 grid gap-3 sm:grid-cols-2">
@@ -296,8 +296,8 @@ export function HistoryModal({
                                 {snapshot.diffSummary.priceChange.previousPrice || "Not available"}
                               </p>
                             </div>
-                            <div className="rounded-2xl border border-cyan-300/20 bg-cyan-300/10 p-3">
-                              <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">Current price</p>
+                            <div className="rounded-2xl border border-[#a8c0b2]/18 bg-[#a8c0b2]/10 p-3">
+                              <p className="text-xs uppercase tracking-[0.14em] text-[#d9e8df]">Current price</p>
                               <p className="mt-1 text-lg font-semibold text-white">
                                 {snapshot.diffSummary.priceChange.currentPrice || "Not available"}
                               </p>

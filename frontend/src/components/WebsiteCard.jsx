@@ -108,8 +108,8 @@ function formatDollarAmount(value) {
 
 export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy }) {
   const statusClasses = {
-    Watching: "bg-emerald-500/15 text-emerald-200 border-emerald-400/20",
-    Changed: "bg-amber-500/15 text-amber-100 border-amber-400/20",
+    Watching: "bg-white/[0.04] text-slate-200 border-white/10",
+    Changed: "bg-[#a8c0b2]/12 text-[#d9e8df] border-[#a8c0b2]/18",
     Error: "bg-rose-500/15 text-rose-100 border-rose-400/20"
   };
   const availability = website.latestAvailabilityStatus || website.lastDiffSummary?.currentAvailabilityStatus || "unknown";
@@ -123,17 +123,17 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
           : "Availability unknown";
   const availabilityClasses =
     availability === "sold_out" || availability === "unavailable"
-      ? "border-amber-300/20 bg-amber-300/10 text-amber-100"
+      ? "border-amber-300/18 bg-amber-300/10 text-amber-100"
       : availability === "available"
-        ? "border-emerald-300/20 bg-emerald-300/10 text-emerald-100"
-        : "border-white/10 bg-white/5 text-slate-300";
+        ? "border-[#a8c0b2]/18 bg-[#a8c0b2]/10 text-[#d9e8df]"
+        : "border-white/10 bg-white/[0.04] text-slate-300";
 
   return (
-    <article className="glass-panel rounded-[30px] p-4 sm:p-6">
+    <article className="glass-panel rounded-[28px] p-4 sm:p-5">
       <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
-            <p className="text-sm uppercase tracking-[0.18em] text-slate-400">Watched website</p>
+            <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Watched page</p>
             <div
               className={`inline-flex rounded-full border px-3 py-1 text-xs font-medium ${statusClasses[website.status] || statusClasses.Watching}`}
             >
@@ -143,16 +143,16 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
               {availabilityLabel}
             </div>
           </div>
-          <h3 className="display-font mt-3 break-words text-2xl font-semibold text-white">
+          <h3 className="display-font mt-2 break-words text-xl font-semibold text-white sm:text-2xl">
             {website.latestProductTitle || "Tracked product page"}
           </h3>
-          <div className="mt-2 flex items-start gap-2 text-sm text-slate-300">
+          <div className="mt-2 flex items-start gap-2 text-sm text-slate-400">
             <ExternalLink className="mt-0.5 h-4 w-4 shrink-0 text-slate-500" />
             <p className="break-all">{website.url}</p>
           </div>
         </div>
 
-        <div className="grid gap-3 text-sm text-slate-300 md:min-w-[220px] md:text-right">
+        <div className="grid gap-2 text-sm text-slate-400 md:min-w-[220px] md:text-right">
           <p className="inline-flex items-center gap-2 md:justify-end">
             <Clock3 className="h-4 w-4 text-slate-500" />
             Last checked: {formatDate(website.lastChecked)}
@@ -163,7 +163,7 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
 
       <div className="mt-5 flex flex-wrap gap-2.5">
         {website.latestPrimaryPrice ? (
-          <div className="inline-flex items-center gap-2 rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-1.5 text-sm text-cyan-100">
+          <div className="inline-flex items-center gap-2 rounded-full border border-[#a8c0b2]/18 bg-[#a8c0b2]/10 px-3 py-1.5 text-sm text-[#d9e8df]">
             <DollarSign className="h-4 w-4" />
             {website.latestPrimaryPrice}
           </div>
@@ -180,7 +180,7 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
             Check failed
           </div>
         ) : website.lastDiffSummary?.priceChange?.changed ? (
-          <div className="inline-flex items-center gap-2 rounded-full border border-amber-300/20 bg-amber-300/10 px-3 py-1.5 text-sm text-amber-100">
+          <div className="inline-flex items-center gap-2 rounded-full border border-[#a8c0b2]/18 bg-[#a8c0b2]/10 px-3 py-1.5 text-sm text-[#d9e8df]">
             <DollarSign className="h-4 w-4" />
             {getPriceSummary(website.lastDiffSummary.priceChange)}
           </div>
@@ -198,7 +198,7 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
         ) : null}
       </div>
 
-      <div className="mt-4 rounded-3xl border border-white/10 bg-white/[0.04] p-4">
+      <div className="mt-4">
         <p className="text-sm leading-6 text-slate-300">
           {website.status === "Error"
             ? website.lastErrorMessage || "The website could not be checked successfully."
@@ -216,10 +216,10 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
       ) : null}
 
       {website.lastDiffSummary?.priceChange?.changed ? (
-        <div className="mt-5 rounded-3xl border border-amber-300/20 bg-amber-300/10 p-4">
-          <p className="text-xs uppercase tracking-[0.16em] text-amber-200">Latest price change</p>
+        <div className="mt-5 rounded-3xl border border-[#a8c0b2]/18 bg-[#a8c0b2]/10 p-4">
+          <p className="text-xs uppercase tracking-[0.16em] text-[#d9e8df]">Latest price change</p>
           <p className="mt-2 text-base font-semibold text-white">{getPriceDirectionLabel(website.lastDiffSummary.priceChange)}</p>
-          <p className="mt-1 text-sm text-amber-100">
+          <p className="mt-1 text-sm text-slate-200">
             {website.lastDiffSummary.priceChange.label}
           </p>
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
@@ -229,8 +229,8 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
                 {website.lastDiffSummary.priceChange.previousPrice || "Not available"}
               </p>
             </div>
-            <div className="rounded-2xl border border-cyan-300/20 bg-cyan-300/10 p-3">
-              <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">Current price</p>
+            <div className="rounded-2xl border border-[#a8c0b2]/18 bg-[#a8c0b2]/10 p-3">
+              <p className="text-xs uppercase tracking-[0.14em] text-[#d9e8df]">Current price</p>
               <p className="mt-1 break-words text-lg font-semibold text-white">
                 {website.lastDiffSummary.priceChange.currentPrice || "Not available"}
               </p>
@@ -244,7 +244,7 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
           type="button"
           onClick={() => onCheck(website.id)}
           disabled={busy}
-          className="glow-button inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#8fb2c3] via-[#7f9fb7] to-[#8cb4a8] px-4 py-3 font-semibold text-slate-950 transition hover:scale-[1.01] hover:from-[#9bbccc] hover:via-[#8aabc2] hover:to-[#96beb2] disabled:cursor-not-allowed disabled:opacity-60"
+          className="glow-button inline-flex items-center justify-center gap-2 rounded-2xl bg-[#a8c0b2] px-4 py-3 font-semibold text-slate-950 transition hover:bg-[#b8cec1] disabled:cursor-not-allowed disabled:opacity-60"
         >
           <RefreshCw className="h-4 w-4" />
           {busy ? "Checking..." : "Check Now"}
