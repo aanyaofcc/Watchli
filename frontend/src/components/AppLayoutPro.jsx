@@ -18,7 +18,7 @@ export function AppLayoutPro({ children }) {
       <div className="aurora-orb left-[-80px] top-20 h-64 w-64 bg-emerald-200/20" />
       <div className="aurora-orb right-[-80px] top-32 h-72 w-72 bg-slate-200/10" />
       <header className="relative z-10 border-b border-white/6 bg-[#111923]/88 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-5xl flex-col gap-3 px-4 py-3.5 sm:px-6 md:flex-row md:items-center md:justify-between">
+        <div className="flex w-full flex-col gap-3 px-4 py-3.5 sm:px-6 md:flex-row md:items-center md:justify-between">
           <BrandLogoLink to="/" size="dashboard" />
           <div className="flex w-full flex-col gap-3 sm:flex-row md:w-auto">
             <Link
@@ -46,8 +46,8 @@ export function AppLayoutPro({ children }) {
           </div>
         </div>
       </header>
-      <main className="relative z-10 mx-auto max-w-5xl px-4 py-6 sm:px-6 sm:py-8">{children}</main>
-      <SiteFooterDense compact width="max-w-5xl" />
+      <main className="relative z-10 w-full px-4 py-6 sm:px-6 sm:py-8">{children}</main>
+      <SiteFooterDense compact width="max-w-none" />
     </div>
   );
 }
