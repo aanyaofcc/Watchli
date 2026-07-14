@@ -1,7 +1,16 @@
 import * as cheerio from "cheerio";
 import crypto from "crypto";
 
-const PRICE_REGEX = /(?:\$|USD\s?)(?:\d{1,3}(?:,\d{3})*|\d+)(?:\.\d{2})?/gi;
+const PRICE_REGEX =
+  /(?:\$|USD\s?|US\$\s?|CAD\s?|CA\$\s?|AUD\s?|A\$\s?|EUR\s?|€\s?|GBP\s?|£\s?)(?:\d{1,3}(?:,\d{3})*|\d+)(?:\.\d{2})?|\b(?:\d{1,3}(?:,\d{3})*|\d+)(?:\.\d{2})?\s?(?:USD|CAD|AUD|EUR|GBP)\b/gi;
+const CURRENCY_SYMBOL_TO_CODE = {
+  "$": "USD",
+  "US$": "USD",
+  "CA$": "CAD",
+  "A$": "AUD",
+  "€": "EUR",
+  "£": "GBP"
+};
 const SOLD_OUT_PATTERNS = [
   /\bsold\s*out\b/i,
   /\bout\s*of\s*stock\b/i,
@@ -43,8 +52,32 @@ function normalizeCurrency(currency, raw = "") {
     return trimmed;
   }
 
-  if (raw.includes("$") || raw.toUpperCase().includes("USD")) {
+  const normalizedRaw = String(raw || "").trim();
+
+  for (const [symbol, code] of Object.entries(CURRENCY_SYMBOL_TO_CODE)) {
+    if (normalizedRaw.includes(symbol)) {
+      return code;
+    }
+  }
+
+  if (normalizedRaw.toUpperCase().includes("USD")) {
     return "USD";
+  }
+
+  if (normalizedRaw.toUpperCase().includes("CAD")) {
+    return "CAD";
+  }
+
+  if (normalizedRaw.toUpperCase().includes("AUD")) {
+    return "AUD";
+  }
+
+  if (normalizedRaw.toUpperCase().includes("EUR")) {
+    return "EUR";
+  }
+
+  if (normalizedRaw.toUpperCase().includes("GBP")) {
+    return "GBP";
   }
 
   return "";
@@ -78,14 +111,18 @@ function formatPrice(value, currency, fallbackRaw = "") {
     return normalizeWhitespace(fallbackRaw);
   }
 
-  if (currency === "USD") {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD"
-    }).format(value);
+  if (currency) {
+    try {
+      return new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency
+      }).format(value);
+    } catch (_error) {
+      return `${currency} ${value.toFixed(2)}`;
+    }
   }
 
-  return currency ? `${currency} ${value.toFixed(2)}` : `$${value.toFixed(2)}`;
+  return `$${value.toFixed(2)}`;
 }
 
 function makePriceCandidate({
@@ -117,6 +154,48 @@ function makePriceCandidate({
 
 function readText($, element) {
   return normalizeWhitespace($(element).text() || $(element).attr("content") || "");
+}
+
+function findPriceLikeMatch(text) {
+  if (!text) {
+    return "";
+  }
+
+  return text.match(PRICE_REGEX)?.[0] || "";
+}
+
+function readAttributePrice(element, $) {
+  const attributeKeys = [
+    "data-price",
+    "data-price-amount",
+    "data-product-price",
+    "data-sale-price",
+    "data-current-price",
+    "data-amount",
+    "content",
+    "value",
+    "aria-label"
+  ];
+
+  for (const key of attributeKeys) {
+    const value = $(element).attr(key);
+
+    if (!value) {
+      continue;
+    }
+
+    const matched = findPriceLikeMatch(value);
+
+    if (matched) {
+      return matched;
+    }
+
+    if (parseNumericPrice(value) !== null) {
+      return value;
+    }
+  }
+
+  return "";
 }
 
 function collectJsonLdCandidates(node, candidates, inheritedTitle = "") {
@@ -208,6 +287,43 @@ function collectMetaCandidates($, candidates) {
   });
 }
 
+function collectScriptJsonCandidates($, candidates, productTitle) {
+  $("script").each((_, element) => {
+    const scriptType = ($(element).attr("type") || "").toLowerCase();
+
+    if (scriptType && scriptType.includes("ld+json")) {
+      return;
+    }
+
+    const scriptText = $(element).contents().text();
+
+    if (!scriptText || scriptText.length > 400000) {
+      return;
+    }
+
+    const compact = scriptText.replace(/\s+/g, " ");
+    const priceMatches = compact.match(/"price"\s*:\s*"?(?<price>\d+(?:\.\d{2})?)"?/gi) || [];
+
+    priceMatches.slice(0, 5).forEach((match) => {
+      const priceValue = match.match(/"price"\s*:\s*"?(?<price>\d+(?:\.\d{2})?)"?/i)?.groups?.price;
+      const currency =
+        compact.match(/"priceCurrency"\s*:\s*"(?<currency>[A-Z]{3})"/i)?.groups?.currency || "";
+      const candidate = makePriceCandidate({
+        value: priceValue,
+        currency,
+        raw: priceValue || "",
+        source: "script json",
+        score: 88,
+        productTitle
+      });
+
+      if (candidate) {
+        candidates.push(candidate);
+      }
+    });
+  });
+}
+
 function collectSelectorCandidates($, candidates) {
   const selectors = [
     [".price", 75],
@@ -216,6 +332,12 @@ function collectSelectorCandidates($, candidates) {
     [".current-price", 85],
     [".our-price", 82],
     ["[data-price]", 80],
+    ["[data-price-amount]", 87],
+    ["[data-product-price]", 86],
+    ["[data-sale-price]", 86],
+    ["[data-current-price]", 87],
+    ["[itemprop='offers']", 76],
+    ["[aria-label*='price' i]", 74],
     ["[class*='price']", 68],
     ["[id*='price']", 66]
   ];
@@ -224,15 +346,30 @@ function collectSelectorCandidates($, candidates) {
   selectors.forEach(([selector, baseScore]) => {
     $(selector).slice(0, 20).each((_, element) => {
       const text = readText($, element);
-      const match = text.match(PRICE_REGEX)?.[0] || $(element).attr("data-price") || "";
+      const match = findPriceLikeMatch(text) || readAttributePrice(element, $) || "";
       const className = ($(element).attr("class") || "").toLowerCase();
+      const id = ($(element).attr("id") || "").toLowerCase();
+      const dataTestId = ($(element).attr("data-testid") || "").toLowerCase();
       let score = baseScore;
 
-      if (className.includes("old") || className.includes("compare") || className.includes("original") || className.includes("was")) {
+      if (
+        className.includes("old") ||
+        className.includes("compare") ||
+        className.includes("original") ||
+        className.includes("was") ||
+        id.includes("old") ||
+        id.includes("compare")
+      ) {
         score -= 18;
       }
 
-      if (className.includes("sale") || className.includes("current") || className.includes("final")) {
+      if (
+        className.includes("sale") ||
+        className.includes("current") ||
+        className.includes("final") ||
+        dataTestId.includes("sale") ||
+        dataTestId.includes("price")
+      ) {
         score += 8;
       }
 
@@ -325,6 +462,7 @@ export function extractProductSignals(html) {
     collectJsonLdCandidates(parsed, candidates, productTitle);
   });
 
+  collectScriptJsonCandidates($, candidates, productTitle);
   collectMetaCandidates($, candidates);
   collectSelectorCandidates($, candidates);
 
