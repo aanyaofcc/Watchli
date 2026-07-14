@@ -161,56 +161,55 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
         </div>
       </div>
 
-      <div className="mt-5 grid gap-3 md:grid-cols-[1.05fr_0.95fr]">
-        <div className="glass-panel-soft rounded-3xl p-4">
-          <p className="text-xs uppercase tracking-[0.16em] text-slate-400">Current price</p>
-          {website.latestPrimaryPrice ? (
-            <div className="mt-2 inline-flex items-center gap-2 rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-1.5 text-sm text-cyan-100">
-              <DollarSign className="h-4 w-4" />
-              Tracked price: {website.latestPrimaryPrice}
-            </div>
-          ) : (
-            <div className="mt-2 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-slate-300">
-              <DollarSign className="h-4 w-4" />
-              No clear price detected yet
-            </div>
-          )}
+      <div className="mt-5 flex flex-wrap gap-2.5">
+        {website.latestPrimaryPrice ? (
+          <div className="inline-flex items-center gap-2 rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-1.5 text-sm text-cyan-100">
+            <DollarSign className="h-4 w-4" />
+            {website.latestPrimaryPrice}
+          </div>
+        ) : (
+          <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-slate-300">
+            <DollarSign className="h-4 w-4" />
+            No price yet
+          </div>
+        )}
 
-          {website.latestPrimaryPriceSource ? (
-            <p className="mt-3 text-sm text-slate-400">Source: {website.latestPrimaryPriceSource}</p>
-          ) : null}
-        </div>
+        {website.status === "Error" ? (
+          <div className="inline-flex items-center gap-2 rounded-full border border-rose-400/20 bg-rose-500/10 px-3 py-1.5 text-sm text-rose-100">
+            <PackageSearch className="h-4 w-4" />
+            Check failed
+          </div>
+        ) : website.lastDiffSummary?.priceChange?.changed ? (
+          <div className="inline-flex items-center gap-2 rounded-full border border-amber-300/20 bg-amber-300/10 px-3 py-1.5 text-sm text-amber-100">
+            <DollarSign className="h-4 w-4" />
+            {getPriceSummary(website.lastDiffSummary.priceChange)}
+          </div>
+        ) : (
+          <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-slate-300">
+            <PackageSearch className="h-4 w-4" />
+            Watching
+          </div>
+        )}
 
-        <div className="glass-panel-soft rounded-3xl p-4">
-          <p className="text-xs uppercase tracking-[0.16em] text-slate-400">Latest signal</p>
-          {website.status === "Error" ? (
-            <div className="mt-2 inline-flex items-center gap-2 rounded-full border border-rose-400/20 bg-rose-500/10 px-3 py-1.5 text-sm text-rose-100">
-              <PackageSearch className="h-4 w-4" />
-              Check failed
-            </div>
-          ) : website.lastDiffSummary?.priceChange?.changed ? (
-            <div className="mt-2 inline-flex items-center gap-2 rounded-full border border-amber-300/20 bg-amber-300/10 px-3 py-1.5 text-sm text-amber-100">
-              <DollarSign className="h-4 w-4" />
-              {getPriceSummary(website.lastDiffSummary.priceChange)}
-            </div>
-          ) : (
-            <div className="mt-2 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-slate-300">
-              <PackageSearch className="h-4 w-4" />
-              Monitoring for changes
-            </div>
-          )}
-            <p className="mt-3 text-sm text-slate-300">
-            {website.status === "Error"
-              ? website.lastErrorMessage || "The website could not be checked successfully."
-              : website.lastDiffSummary?.priceChange?.changed
+        {website.latestPrimaryPriceSource ? (
+          <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-sm text-slate-300">
+            Source: {website.latestPrimaryPriceSource}
+          </div>
+        ) : null}
+      </div>
+
+      <div className="mt-4 rounded-3xl border border-white/10 bg-white/[0.04] p-4">
+        <p className="text-sm leading-6 text-slate-300">
+          {website.status === "Error"
+            ? website.lastErrorMessage || "The website could not be checked successfully."
+            : website.lastDiffSummary?.priceChange?.changed
               ? website.lastDiffSummary.priceChange.label
               : "Watchli is standing by for price, availability, or content changes on this page."}
-          </p>
-        </div>
+        </p>
       </div>
 
       {website.status === "Error" && website.lastErrorMessage ? (
-        <div className="mt-5 rounded-3xl border border-rose-400/25 bg-rose-500/10 p-4">
+        <div className="mt-4 rounded-3xl border border-rose-400/25 bg-rose-500/10 p-4">
           <p className="text-xs uppercase tracking-[0.16em] text-rose-200">Failure reason</p>
           <p className="mt-2 text-sm leading-6 text-rose-100">{website.lastErrorMessage}</p>
         </div>

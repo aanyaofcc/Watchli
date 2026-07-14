@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Bell, Crown, Globe, LoaderCircle, Lock, Mail, RefreshCw, ScanSearch, Zap } from "lucide-react";
+import { Bell, Crown, LoaderCircle, Mail, RefreshCw, Zap } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../providers/AuthProvider";
 import {
@@ -263,32 +263,7 @@ export function DashboardPage() {
 
   return (
     <div className="space-y-5 sm:space-y-6">
-      <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        <div className="glass-panel-soft rounded-3xl p-5">
-          <p className="text-sm text-slate-400">Tracked products</p>
-          <p className="display-font mt-2 text-3xl font-semibold text-white">{websites.length}</p>
-          <p className="mt-2 text-sm text-slate-300">
-            {account.websiteSlotsRemaining} slot{account.websiteSlotsRemaining === 1 ? "" : "s"} left on your plan
-          </p>
-        </div>
-        <div className="glass-panel-soft rounded-3xl p-5">
-          <p className="text-sm text-slate-400">Price-aware pages</p>
-          <p className="display-font mt-2 text-3xl font-semibold text-white">{priceAwareWebsites.length}</p>
-          <p className="mt-2 text-sm text-slate-300">Pages with a current tracked price signal</p>
-        </div>
-        <div className="glass-panel-soft rounded-3xl p-5">
-          <p className="text-sm text-slate-400">Recent changes</p>
-          <p className="display-font mt-2 text-3xl font-semibold text-white">{changedWebsites.length}</p>
-          <p className="mt-2 text-sm text-slate-300">Products currently marked as changed</p>
-        </div>
-        <div className="glass-panel-soft rounded-3xl p-5">
-          <p className="text-sm text-slate-400">Available now</p>
-          <p className="display-font mt-2 text-3xl font-semibold text-white">{availableWebsites.length}</p>
-          <p className="mt-2 text-sm text-slate-300">Tracked products that still appear available</p>
-        </div>
-      </section>
-
-      <section className="grid gap-4 lg:grid-cols-[1.08fr_0.92fr] lg:items-start">
+      <section className="grid gap-4 xl:grid-cols-[1.15fr_0.85fr] xl:items-start">
         <div className="glass-panel rounded-[32px] p-5 sm:p-8">
           <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
             <div>
@@ -338,6 +313,21 @@ export function DashboardPage() {
             </span>
           </div>
 
+          <div className="mt-5 grid gap-3 sm:grid-cols-3">
+            <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+              <p className="text-sm text-slate-400">Tracked pages</p>
+              <p className="display-font mt-2 text-2xl font-semibold text-white">{websites.length}</p>
+            </div>
+            <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+              <p className="text-sm text-slate-400">Price found</p>
+              <p className="display-font mt-2 text-2xl font-semibold text-white">{priceAwareWebsites.length}</p>
+            </div>
+            <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+              <p className="text-sm text-slate-400">Need attention</p>
+              <p className="display-font mt-2 text-2xl font-semibold text-white">{changedWebsites.length + errorWebsites.length}</p>
+            </div>
+          </div>
+
           {error ? (
             <p className="mt-4 rounded-2xl border border-rose-400/30 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">
               {error}
@@ -351,136 +341,81 @@ export function DashboardPage() {
           ) : null}
         </div>
 
-        <div className="grid gap-3 sm:grid-cols-2">
-          <div className="glass-panel-soft rounded-3xl p-5 sm:p-6">
-            <div className="flex items-center gap-3">
-              <Globe className="h-5 w-5 text-cyan-300" />
-              <div>
-                <p className="text-sm text-slate-400">Current usage</p>
-                <h2 className="display-font text-xl font-semibold text-white">
-                  {account.websiteCount} / {account.websiteLimit} websites
-                </h2>
-              </div>
-            </div>
-          </div>
-
+        <div className="space-y-3">
           <div className="glass-panel-soft rounded-3xl p-5 sm:p-6">
             <div className="flex items-center gap-3">
               <Bell className="h-5 w-5 text-cyan-300" />
               <div>
-                <p className="text-sm text-slate-400">Notifications</p>
+                <p className="text-sm text-slate-400">Quick actions</p>
                 <h2 className="display-font text-xl font-semibold text-white">
-                  Email alerts enabled
-                </h2>
-              </div>
-            </div>
-            <button
-              type="button"
-              onClick={handleSendTestEmail}
-              disabled={sendingEmail}
-              className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-slate-200 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
-            >
-              <Mail className="h-4 w-4" />
-              {sendingEmail ? "Sending..." : "Send Test Email"}
-            </button>
-          </div>
-
-          <div className="glass-panel-soft rounded-3xl p-5 sm:p-6">
-            <div className="flex items-center gap-3">
-              <Zap className="h-5 w-5 text-cyan-300" />
-              <div>
-                <p className="text-sm text-slate-400">Recent alert pulse</p>
-                <h2 className="display-font text-xl font-semibold text-white">
-                  {changedWebsites[0]?.latestProductTitle || changedWebsites[0]?.url || "No fresh alert yet"}
-                </h2>
-              </div>
-            </div>
-            <p className="mt-3 text-sm leading-6 text-slate-300">
-              {changedWebsites[0]?.lastDiffSummary?.priceChange?.label ||
-                "Run a manual check or wait for scheduled checks to see the latest product movement here."}
-            </p>
-          </div>
-
-          <div className="glass-panel-soft rounded-3xl p-5 sm:p-6">
-            <div className="flex items-center gap-3">
-              <RefreshCw className="h-5 w-5 text-cyan-300" />
-              <div>
-                <p className="text-sm text-slate-400">Watch health</p>
-                <h2 className="display-font text-xl font-semibold text-white">
-                  {errorWebsites.length > 0 ? `${errorWebsites.length} need attention` : "All watches healthy"}
+                  Keep your watches moving
                 </h2>
               </div>
             </div>
             <p className="mt-3 text-sm leading-6 text-slate-300">
               {errorWebsites.length > 0
-                ? "One or more pages could not be checked recently. Refresh or run a manual check to retry them."
-                : "Your tracked pages are checking normally and no recent fetch errors are blocking updates."}
+                ? `${errorWebsites.length} watch${errorWebsites.length === 1 ? "" : "es"} need another check.`
+                : changedWebsites.length > 0
+                  ? `${changedWebsites.length} watch${changedWebsites.length === 1 ? "" : "es"} changed recently.`
+                  : "Everything is looking steady right now."}
             </p>
-          </div>
-        </div>
-      </section>
-
-      <section className="grid gap-4 lg:grid-cols-[0.92fr_1.08fr]">
-        <div className="glass-panel-soft rounded-3xl p-5 sm:p-6">
-          <div className="flex items-center gap-3">
-            <ScanSearch className="h-5 w-5 text-cyan-300" />
-            <div>
-              <p className="text-sm text-slate-400">Change intelligence</p>
-              <h2 className="display-font text-xl font-semibold text-white">
-                Before-and-after previews enabled
-              </h2>
-            </div>
-          </div>
-          <p className="mt-3 text-sm leading-6 text-slate-300">
-            Watchli now surfaces likely price signals from product pages and highlights
-            before-and-after text so you can spot listing changes faster.
-          </p>
-        </div>
-
-        <div className="glass-panel-soft rounded-3xl p-5 sm:p-6">
-          <div className="flex items-center gap-3">
-            <Crown className="h-5 w-5 text-amber-300" />
-            <div>
-              <p className="text-sm text-slate-400">Upgrade path</p>
-              <h2 className="display-font text-xl font-semibold text-white">
-                Watchli Pro
-              </h2>
-            </div>
-          </div>
-          <div className="mt-4 grid gap-2.5 md:grid-cols-3">
-            {[
-              "Up to 100 watched product pages",
-              "$7/month subscription billing",
-              "Future faster checks and premium features"
-            ].map((feature) => (
-              <div
-                key={feature}
-                className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-slate-200"
-              >
-                <Lock className="h-4 w-4 shrink-0 text-amber-200" />
-                {feature}
-              </div>
-            ))}
-          </div>
-          <div className="mt-4 flex flex-col gap-3 sm:flex-row">
-            <button
-              type="button"
-              onClick={handleUpgradeClick}
-              className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-amber-300/20 bg-amber-300/10 px-4 py-3 text-sm font-medium text-amber-100 transition hover:bg-amber-300/15 sm:w-auto"
-            >
-              <Zap className="h-4 w-4" />
-              {account.premium ? "View Pro plan" : "Upgrade to Pro"}
-            </button>
-            {account.premium ? (
+            <div className="mt-4 flex flex-col gap-3">
               <button
                 type="button"
-                onClick={() => void handleManageBilling()}
-                disabled={openingBilling}
-                className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-slate-200 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+                onClick={handleSendTestEmail}
+                disabled={sendingEmail}
+                className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-slate-200 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {openingBilling ? "Opening..." : "Manage Billing"}
+                <Mail className="h-4 w-4" />
+                {sendingEmail ? "Sending..." : "Send Test Email"}
               </button>
-            ) : null}
+              <button
+                type="button"
+                onClick={() => void loadWebsites({ showRefreshing: true })}
+                disabled={refreshingWebsites || loadingWebsites}
+                className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-slate-200 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                <RefreshCw className={`h-4 w-4 ${refreshingWebsites ? "animate-spin" : ""}`} />
+                Refresh dashboard
+              </button>
+            </div>
+          </div>
+
+          <div className="glass-panel-soft rounded-3xl p-5 sm:p-6">
+            <div className="flex items-center gap-3">
+              <Crown className="h-5 w-5 text-amber-300" />
+              <div>
+                <p className="text-sm text-slate-400">Plan</p>
+                <h2 className="display-font text-xl font-semibold text-white">
+                  {account.premium ? "Watchli Pro" : "Free plan"}
+                </h2>
+              </div>
+            </div>
+            <p className="mt-3 text-sm leading-6 text-slate-300">
+              {account.premium
+                ? "Manage your subscription and keep room for more watched products."
+                : "Upgrade when you want more watched pages and premium plan headroom."}
+            </p>
+            <div className="mt-4 flex flex-col gap-3 sm:flex-row">
+              <button
+                type="button"
+                onClick={handleUpgradeClick}
+                className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-amber-300/20 bg-amber-300/10 px-4 py-3 text-sm font-medium text-amber-100 transition hover:bg-amber-300/15"
+              >
+                <Zap className="h-4 w-4" />
+                {account.premium ? "View Pro plan" : "Upgrade to Pro"}
+              </button>
+              {account.premium ? (
+                <button
+                  type="button"
+                  onClick={() => void handleManageBilling()}
+                  disabled={openingBilling}
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-slate-200 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {openingBilling ? "Opening..." : "Manage Billing"}
+                </button>
+              ) : null}
+            </div>
           </div>
         </div>
       </section>
@@ -497,17 +432,9 @@ export function DashboardPage() {
                 : "Start by adding a product page you want Watchli to monitor."}
             </p>
           </div>
-          <div className="flex flex-col gap-2 sm:flex-row">
-            <button
-              type="button"
-              onClick={() => void loadWebsites({ showRefreshing: true })}
-              disabled={refreshingWebsites || loadingWebsites}
-              className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-slate-200 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
-            >
-              <RefreshCw className={`h-4 w-4 ${refreshingWebsites ? "animate-spin" : ""}`} />
-              Refresh
-            </button>
-          </div>
+          <p className="text-sm text-slate-400">
+            {availableWebsites.length} available now
+          </p>
         </div>
 
         {loadingWebsites ? (
