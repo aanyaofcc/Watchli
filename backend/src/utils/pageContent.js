@@ -388,6 +388,101 @@ function collectSelectorCandidates($, candidates) {
   });
 }
 
+function collectTitleProximityCandidates($, candidates, productTitle) {
+  const titleElement = $("h1").first();
+
+  if (!titleElement.length) {
+    return;
+  }
+
+  const nearbyElements = [
+    titleElement,
+    titleElement.parent(),
+    titleElement.parent().parent(),
+    titleElement.next(),
+    titleElement.nextAll().slice(0, 8),
+    titleElement.parent().next(),
+    titleElement.parent().nextAll().slice(0, 6)
+  ];
+
+  nearbyElements.flat().forEach((elementLike) => {
+    const element = elementLike?.cheerio ? elementLike : $(elementLike);
+
+    if (!element?.length) {
+      return;
+    }
+
+    element.find("*").addBack().slice(0, 40).each((_, node) => {
+      const text = readText($, node);
+      const match = findPriceLikeMatch(text) || readAttributePrice(node, $) || "";
+
+      if (!match) {
+        return;
+      }
+
+      const candidate = makePriceCandidate({
+        value: match,
+        raw: match,
+        source: "title proximity",
+        score: 90,
+        productTitle
+      });
+
+      if (candidate) {
+        candidates.push(candidate);
+      }
+    });
+  });
+}
+
+function collectVisibleTextCandidates($, candidates, productTitle) {
+  const commonProductAreaSelectors = [
+    "main",
+    "[role='main']",
+    "#main",
+    ".product-detail",
+    ".product-details",
+    ".pdp",
+    ".product",
+    "body"
+  ];
+
+  commonProductAreaSelectors.forEach((selector, selectorIndex) => {
+    $(selector).slice(0, 1).find("*").slice(0, 180).each((_, element) => {
+      const text = readText($, element);
+
+      if (!text || text.length > 120) {
+        return;
+      }
+
+      const match = findPriceLikeMatch(text);
+
+      if (!match) {
+        return;
+      }
+
+      const className = ($(element).attr("class") || "").toLowerCase();
+      let score = selectorIndex === commonProductAreaSelectors.length - 1 ? 54 : 72;
+
+      if (className.includes("sale") || className.includes("current") || className.includes("price")) {
+        score += 8;
+      }
+
+      const candidate = makePriceCandidate({
+        value: match,
+        raw: match,
+        source: "visible text",
+        score,
+        productTitle
+      });
+
+      if (candidate) {
+        candidates.push(candidate);
+      }
+    });
+  });
+}
+
 function dedupeCandidates(candidates) {
   const byKey = new Map();
 
@@ -465,6 +560,8 @@ export function extractProductSignals(html) {
   collectScriptJsonCandidates($, candidates, productTitle);
   collectMetaCandidates($, candidates);
   collectSelectorCandidates($, candidates);
+  collectTitleProximityCandidates($, candidates, productTitle);
+  collectVisibleTextCandidates($, candidates, productTitle);
 
   const uniqueCandidates = dedupeCandidates(candidates);
   const primaryCandidate = uniqueCandidates[0] || null;

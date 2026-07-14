@@ -1,5 +1,9 @@
 import { config } from "../config.js";
+import { getAdmin, getDb } from "../firebase.js";
 import { checkAllWebsites } from "./websiteService.js";
+
+const SYSTEM_COLLECTION = "system";
+const STATUS_DOC = "status";
 
 function logSummary(results) {
   const total = results.length;
@@ -11,14 +15,54 @@ function logSummary(results) {
   );
 }
 
+async function saveSchedulerStatus(data) {
+  try {
+    const db = getDb();
+    const admin = getAdmin();
+
+    await db.collection(SYSTEM_COLLECTION).doc(STATUS_DOC).set(
+      {
+        scheduler: {
+          ...data,
+          updatedAt: admin.firestore.FieldValue.serverTimestamp()
+        }
+      },
+      { merge: true }
+    );
+  } catch (error) {
+    console.error("[watchli-scheduler] Could not save scheduler status.", error);
+  }
+}
+
 async function runScheduledChecks(trigger) {
   console.log(`[watchli-scheduler] Starting automatic checks via ${trigger}.`);
+  await saveSchedulerStatus({
+    running: true,
+    trigger,
+    lastStartedAt: new Date().toISOString(),
+    lastError: ""
+  });
 
   try {
     const results = await checkAllWebsites();
     logSummary(results);
+    await saveSchedulerStatus({
+      running: false,
+      trigger,
+      lastCompletedAt: new Date().toISOString(),
+      lastRunTotal: results.length,
+      lastRunChanged: results.filter((result) => result.changed).length,
+      lastRunFailed: results.filter((result) => result.error).length,
+      lastError: ""
+    });
   } catch (error) {
     console.error("[watchli-scheduler] Automatic checks failed.", error);
+    await saveSchedulerStatus({
+      running: false,
+      trigger,
+      lastCompletedAt: new Date().toISOString(),
+      lastError: error?.message || "Automatic checks failed."
+    });
   }
 }
 

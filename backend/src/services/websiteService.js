@@ -9,6 +9,8 @@ const WEBSITES_COLLECTION = "websites";
 const USERS_COLLECTION = "users";
 const MAX_SNAPSHOT_LENGTH = 50000;
 const SNAPSHOTS_COLLECTION = "snapshots";
+const SYSTEM_COLLECTION = "system";
+const STATUS_DOC = "status";
 
 function serializeTimestamp(value) {
   if (!value) {
@@ -504,6 +506,7 @@ export async function listUserWebsites(userId) {
     .collection(WEBSITES_COLLECTION)
     .where("userId", "==", userId)
     .get();
+  const statusSnapshot = await db.collection(SYSTEM_COLLECTION).doc(STATUS_DOC).get();
   const websites = snapshot.docs
     .map((document) => serializeWebsite(document.id, document.data()))
     .sort((left, right) => {
@@ -512,10 +515,12 @@ export async function listUserWebsites(userId) {
       return rightTime - leftTime;
     });
   const account = await getUserPlanSummary(userId, snapshot.size);
+  const scheduler = statusSnapshot.data()?.scheduler || null;
 
   return {
     websites,
-    account
+    account,
+    scheduler
   };
 }
 

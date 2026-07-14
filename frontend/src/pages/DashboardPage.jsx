@@ -50,6 +50,7 @@ export function DashboardPage() {
     premium: false,
     upgradeAvailable: true
   });
+  const [scheduler, setScheduler] = useState(null);
   const [url, setUrl] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -91,6 +92,7 @@ export function DashboardPage() {
       await syncWebsites().catch(() => undefined);
       const payload = await fetchMyWebsites();
       setWebsites(payload.websites || []);
+      setScheduler(payload.scheduler || null);
       setAccount((current) => ({
         ...current,
         ...(payload.account || {})
@@ -379,6 +381,45 @@ export function DashboardPage() {
                 Refresh dashboard
               </button>
             </div>
+          </div>
+
+          <div className="glass-panel-soft rounded-3xl p-5 sm:p-6">
+            <div className="flex items-center gap-3">
+              <RefreshCw className={`h-5 w-5 text-cyan-300 ${scheduler?.running ? "animate-spin" : ""}`} />
+              <div>
+                <p className="text-sm text-slate-400">Automatic checks</p>
+                <h2 className="display-font text-xl font-semibold text-white">
+                  {scheduler?.running
+                    ? "Scheduler running"
+                    : scheduler?.lastCompletedAt
+                      ? "Scheduler active"
+                      : "No scheduler run yet"}
+                </h2>
+              </div>
+            </div>
+            <p className="mt-3 text-sm leading-6 text-slate-300">
+              {scheduler?.lastError
+                ? `Last scheduler issue: ${scheduler.lastError}`
+                : scheduler?.lastCompletedAt
+                  ? `Last completed: ${new Intl.DateTimeFormat("en-US", {
+                    dateStyle: "medium",
+                    timeStyle: "short"
+                  }).format(new Date(scheduler.lastCompletedAt))}`
+                  : "Automatic checks will appear here after the first scheduled run."}
+            </p>
+            {scheduler?.lastCompletedAt ? (
+              <div className="mt-4 flex flex-wrap gap-2 text-sm text-slate-300">
+                <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5">
+                  {scheduler.lastRunTotal || 0} checked
+                </span>
+                <span className="rounded-full border border-amber-300/20 bg-amber-300/10 px-3 py-1.5 text-amber-100">
+                  {scheduler.lastRunChanged || 0} changed
+                </span>
+                <span className="rounded-full border border-rose-300/20 bg-rose-300/10 px-3 py-1.5 text-rose-100">
+                  {scheduler.lastRunFailed || 0} failed
+                </span>
+              </div>
+            ) : null}
           </div>
 
           <div className="glass-panel-soft rounded-3xl p-5 sm:p-6">

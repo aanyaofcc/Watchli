@@ -200,13 +200,38 @@ export function HistoryModal({
         </button>
 
         <div className="border-b border-white/10 px-4 py-5 sm:px-6 md:px-8">
-          <p className="text-sm uppercase tracking-[0.18em] text-cyan-300">Website history</p>
+          <p className="text-sm uppercase tracking-[0.18em] text-cyan-300">Watch details</p>
           <h2 className="display-font mt-3 break-all text-2xl font-semibold text-white sm:text-3xl">
-            {website.url}
+            {website.latestProductTitle || website.url}
           </h2>
           <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-300">
-            Review recent checks, snapshot previews, and the latest before-and-after changes for this watched page.
+            Review the current watch status, tracked price, and recent check history for this product page.
           </p>
+          <div className="mt-5 grid gap-3 md:grid-cols-3">
+            <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+              <p className="text-xs uppercase tracking-[0.14em] text-slate-400">Current price</p>
+              <p className="mt-2 text-lg font-semibold text-white">
+                {website.latestPrimaryPrice || "Not detected yet"}
+              </p>
+            </div>
+            <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+              <p className="text-xs uppercase tracking-[0.14em] text-slate-400">Availability</p>
+              <p className="mt-2 text-lg font-semibold text-white">
+                {website.latestAvailabilityLabel || "Unknown"}
+              </p>
+            </div>
+            <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+              <p className="text-xs uppercase tracking-[0.14em] text-slate-400">Last check</p>
+              <p className="mt-2 text-lg font-semibold text-white">
+                {formatDate(website.lastChecked)}
+              </p>
+            </div>
+          </div>
+          {website.lastErrorMessage ? (
+            <div className="mt-4 rounded-2xl border border-rose-400/25 bg-rose-500/10 p-4 text-sm text-rose-100">
+              Latest error: {website.lastErrorMessage}
+            </div>
+          ) : null}
         </div>
 
         <div className="max-h-[74vh] overflow-y-auto px-4 py-5 sm:px-6 md:px-8">
