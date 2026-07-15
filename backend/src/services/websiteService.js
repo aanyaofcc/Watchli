@@ -65,6 +65,18 @@ function getUserWebsiteSnapshotRef(db, userId, websiteId, snapshotId) {
   return getUserWebsiteRef(db, userId, websiteId).collection(SNAPSHOTS_COLLECTION).doc(snapshotId);
 }
 
+function shouldSendEmailForPriceChange(priceChange) {
+  if (!priceChange?.changed) {
+    return false;
+  }
+
+  if (priceChange.type === "updated") {
+    return priceChange.direction === "up" || priceChange.direction === "down";
+  }
+
+  return priceChange.type === "sold_out" || priceChange.type === "unavailable";
+}
+
 async function deleteCollectionDocuments(collectionRef) {
   const snapshot = await collectionRef.get();
 
@@ -395,6 +407,7 @@ export async function checkWebsite({ websiteId, userId }) {
       (priceData.primaryPriceConfidence || 0) >= 75;
     const priceChanged = Boolean(diffSummary.priceChange?.changed);
     const shouldAlert = hasReliablePrice ? priceChanged : contentChanged;
+    const shouldSendEmail = shouldSendEmailForPriceChange(diffSummary.priceChange);
 
     if (shouldAlert) {
       await saveSnapshotRecord({
@@ -442,7 +455,7 @@ export async function checkWebsite({ websiteId, userId }) {
         }
       });
 
-      if (user?.email) {
+      if (user?.email && shouldSendEmail) {
         await sendChangeEmail({
           email: user.email,
           url: normalizedUrl,
@@ -454,8 +467,12 @@ export async function checkWebsite({ websiteId, userId }) {
       return {
         changed: true,
         message: priceChanged && diffSummary.priceChange?.label
-          ? `${diffSummary.priceChange.label}. Notification sent.`
-          : "Change detected and notification sent."
+          ? shouldSendEmail
+            ? `${diffSummary.priceChange.label}. Notification sent.`
+            : `${diffSummary.priceChange.label}.`
+          : shouldSendEmail
+            ? "Change detected and notification sent."
+            : "Change detected."
       };
     }
 
