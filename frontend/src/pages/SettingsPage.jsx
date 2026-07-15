@@ -280,7 +280,7 @@ export function SettingsPage() {
         </div>
       ) : null}
 
-      <section className="grid gap-4 xl:grid-cols-[0.9fr_1.1fr]">
+      <section className="grid gap-5 2xl:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)]">
         <div className="space-y-4">
           <div className="glass-panel rounded-[32px] p-5 sm:p-6">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
@@ -577,7 +577,7 @@ export function SettingsPage() {
                   </div>
                 </div>
 
-                <div className="mt-6 grid gap-3 md:grid-cols-2">
+                <div className="mt-6 grid gap-3 xl:grid-cols-2">
                   <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-4">
                     <p className="text-sm text-slate-400">Billing experience</p>
                     <p className="mt-2 text-sm leading-6 text-slate-200">
@@ -596,7 +596,7 @@ export function SettingsPage() {
 
                 <div className="mt-6 rounded-3xl border border-white/10 bg-white/[0.04] p-5">
                   <p className="text-sm text-slate-400">Recommended next steps</p>
-                  <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                  <div className="mt-3 grid gap-3 xl:grid-cols-2">
                     <div className="rounded-2xl border border-white/10 bg-slate-950/30 p-4">
                       <p className="text-sm font-medium text-white">Improve account trust</p>
                       <p className="mt-2 text-sm leading-6 text-slate-300">
@@ -643,6 +643,38 @@ export function SettingsPage() {
                 </div>
               </>
             )}
+          </div>
+
+          <div className="glass-panel-soft rounded-3xl p-5 sm:p-6">
+            <div className="flex items-center gap-3">
+              <div className="rounded-2xl bg-cyan-300/10 p-3">
+                <MailCheck className="h-5 w-5 text-cyan-200" />
+              </div>
+              <div>
+                <p className="text-sm text-slate-400">Alert reminders</p>
+                <h2 className="display-font text-xl font-semibold text-white">How Watchli contacts you</h2>
+              </div>
+            </div>
+            <div className="mt-5 grid gap-3 sm:grid-cols-3">
+              <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+                <p className="text-sm font-medium text-white">Price goes up</p>
+                <p className="mt-2 text-sm leading-6 text-slate-300">
+                  Get notified when a tracked item becomes more expensive.
+                </p>
+              </div>
+              <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+                <p className="text-sm font-medium text-white">Price goes down</p>
+                <p className="mt-2 text-sm leading-6 text-slate-300">
+                  Catch sale drops and markdowns without checking manually.
+                </p>
+              </div>
+              <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+                <p className="text-sm font-medium text-white">Stock disappears</p>
+                <p className="mt-2 text-sm leading-6 text-slate-300">
+                  Watchli can alert you when a product sells out or becomes unavailable.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
