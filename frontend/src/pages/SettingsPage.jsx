@@ -280,7 +280,7 @@ export function SettingsPage() {
         </div>
       ) : null}
 
-      <section className="grid gap-5 2xl:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)]">
+      <section className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
         <div className="space-y-4">
           <div className="glass-panel rounded-[32px] p-5 sm:p-6">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
@@ -375,33 +375,6 @@ export function SettingsPage() {
           <div className="glass-panel-soft rounded-3xl p-5 sm:p-6">
             <div className="flex items-center gap-3">
               <div className="rounded-2xl bg-white/10 p-3">
-                <ShieldCheck className="h-5 w-5 text-slate-100" />
-              </div>
-              <div>
-                <p className="text-sm text-slate-400">Security</p>
-                <h2 className="display-font text-xl font-semibold text-white">Password and access</h2>
-              </div>
-            </div>
-            <p className="mt-4 text-sm leading-6 text-slate-300">
-              Need to change your password? Send yourself a secure reset email to the address on your account.
-            </p>
-            <button
-              type="button"
-              onClick={handlePasswordReset}
-              disabled={sendingReset}
-              className="mt-4 inline-flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-5 py-3 text-sm text-slate-200 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              {sendingReset ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <Settings className="h-4 w-4" />}
-              Send password reset email
-            </button>
-            <p className="mt-3 text-xs leading-6 text-slate-400">
-              Reset emails return to your Watchli login page after the password update. If the email does not appear right away, check spam or junk.
-            </p>
-          </div>
-
-          <div className="glass-panel-soft rounded-3xl p-5 sm:p-6">
-            <div className="flex items-center gap-3">
-              <div className="rounded-2xl bg-white/10 p-3">
                 <MailCheck className="h-5 w-5 text-slate-100" />
               </div>
               <div>
@@ -459,31 +432,6 @@ export function SettingsPage() {
               {savingNotifications
                 ? "Saving your alert preferences..."
                 : "These preferences apply to Watchli product alerts across your account."}
-            </p>
-          </div>
-
-          <div className="glass-panel-soft rounded-3xl p-5 sm:p-6">
-            <div className="flex items-center gap-3">
-              <div className="rounded-2xl bg-white/10 p-3">
-                <MailCheck className="h-5 w-5 text-slate-100" />
-              </div>
-              <div>
-                <p className="text-sm text-slate-400">Account overview</p>
-                <h2 className="display-font text-xl font-semibold text-white">Identity and support</h2>
-              </div>
-            </div>
-            <div className="mt-5 grid gap-3 sm:grid-cols-2">
-              <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
-                <p className="text-sm text-slate-400">Account email</p>
-                <p className="mt-2 break-all text-sm text-white">{user?.email || "Not available"}</p>
-              </div>
-              <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
-                <p className="text-sm text-slate-400">Member since</p>
-                <p className="mt-2 text-sm text-white">{formatDate(user?.metadata?.creationTime)}</p>
-              </div>
-            </div>
-            <p className="mt-4 text-sm leading-6 text-slate-300">
-              Want more branded password reset emails? Update the Firebase Authentication email template so the sender name, support links, and copy match Watchli.
             </p>
           </div>
 
@@ -643,6 +591,58 @@ export function SettingsPage() {
                 </div>
               </>
             )}
+          </div>
+
+          <div className="glass-panel-soft rounded-3xl p-5 sm:p-6">
+            <div className="flex items-center gap-3">
+              <div className="rounded-2xl bg-white/10 p-3">
+                <ShieldCheck className="h-5 w-5 text-slate-100" />
+              </div>
+              <div>
+                <p className="text-sm text-slate-400">Security</p>
+                <h2 className="display-font text-xl font-semibold text-white">Password and access</h2>
+              </div>
+            </div>
+            <p className="mt-4 text-sm leading-6 text-slate-300">
+              Need to change your password? Send yourself a secure reset email to the address on your account.
+            </p>
+            <button
+              type="button"
+              onClick={handlePasswordReset}
+              disabled={sendingReset}
+              className="mt-4 inline-flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-5 py-3 text-sm text-slate-200 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {sendingReset ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <Settings className="h-4 w-4" />}
+              Send password reset email
+            </button>
+            <p className="mt-3 text-xs leading-6 text-slate-400">
+              Reset emails return to your Watchli login page after the password update. If the email does not appear right away, check spam or junk.
+            </p>
+          </div>
+
+          <div className="glass-panel-soft rounded-3xl p-5 sm:p-6">
+            <div className="flex items-center gap-3">
+              <div className="rounded-2xl bg-white/10 p-3">
+                <MailCheck className="h-5 w-5 text-slate-100" />
+              </div>
+              <div>
+                <p className="text-sm text-slate-400">Account overview</p>
+                <h2 className="display-font text-xl font-semibold text-white">Identity and support</h2>
+              </div>
+            </div>
+            <div className="mt-5 grid gap-3 sm:grid-cols-2">
+              <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+                <p className="text-sm text-slate-400">Account email</p>
+                <p className="mt-2 break-all text-sm text-white">{user?.email || "Not available"}</p>
+              </div>
+              <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+                <p className="text-sm text-slate-400">Member since</p>
+                <p className="mt-2 text-sm text-white">{formatDate(user?.metadata?.creationTime)}</p>
+              </div>
+            </div>
+            <p className="mt-4 text-sm leading-6 text-slate-300">
+              Want more branded password reset emails? Update the Firebase Authentication email template so the sender name, support links, and copy match Watchli.
+            </p>
           </div>
 
           <div className="glass-panel-soft rounded-3xl p-5 sm:p-6">
