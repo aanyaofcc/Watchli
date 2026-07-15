@@ -24,6 +24,45 @@ const UNAVAILABLE_PATTERNS = [
   /\bunavailable\b/i,
   /\bdiscontinued\b/i
 ];
+const POSITIVE_AVAILABILITY_PATTERNS = [
+  /\bin\s*stock\b/i,
+  /\bavailable\s*now\b/i,
+  /\bready\s*to\s*ship\b/i,
+  /\bships\s*now\b/i,
+  /\badd\s*to\s*cart\b/i,
+  /\bbuy\s*now\b/i
+];
+const NEGATIVE_PRICE_CONTEXT = [
+  "old",
+  "compare",
+  "comparison",
+  "list",
+  "original",
+  "regular",
+  "retail",
+  "msrp",
+  "save",
+  "saving",
+  "per month",
+  "monthly",
+  "installment",
+  "afterpay",
+  "klarna"
+];
+const POSITIVE_PRICE_CONTEXT = [
+  "price",
+  "sale",
+  "current",
+  "now",
+  "our",
+  "special",
+  "deal",
+  "final",
+  "member",
+  "purchase",
+  "buy",
+  "cart"
+];
 
 function safeJsonParse(value) {
   try {
@@ -156,6 +195,25 @@ function readText($, element) {
   return normalizeWhitespace($(element).text() || $(element).attr("content") || "");
 }
 
+function scoreContext(text = "", startingScore = 0) {
+  const normalized = String(text || "").toLowerCase();
+  let score = startingScore;
+
+  POSITIVE_PRICE_CONTEXT.forEach((keyword) => {
+    if (normalized.includes(keyword)) {
+      score += 4;
+    }
+  });
+
+  NEGATIVE_PRICE_CONTEXT.forEach((keyword) => {
+    if (normalized.includes(keyword)) {
+      score -= 7;
+    }
+  });
+
+  return score;
+}
+
 function findPriceLikeMatch(text) {
   if (!text) {
     return "";
@@ -232,12 +290,19 @@ function collectJsonLdCandidates(node, candidates, inheritedTitle = "") {
   }
 
   offers.forEach((offer) => {
+    const offerAvailability = String(offer?.availability || node.availability || "").toLowerCase();
+    const availabilityAdjustment =
+      offerAvailability.includes("outofstock") || offerAvailability.includes("soldout")
+        ? -30
+        : offerAvailability.includes("instock")
+          ? 6
+          : 0;
     const candidate = makePriceCandidate({
       value: offer?.price ?? offer?.lowPrice,
       currency: offer?.priceCurrency ?? node.priceCurrency,
       raw: offer?.price ?? offer?.lowPrice ?? "",
       source: "structured data",
-      score: offer?.price ? 100 : 92,
+      score: (offer?.price ? 100 : 92) + availabilityAdjustment,
       productTitle: firstText(offer?.name || productTitle)
     });
 
@@ -257,6 +322,7 @@ function collectMetaCandidates($, candidates) {
   const selectors = [
     ["meta[property='product:price:amount']", "meta product price", 98],
     ["meta[property='product:sale_price:amount']", "meta sale price", 97],
+    ["meta[name='twitter:data1']", "twitter meta price", 90],
     ["meta[property='og:price:amount']", "meta og price", 95],
     ["meta[itemprop='price']", "itemprop meta", 96],
     ["[itemprop='price']", "itemprop price", 94]
@@ -276,7 +342,7 @@ function collectMetaCandidates($, candidates) {
         currency,
         raw: content,
         source,
-        score,
+        score: scoreContext(source, score),
         productTitle: $("meta[property='og:title']").attr("content") || $("title").text()
       });
 
@@ -302,24 +368,36 @@ function collectScriptJsonCandidates($, candidates, productTitle) {
     }
 
     const compact = scriptText.replace(/\s+/g, " ");
-    const priceMatches = compact.match(/"price"\s*:\s*"?(?<price>\d+(?:\.\d{2})?)"?/gi) || [];
+    const patterns = [
+      /"sale[_-]?price"\s*:\s*"?(?<price>\d+(?:\.\d{2})?)"?/gi,
+      /"current[_-]?price"\s*:\s*"?(?<price>\d+(?:\.\d{2})?)"?/gi,
+      /"final[_-]?price"\s*:\s*"?(?<price>\d+(?:\.\d{2})?)"?/gi,
+      /"price"\s*:\s*"?(?<price>\d+(?:\.\d{2})?)"?/gi,
+      /"amount"\s*:\s*"?(?<price>\d+(?:\.\d{2})?)"?/gi
+    ];
 
-    priceMatches.slice(0, 5).forEach((match) => {
-      const priceValue = match.match(/"price"\s*:\s*"?(?<price>\d+(?:\.\d{2})?)"?/i)?.groups?.price;
-      const currency =
-        compact.match(/"priceCurrency"\s*:\s*"(?<currency>[A-Z]{3})"/i)?.groups?.currency || "";
-      const candidate = makePriceCandidate({
-        value: priceValue,
-        currency,
-        raw: priceValue || "",
-        source: "script json",
-        score: 88,
-        productTitle
+    patterns.forEach((pattern, patternIndex) => {
+      const matches = compact.match(pattern) || [];
+
+      matches.slice(0, 4).forEach((match) => {
+        const priceValue = match.match(pattern)?.groups?.price;
+        const currency =
+          compact.match(/"priceCurrency"\s*:\s*"(?<currency>[A-Z]{3})"/i)?.groups?.currency ||
+          compact.match(/"currency"\s*:\s*"(?<currency>[A-Z]{3})"/i)?.groups?.currency ||
+          "";
+        const candidate = makePriceCandidate({
+          value: priceValue,
+          currency,
+          raw: priceValue || "",
+          source: "script json",
+          score: scoreContext(match, 88 + Math.max(0, 4 - patternIndex)),
+          productTitle
+        });
+
+        if (candidate) {
+          candidates.push(candidate);
+        }
       });
-
-      if (candidate) {
-        candidates.push(candidate);
-      }
     });
   });
 }
@@ -336,10 +414,17 @@ function collectSelectorCandidates($, candidates) {
     ["[data-product-price]", 86],
     ["[data-sale-price]", 86],
     ["[data-current-price]", 87],
+    ["[data-testid*='price' i]", 86],
+    ["[data-qa*='price' i]", 84],
+    ["[data-test*='price' i]", 84],
     ["[itemprop='offers']", 76],
+    ["[itemprop='price']", 94],
+    ["[itemprop='lowPrice']", 92],
     ["[aria-label*='price' i]", 74],
     ["[class*='price']", 68],
-    ["[id*='price']", 66]
+    ["[id*='price']", 66],
+    ["[class*='sale']", 78],
+    ["[class*='cost']", 70]
   ];
   const pageTitle = $("meta[property='og:title']").attr("content") || $("title").text();
 
@@ -350,7 +435,9 @@ function collectSelectorCandidates($, candidates) {
       const className = ($(element).attr("class") || "").toLowerCase();
       const id = ($(element).attr("id") || "").toLowerCase();
       const dataTestId = ($(element).attr("data-testid") || "").toLowerCase();
-      let score = baseScore;
+      const dataQa = ($(element).attr("data-qa") || "").toLowerCase();
+      const contextText = `${text} ${className} ${id} ${dataTestId} ${dataQa}`;
+      let score = scoreContext(contextText, baseScore);
 
       if (
         className.includes("old") ||
@@ -367,6 +454,7 @@ function collectSelectorCandidates($, candidates) {
         className.includes("sale") ||
         className.includes("current") ||
         className.includes("final") ||
+        className.includes("member") ||
         dataTestId.includes("sale") ||
         dataTestId.includes("price")
       ) {
@@ -424,7 +512,7 @@ function collectTitleProximityCandidates($, candidates, productTitle) {
         value: match,
         raw: match,
         source: "title proximity",
-        score: 90,
+        score: scoreContext(text, 90),
         productTitle
       });
 
@@ -468,6 +556,8 @@ function collectVisibleTextCandidates($, candidates, productTitle) {
         score += 8;
       }
 
+      score = scoreContext(`${text} ${className}`, score);
+
       const candidate = makePriceCandidate({
         value: match,
         raw: match,
@@ -496,6 +586,43 @@ function dedupeCandidates(candidates) {
   });
 
   return [...byKey.values()].sort((left, right) => right.score - left.score);
+}
+
+function collectAvailabilityFromMarkup($) {
+  const statusSignals = [];
+  const selectors = [
+    "[data-stock]",
+    "[data-availability]",
+    "[itemprop='availability']",
+    "[class*='stock']",
+    "[class*='availability']",
+    "[id*='stock']",
+    "[id*='availability']",
+    "button",
+    "[role='button']"
+  ];
+
+  selectors.forEach((selector) => {
+    $(selector).slice(0, 30).each((_, element) => {
+      const combined = normalizeWhitespace(
+        [
+          $(element).attr("data-stock"),
+          $(element).attr("data-availability"),
+          $(element).attr("content"),
+          $(element).attr("aria-label"),
+          $(element).text()
+        ]
+          .filter(Boolean)
+          .join(" ")
+      );
+
+      if (combined) {
+        statusSignals.push(combined);
+      }
+    });
+  });
+
+  return statusSignals.join(" ");
 }
 
 export function normalizeWhitespace(text) {
@@ -536,10 +663,18 @@ function detectAvailability(text) {
     };
   }
 
+  if (POSITIVE_AVAILABILITY_PATTERNS.some((pattern) => pattern.test(normalized))) {
+    return {
+      status: "available",
+      label: "Available",
+      available: true
+    };
+  }
+
   return {
-    status: "available",
-    label: "Available",
-    available: true
+    status: "unknown",
+    label: "",
+    available: null
   };
 }
 
@@ -550,7 +685,8 @@ export function extractProductSignals(html) {
     firstText($("meta[property='og:title']").attr("content")) ||
     firstText($("title").text());
   const pageText = extractPageText(html);
-  const availability = detectAvailability(pageText);
+  const markupAvailability = collectAvailabilityFromMarkup($);
+  const availability = detectAvailability(`${markupAvailability} ${pageText}`);
 
   $("script[type='application/ld+json']").each((_, element) => {
     const parsed = safeJsonParse($(element).contents().text());

@@ -129,8 +129,8 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
         : "border-white/10 bg-white/[0.04] text-slate-300";
 
   return (
-    <article className="glass-panel rounded-[28px] p-4 sm:p-5">
-      <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+    <article className="glass-panel rounded-[26px] p-4 sm:p-5">
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
             <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Watched page</p>
@@ -161,7 +161,9 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
         </div>
       </div>
 
-      <div className="mt-5 flex flex-wrap gap-2.5">
+      <div className="mt-5 grid gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(260px,320px)]">
+        <div className="space-y-3">
+          <div className="flex flex-wrap gap-2.5">
         {website.latestPrimaryPrice ? (
           <div className="inline-flex items-center gap-2 rounded-full border border-[#88BDF2]/18 bg-[#88BDF2]/10 px-3 py-1.5 text-sm text-[#BDDDFC]">
             <DollarSign className="h-4 w-4" />
@@ -196,48 +198,65 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
             Source: {website.latestPrimaryPriceSource}
           </div>
         ) : null}
-      </div>
+          </div>
 
-      <div className="mt-4">
-        <p className="text-sm leading-6 text-slate-300">
-          {website.status === "Error"
-            ? website.lastErrorMessage || "The website could not be checked successfully."
-            : website.lastDiffSummary?.priceChange?.changed
-              ? website.lastDiffSummary.priceChange.label
-              : "Watchli is standing by for price, availability, or content changes on this page."}
-        </p>
-      </div>
+          <div>
+            <p className="text-sm leading-6 text-slate-300">
+              {website.status === "Error"
+                ? website.lastErrorMessage || "The website could not be checked successfully."
+                : website.lastDiffSummary?.priceChange?.changed
+                  ? website.lastDiffSummary.priceChange.label
+                  : "Watchli is standing by for price, availability, or content changes on this page."}
+            </p>
+          </div>
 
-      {website.status === "Error" && website.lastErrorMessage ? (
-        <div className="mt-4 rounded-3xl border border-rose-400/25 bg-rose-500/10 p-4">
-          <p className="text-xs uppercase tracking-[0.16em] text-rose-200">Failure reason</p>
-          <p className="mt-2 text-sm leading-6 text-rose-100">{website.lastErrorMessage}</p>
-        </div>
-      ) : null}
-
-      {website.lastDiffSummary?.priceChange?.changed ? (
-        <div className="mt-5 rounded-3xl border border-[#88BDF2]/18 bg-[#88BDF2]/10 p-4">
-          <p className="text-xs uppercase tracking-[0.16em] text-[#BDDDFC]">Latest price change</p>
-          <p className="mt-2 text-base font-semibold text-white">{getPriceDirectionLabel(website.lastDiffSummary.priceChange)}</p>
-          <p className="mt-1 text-sm text-slate-200">
-            {website.lastDiffSummary.priceChange.label}
-          </p>
-          <div className="mt-4 grid gap-3 sm:grid-cols-2">
-            <div className="rounded-2xl border border-white/10 bg-slate-950/30 p-3">
-              <p className="text-xs uppercase tracking-[0.14em] text-slate-400">Previous price</p>
-              <p className="mt-1 break-words text-lg font-semibold text-white">
-                {website.lastDiffSummary.priceChange.previousPrice || "Not available"}
-              </p>
+          {website.status === "Error" && website.lastErrorMessage ? (
+            <div className="rounded-3xl border border-rose-400/25 bg-rose-500/10 p-4">
+              <p className="text-xs uppercase tracking-[0.16em] text-rose-200">Failure reason</p>
+              <p className="mt-2 text-sm leading-6 text-rose-100">{website.lastErrorMessage}</p>
             </div>
-            <div className="rounded-2xl border border-[#88BDF2]/18 bg-[#88BDF2]/10 p-3">
-              <p className="text-xs uppercase tracking-[0.14em] text-[#BDDDFC]">Current price</p>
-              <p className="mt-1 break-words text-lg font-semibold text-white">
-                {website.lastDiffSummary.priceChange.currentPrice || "Not available"}
-              </p>
+          ) : null}
+        </div>
+
+        {website.lastDiffSummary?.priceChange?.changed ? (
+          <div className="rounded-3xl border border-[#88BDF2]/18 bg-[#88BDF2]/10 p-4">
+            <p className="text-xs uppercase tracking-[0.16em] text-[#BDDDFC]">Latest price change</p>
+            <p className="mt-2 text-base font-semibold text-white">{getPriceDirectionLabel(website.lastDiffSummary.priceChange)}</p>
+            <div className="mt-4 grid gap-3 sm:grid-cols-2">
+              <div className="rounded-2xl border border-white/10 bg-slate-950/30 p-3">
+                <p className="text-xs uppercase tracking-[0.14em] text-slate-400">Previous price</p>
+                <p className="mt-1 break-words text-lg font-semibold text-white">
+                  {website.lastDiffSummary.priceChange.previousPrice || "Not available"}
+                </p>
+              </div>
+              <div className="rounded-2xl border border-[#88BDF2]/18 bg-[#88BDF2]/10 p-3">
+                <p className="text-xs uppercase tracking-[0.14em] text-[#BDDDFC]">Current price</p>
+                <p className="mt-1 break-words text-lg font-semibold text-white">
+                  {website.lastDiffSummary.priceChange.currentPrice || "Not available"}
+                </p>
+              </div>
             </div>
           </div>
-        </div>
-      ) : null}
+        ) : (
+          <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-4">
+            <p className="text-xs uppercase tracking-[0.16em] text-slate-400">Current watch state</p>
+            <p className="mt-2 text-base font-semibold text-white">
+              {website.latestPrimaryPrice
+                ? `Tracking around ${website.latestPrimaryPrice}`
+                : "Waiting for a stronger price signal"}
+            </p>
+            <p className="mt-2 text-sm leading-6 text-slate-300">
+              {availability === "available"
+                ? "The latest check suggests the product is currently available."
+                : availability === "sold_out"
+                  ? "The latest check suggests the item is sold out."
+                  : availability === "unavailable"
+                    ? "The latest check suggests the page is no longer available."
+                    : "Run another check or open history for more detail."}
+            </p>
+          </div>
+        )}
+      </div>
 
       <div className="mt-6 flex flex-col gap-3 sm:flex-row">
         <button
@@ -256,7 +275,7 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
           className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-slate-200 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-60"
         >
           <History className="h-4 w-4" />
-          View details
+          View history
         </button>
         <button
           type="button"
@@ -269,51 +288,10 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
         </button>
       </div>
 
-      {website.lastDiffSummary?.changed ? (
-        <div className="mt-6 grid gap-4 xl:grid-cols-2">
-          <div className="rounded-3xl border border-rose-400/20 bg-rose-500/5 p-4">
-            <div className="mb-3 flex items-center gap-2 text-sm text-rose-200">
-              <History className="h-4 w-4" />
-              Previous snapshot
-            </div>
-            <div className="text-sm leading-7 text-slate-200">
-              {website.lastDiffSummary.previousSegments?.map((segment, index) => (
-                <span
-                  key={`${website.id}-previous-${index}`}
-                  className={segment.changed ? "rounded bg-rose-400/20 px-1 text-rose-100" : ""}
-                >
-                  {segment.text}{" "}
-                </span>
-              ))}
-            </div>
-          </div>
-
-          <div className="rounded-3xl border border-emerald-400/20 bg-emerald-500/5 p-4">
-            <div className="mb-3 flex items-center gap-2 text-sm text-emerald-200">
-              <TextSearch className="h-4 w-4" />
-              Current snapshot
-            </div>
-            <div className="text-sm leading-7 text-slate-200">
-              {website.lastDiffSummary.currentSegments?.map((segment, index) => (
-                <span
-                  key={`${website.id}-current-${index}`}
-                  className={segment.changed ? "rounded bg-emerald-400/20 px-1 text-emerald-100" : ""}
-                >
-                  {segment.text}{" "}
-                </span>
-              ))}
-            </div>
-          </div>
-        </div>
-      ) : website.latestSnapshotText ? (
-        <div className="mt-6 rounded-3xl border border-white/10 bg-white/[0.04] p-4">
-          <div className="mb-3 flex items-center gap-2 text-sm text-slate-300">
-            <TextSearch className="h-4 w-4 text-cyan-300" />
-            Latest saved snapshot
-          </div>
-          <p className="line-clamp-4 text-sm leading-7 text-slate-200">
-            {website.latestSnapshotText}
-          </p>
+      {website.latestSnapshotText ? (
+        <div className="mt-4 inline-flex items-center gap-2 text-sm text-slate-400">
+          <TextSearch className="h-4 w-4 text-[#BDDDFC]" />
+          Snapshot history is available from the history view.
         </div>
       ) : null}
     </article>

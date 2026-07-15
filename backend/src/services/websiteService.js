@@ -42,6 +42,17 @@ function serializeSnapshot(id, data) {
   };
 }
 
+function serializeScheduler(data) {
+  if (!data) {
+    return null;
+  }
+
+  return {
+    ...data,
+    updatedAt: serializeTimestamp(data.updatedAt)
+  };
+}
+
 function getUserWebsiteRef(db, userId, websiteId) {
   return db.collection(USERS_COLLECTION).doc(userId).collection("websites").doc(websiteId);
 }
@@ -117,10 +128,15 @@ async function saveSnapshotRecord({
   ]);
 }
 
+async function sleep(ms) {
+  await new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
 async function fetchHtml(url) {
-  const response = await fetch(url, {
-    signal: AbortSignal.timeout(15000),
-    headers: {
+  const attempts = [
+    {
       "User-Agent":
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
       Accept:
@@ -129,14 +145,47 @@ async function fetchHtml(url) {
       "Cache-Control": "no-cache",
       Pragma: "no-cache",
       Referer: "https://www.google.com/"
+    },
+    {
+      "User-Agent":
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15",
+      Accept:
+        "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+      "Accept-Language": "en-US,en;q=0.8",
+      "Cache-Control": "no-cache",
+      Pragma: "no-cache"
     }
-  });
+  ];
+  let lastError = null;
 
-  if (!response.ok) {
-    throw new Error(`Website returned ${response.status} ${response.statusText}`.trim());
+  for (let index = 0; index < attempts.length; index += 1) {
+    try {
+      const response = await fetch(url, {
+        signal: AbortSignal.timeout(15000),
+        headers: attempts[index]
+      });
+
+      if (!response.ok) {
+        throw new Error(`Website returned ${response.status} ${response.statusText}`.trim());
+      }
+
+      const html = await response.text();
+
+      if (!html || html.trim().length < 80) {
+        throw new Error("Website returned an empty page.");
+      }
+
+      return html;
+    } catch (error) {
+      lastError = error;
+
+      if (index < attempts.length - 1) {
+        await sleep(900 * (index + 1));
+      }
+    }
   }
 
-  return response.text();
+  throw lastError || new Error("Website check failed.");
 }
 
 export async function createWebsiteForUser({ userId, url }) {
@@ -515,7 +564,7 @@ export async function listUserWebsites(userId) {
       return rightTime - leftTime;
     });
   const account = await getUserPlanSummary(userId, snapshot.size);
-  const scheduler = statusSnapshot.data()?.scheduler || null;
+  const scheduler = serializeScheduler(statusSnapshot.data()?.scheduler || null);
 
   return {
     websites,

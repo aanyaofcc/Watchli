@@ -263,26 +263,32 @@ export function DashboardPage() {
     }
   };
 
+  const schedulerStatusLabel = scheduler?.running
+    ? "Running now"
+    : scheduler?.lastRunSucceeded
+      ? "Healthy"
+      : scheduler?.lastError
+        ? "Needs attention"
+        : "Waiting";
+
   return (
     <div className="space-y-5 sm:space-y-6">
-      <section className="grid gap-4 lg:grid-cols-[1.2fr_0.8fr] lg:items-start">
-        <div className="glass-panel rounded-[32px] p-5 sm:p-8">
-          <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+      <section className="grid gap-4 xl:grid-cols-[minmax(0,1.55fr)_360px] xl:items-start">
+        <div className="glass-panel rounded-[30px] p-5 sm:p-7">
+          <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-start sm:justify-between">
             <div>
               <p className="text-sm uppercase tracking-[0.16em] text-[#BDDDFC]">Dashboard</p>
               <h1 className="display-font mt-3 break-words text-2xl font-semibold text-white sm:text-3xl">
                 Welcome back{user?.email ? `, ${user.email}` : ""}
               </h1>
+              <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-300 sm:text-base">
+                Track product pages, capture likely price signals, and review changes without digging through noisy page updates.
+              </p>
             </div>
             <div className="data-chip w-fit rounded-full px-4 py-2 text-sm text-slate-300">
               {account.planLabel}
             </div>
           </div>
-
-          <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-300 sm:text-base">
-            Add a product or shopping page, let Watchli capture its readable content, and
-            get alerted when the price or listing details appear to change.
-          </p>
 
           <form className="mt-6 space-y-4" onSubmit={handleAddWebsite}>
             <label className="block">
@@ -312,6 +318,9 @@ export function DashboardPage() {
             </span>
             <span className="rounded-full border border-[#BDDDFC]/20 bg-[#BDDDFC]/10 px-3 py-1.5 text-[#BDDDFC]">
               {account.checkFrequency}
+            </span>
+            <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5">
+              {priceAwareWebsites.length} prices found
             </span>
           </div>
 
@@ -346,11 +355,54 @@ export function DashboardPage() {
         <div className="space-y-3">
           <div className="glass-panel-soft rounded-3xl p-5 sm:p-6">
             <div className="flex items-center gap-3">
+              <RefreshCw className={`h-5 w-5 text-[#BDDDFC] ${scheduler?.running ? "animate-spin" : ""}`} />
+              <div>
+                <p className="text-sm text-slate-400">Automatic checks</p>
+                <h2 className="display-font text-xl font-semibold text-white">
+                  {schedulerStatusLabel}
+                </h2>
+              </div>
+            </div>
+            <p className="mt-3 text-sm leading-6 text-slate-300">
+              {scheduler?.lastError
+                ? `Last scheduler issue: ${scheduler.lastError}`
+                : scheduler?.lastCompletedAt
+                  ? `Last completed: ${new Intl.DateTimeFormat("en-US", {
+                    dateStyle: "medium",
+                    timeStyle: "short"
+                  }).format(new Date(scheduler.lastCompletedAt))}`
+                  : "Automatic checks will appear here after the first scheduled run."}
+            </p>
+            <div className="mt-4 flex flex-wrap gap-2 text-sm text-slate-300">
+              <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5">
+                {scheduler?.lastRunTotal || 0} checked
+              </span>
+              <span className="rounded-full border border-[#88BDF2]/20 bg-[#88BDF2]/12 px-3 py-1.5 text-[#BDDDFC]">
+                {scheduler?.lastRunChanged || 0} changed
+              </span>
+              <span className="rounded-full border border-rose-300/20 bg-rose-300/10 px-3 py-1.5 text-rose-100">
+                {scheduler?.lastRunFailed || 0} failed
+              </span>
+              {scheduler?.nextRunAt ? (
+                <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5">
+                  Next run {new Intl.DateTimeFormat("en-US", {
+                    month: "short",
+                    day: "numeric",
+                    hour: "numeric",
+                    minute: "2-digit"
+                  }).format(new Date(scheduler.nextRunAt))}
+                </span>
+              ) : null}
+            </div>
+          </div>
+
+          <div className="glass-panel-soft rounded-3xl p-5 sm:p-6">
+            <div className="flex items-center gap-3">
               <Bell className="h-5 w-5 text-[#BDDDFC]" />
               <div>
                 <p className="text-sm text-slate-400">Quick actions</p>
                 <h2 className="display-font text-xl font-semibold text-white">
-                  Stay on top of checks
+                  Keep the account moving
                 </h2>
               </div>
             </div>
@@ -361,7 +413,7 @@ export function DashboardPage() {
                   ? `${changedWebsites.length} watch${changedWebsites.length === 1 ? "" : "es"} changed recently.`
                   : "Everything is looking steady right now."}
             </p>
-            <div className="mt-4 flex flex-col gap-3">
+            <div className="mt-4 flex flex-col gap-3 sm:flex-row">
               <button
                 type="button"
                 onClick={handleSendTestEmail}
@@ -381,81 +433,41 @@ export function DashboardPage() {
                 Refresh dashboard
               </button>
             </div>
-          </div>
-
-          <div className="glass-panel-soft rounded-3xl p-5 sm:p-6">
-            <div className="flex items-center gap-3">
-              <RefreshCw className={`h-5 w-5 text-[#BDDDFC] ${scheduler?.running ? "animate-spin" : ""}`} />
-              <div>
-                <p className="text-sm text-slate-400">Automatic checks</p>
-                <h2 className="display-font text-xl font-semibold text-white">
-                  {scheduler?.running
-                    ? "Scheduler running"
-                    : scheduler?.lastCompletedAt
-                      ? "Scheduler active"
-                      : "No scheduler run yet"}
-                </h2>
+            <div className="mt-4 rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+              <div className="flex items-center gap-3">
+                <Crown className="h-5 w-5 text-[#BDDDFC]" />
+                <div>
+                  <p className="text-sm text-slate-400">Plan</p>
+                  <h2 className="display-font text-lg font-semibold text-white">
+                    {account.premium ? "Watchli Pro" : "Free plan"}
+                  </h2>
+                </div>
               </div>
-            </div>
-            <p className="mt-3 text-sm leading-6 text-slate-300">
-              {scheduler?.lastError
-                ? `Last scheduler issue: ${scheduler.lastError}`
-                : scheduler?.lastCompletedAt
-                  ? `Last completed: ${new Intl.DateTimeFormat("en-US", {
-                    dateStyle: "medium",
-                    timeStyle: "short"
-                  }).format(new Date(scheduler.lastCompletedAt))}`
-                  : "Automatic checks will appear here after the first scheduled run."}
-            </p>
-            {scheduler?.lastCompletedAt ? (
-              <div className="mt-4 flex flex-wrap gap-2 text-sm text-slate-300">
-                <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5">
-                  {scheduler.lastRunTotal || 0} checked
-                </span>
-                <span className="rounded-full border border-[#88BDF2]/20 bg-[#88BDF2]/12 px-3 py-1.5 text-[#BDDDFC]">
-                  {scheduler.lastRunChanged || 0} changed
-                </span>
-                <span className="rounded-full border border-rose-300/20 bg-rose-300/10 px-3 py-1.5 text-rose-100">
-                  {scheduler.lastRunFailed || 0} failed
-                </span>
-              </div>
-            ) : null}
-          </div>
-
-          <div className="glass-panel-soft rounded-3xl p-5 sm:p-6">
-            <div className="flex items-center gap-3">
-              <Crown className="h-5 w-5 text-[#BDDDFC]" />
-              <div>
-                <p className="text-sm text-slate-400">Plan</p>
-                <h2 className="display-font text-xl font-semibold text-white">
-                  {account.premium ? "Watchli Pro" : "Free plan"}
-                </h2>
-              </div>
-            </div>
-            <p className="mt-3 text-sm leading-6 text-slate-300">
-              {account.premium
-                ? "Manage your subscription and keep room for more watched products."
-                : "Upgrade when you want more watched pages and premium plan headroom."}
-            </p>
-            <div className="mt-4 flex flex-col gap-3 sm:flex-row">
-              <button
-                type="button"
-                onClick={handleUpgradeClick}
-                className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-[#88BDF2]/20 bg-[#88BDF2]/14 px-4 py-3 text-sm font-medium text-white transition hover:bg-[#88BDF2]/22"
-              >
-                <Zap className="h-4 w-4" />
-                {account.premium ? "View Pro plan" : "Upgrade to Pro"}
-              </button>
-              {account.premium ? (
+              <p className="mt-3 text-sm leading-6 text-slate-300">
+                {account.premium
+                  ? "Manage your subscription and keep room for more watched products."
+                  : "Upgrade when you want more watched pages and premium plan headroom."}
+              </p>
+              <div className="mt-4 flex flex-col gap-3">
                 <button
                   type="button"
-                  onClick={() => void handleManageBilling()}
-                  disabled={openingBilling}
-                  className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-[#BDDDFC]/16 bg-white/[0.05] px-4 py-3 text-sm text-slate-100 transition hover:bg-white/[0.09] disabled:cursor-not-allowed disabled:opacity-60"
+                  onClick={handleUpgradeClick}
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-[#88BDF2]/20 bg-[#88BDF2]/14 px-4 py-3 text-sm font-medium text-white transition hover:bg-[#88BDF2]/22"
                 >
-                  {openingBilling ? "Opening..." : "Manage Billing"}
+                  <Zap className="h-4 w-4" />
+                  {account.premium ? "View Pro plan" : "Upgrade to Pro"}
                 </button>
-              ) : null}
+                {account.premium ? (
+                  <button
+                    type="button"
+                    onClick={() => void handleManageBilling()}
+                    disabled={openingBilling}
+                    className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-[#BDDDFC]/16 bg-white/[0.05] px-4 py-3 text-sm text-slate-100 transition hover:bg-white/[0.09] disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    {openingBilling ? "Opening..." : "Manage Billing"}
+                  </button>
+                ) : null}
+              </div>
             </div>
           </div>
         </div>
@@ -496,13 +508,13 @@ export function DashboardPage() {
               <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5">
                 Add a public product URL
               </span>
-              <span className="rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-1.5 text-cyan-100">
+              <span className="rounded-full border border-[#88BDF2]/20 bg-[#88BDF2]/10 px-3 py-1.5 text-[#BDDDFC]">
                 Run manual checks anytime
               </span>
             </div>
           </div>
         ) : (
-          <div className="grid gap-4">
+          <div className="grid gap-3">
             {websites.map((website) => (
               <WebsiteCard
                 key={website.id}
