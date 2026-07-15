@@ -4,6 +4,7 @@ import { createDiffSummary } from "../utils/diffSummary.js";
 import { extractPageText, extractProductSignals, hashText } from "../utils/pageContent.js";
 import { normalizeWebsiteUrl } from "../utils/url.js";
 import { sendChangeEmail } from "./emailService.js";
+import { getUserNotificationPreferences } from "./userSettingsService.js";
 
 const WEBSITES_COLLECTION = "websites";
 const USERS_COLLECTION = "users";
@@ -65,16 +66,62 @@ function getUserWebsiteSnapshotRef(db, userId, websiteId, snapshotId) {
   return getUserWebsiteRef(db, userId, websiteId).collection(SNAPSHOTS_COLLECTION).doc(snapshotId);
 }
 
-function shouldSendEmailForPriceChange(priceChange) {
+function shouldSendEmailForPriceChange(priceChange, preferences) {
+  if (preferences?.paused) {
+    return false;
+  }
+
   if (!priceChange?.changed) {
     return false;
   }
 
   if (priceChange.type === "updated") {
-    return priceChange.direction === "up" || priceChange.direction === "down";
+    if (priceChange.direction === "up") {
+      return Boolean(preferences?.priceIncrease);
+    }
+
+    if (priceChange.direction === "down") {
+      return Boolean(preferences?.priceDecrease);
+    }
+
+    return false;
   }
 
-  return priceChange.type === "sold_out" || priceChange.type === "unavailable";
+  return (
+    (priceChange.type === "sold_out" || priceChange.type === "unavailable") &&
+    Boolean(preferences?.outOfStock)
+  );
+}
+
+function describeCheckFailure(error) {
+  const message = error?.message || "Website check failed.";
+  const lowerMessage = message.toLowerCase();
+
+  if (lowerMessage.includes("timed out") || lowerMessage.includes("timeout")) {
+    return "This website took too long to respond. It may be slow, temporarily unavailable, or blocking automated checks.";
+  }
+
+  if (
+    lowerMessage.includes("403") ||
+    lowerMessage.includes("401") ||
+    lowerMessage.includes("429")
+  ) {
+    return "This website appears to be blocking automated checks right now. Try again later or use a different product page if possible.";
+  }
+
+  if (lowerMessage.includes("404")) {
+    return "This product page could not be found. The listing may have moved or been removed.";
+  }
+
+  if (lowerMessage.includes("empty page")) {
+    return "Watchli received an empty or incomplete page, so it could not extract product details from this check.";
+  }
+
+  if (lowerMessage.includes("fetch failed") || lowerMessage.includes("network")) {
+    return "Watchli could not reach this website right now. Check the URL and try again in a moment.";
+  }
+
+  return message;
 }
 
 async function deleteCollectionDocuments(collectionRef) {
@@ -321,6 +368,7 @@ export async function checkWebsite({ websiteId, userId }) {
 
   const userSnap = await db.collection(USERS_COLLECTION).doc(userId).get();
   const user = userSnap.data();
+  const notificationPreferences = await getUserNotificationPreferences(userId);
 
   try {
     const html = await fetchHtml(normalizedUrl);
@@ -407,7 +455,10 @@ export async function checkWebsite({ websiteId, userId }) {
       (priceData.primaryPriceConfidence || 0) >= 75;
     const priceChanged = Boolean(diffSummary.priceChange?.changed);
     const shouldAlert = hasReliablePrice ? priceChanged : contentChanged;
-    const shouldSendEmail = shouldSendEmailForPriceChange(diffSummary.priceChange);
+    const shouldSendEmail = shouldSendEmailForPriceChange(
+      diffSummary.priceChange,
+      notificationPreferences
+    );
 
     if (shouldAlert) {
       await saveSnapshotRecord({
@@ -520,7 +571,7 @@ export async function checkWebsite({ websiteId, userId }) {
         : "No change detected."
     };
   } catch (error) {
-    const errorMessage = error.message || "Website check failed.";
+    const errorMessage = describeCheckFailure(error);
 
     await saveSnapshotRecord({
       db,

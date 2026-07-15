@@ -18,6 +18,13 @@ import {
 } from "firebase/firestore";
 import { auth, db } from "../lib/firebase";
 
+const DEFAULT_NOTIFICATION_PREFERENCES = {
+  paused: false,
+  priceIncrease: true,
+  priceDecrease: true,
+  outOfStock: true
+};
+
 const AuthContext = createContext(null);
 
 function getPasswordResetSettings() {
@@ -51,7 +58,8 @@ export function AuthProvider({ children }) {
       {
         email,
         plan: "free",
-        createdAt: serverTimestamp()
+        createdAt: serverTimestamp(),
+        notificationPreferences: DEFAULT_NOTIFICATION_PREFERENCES
       },
       { merge: true }
     );

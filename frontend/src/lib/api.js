@@ -51,6 +51,13 @@ export function deleteAccount(confirmation) {
   });
 }
 
+export function updateNotificationPreferences(preferences) {
+  return request("/api/account/notification-preferences", {
+    method: "PATCH",
+    body: preferences
+  });
+}
+
 export function sendTestEmail(email) {
   return post("/api/send-test-email", { email });
 }

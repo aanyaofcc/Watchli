@@ -14,8 +14,21 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import { updateProfile } from "firebase/auth";
 import { auth } from "../lib/firebase";
-import { createBillingPortalSession, createCheckoutSession, deleteAccount, fetchMyWebsites } from "../lib/api";
+import {
+  createBillingPortalSession,
+  createCheckoutSession,
+  deleteAccount,
+  fetchMyWebsites,
+  updateNotificationPreferences
+} from "../lib/api";
 import { useAuth } from "../providers/AuthProvider";
+
+const DEFAULT_NOTIFICATION_PREFERENCES = {
+  paused: false,
+  priceIncrease: true,
+  priceDecrease: true,
+  outOfStock: true
+};
 
 function formatDate(value) {
   if (!value) {
@@ -45,8 +58,12 @@ export function SettingsPage() {
   const [checkingOut, setCheckingOut] = useState(false);
   const [sendingReset, setSendingReset] = useState(false);
   const [deletingAccount, setDeletingAccount] = useState(false);
+  const [savingNotifications, setSavingNotifications] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [notificationPreferences, setNotificationPreferences] = useState(
+    DEFAULT_NOTIFICATION_PREFERENCES
+  );
 
   const confirmationTarget = user?.email || user?.uid || "";
   const usagePercent = useMemo(() => {
@@ -68,6 +85,9 @@ export function SettingsPage() {
 
         if (active) {
           setAccount(payload.account || null);
+          setNotificationPreferences(
+            payload.account?.notificationPreferences || DEFAULT_NOTIFICATION_PREFERENCES
+          );
         }
       } catch (loadError) {
         if (active) {
@@ -188,6 +208,40 @@ export function SettingsPage() {
     } catch (deleteError) {
       setError(deleteError.message || "Could not delete your account.");
       setDeletingAccount(false);
+    }
+  };
+
+  const handleNotificationToggle = async (key, value) => {
+    setError("");
+    setSuccess("");
+    setSavingNotifications(true);
+
+    const nextPreferences = {
+      ...notificationPreferences,
+      [key]: value
+    };
+
+    setNotificationPreferences(nextPreferences);
+
+    try {
+      const payload = await updateNotificationPreferences(nextPreferences);
+      const savedPreferences =
+        payload.notificationPreferences || nextPreferences;
+      setNotificationPreferences(savedPreferences);
+      setAccount((current) =>
+        current
+          ? {
+              ...current,
+              notificationPreferences: savedPreferences
+            }
+          : current
+      );
+      setSuccess("Email alert preferences updated.");
+    } catch (saveError) {
+      setNotificationPreferences(notificationPreferences);
+      setError(saveError.message || "Could not update email alert preferences.");
+    } finally {
+      setSavingNotifications(false);
     }
   };
 
@@ -342,6 +396,69 @@ export function SettingsPage() {
             </button>
             <p className="mt-3 text-xs leading-6 text-slate-400">
               Reset emails return to your Watchli login page after the password update. If the email does not appear right away, check spam or junk.
+            </p>
+          </div>
+
+          <div className="glass-panel-soft rounded-3xl p-5 sm:p-6">
+            <div className="flex items-center gap-3">
+              <div className="rounded-2xl bg-white/10 p-3">
+                <MailCheck className="h-5 w-5 text-slate-100" />
+              </div>
+              <div>
+                <p className="text-sm text-slate-400">Email alerts</p>
+                <h2 className="display-font text-xl font-semibold text-white">Alert rules and preferences</h2>
+              </div>
+            </div>
+            <p className="mt-4 text-sm leading-6 text-slate-300">
+              Watchli sends emails only when a tracked product price increases, decreases, or the product goes out of stock or becomes unavailable.
+            </p>
+            <div className="mt-5 space-y-3">
+              {[
+                {
+                  key: "paused",
+                  label: "Pause all alert emails",
+                  description: "Keep tracking active in the dashboard, but stop all notification emails for now."
+                },
+                {
+                  key: "priceIncrease",
+                  label: "Email me when price increases",
+                  description: "Useful if you want to know when a product starts getting more expensive."
+                },
+                {
+                  key: "priceDecrease",
+                  label: "Email me when price decreases",
+                  description: "Useful for catching deals, markdowns, and sale price drops."
+                },
+                {
+                  key: "outOfStock",
+                  label: "Email me when item goes out of stock",
+                  description: "Useful for spotting when an item sells out or becomes unavailable."
+                }
+              ].map((item) => (
+                <label
+                  key={item.key}
+                  className="flex cursor-pointer items-start justify-between gap-4 rounded-2xl border border-white/10 bg-white/[0.04] p-4"
+                >
+                  <div>
+                    <p className="text-sm font-medium text-white">{item.label}</p>
+                    <p className="mt-1 text-sm leading-6 text-slate-300">{item.description}</p>
+                  </div>
+                  <input
+                    type="checkbox"
+                    checked={Boolean(notificationPreferences[item.key])}
+                    disabled={savingNotifications}
+                    onChange={(event) => {
+                      void handleNotificationToggle(item.key, event.target.checked);
+                    }}
+                    className="mt-1 h-5 w-5 rounded border-white/20 bg-slate-950/40 text-cyan-300 focus:ring-cyan-300"
+                  />
+                </label>
+              ))}
+            </div>
+            <p className="mt-3 text-xs leading-6 text-slate-400">
+              {savingNotifications
+                ? "Saving your alert preferences..."
+                : "These preferences apply to Watchli product alerts across your account."}
             </p>
           </div>
 

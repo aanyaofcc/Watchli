@@ -1,4 +1,8 @@
 import { getDb } from "../firebase.js";
+import {
+  DEFAULT_NOTIFICATION_PREFERENCES,
+  normalizeNotificationPreferences
+} from "./userSettingsService.js";
 
 export const PLAN_DEFINITIONS = {
   free: {
@@ -52,6 +56,9 @@ export async function getUserPlanSummary(userId, websiteCount = null) {
     checkFrequency: plan.checkFrequency,
     priceMonthly: plan.priceMonthly,
     premium: plan.premium,
-    upgradeAvailable: !plan.premium
+    upgradeAvailable: !plan.premium,
+    notificationPreferences: normalizeNotificationPreferences(
+      userData.notificationPreferences || DEFAULT_NOTIFICATION_PREFERENCES
+    )
   };
 }

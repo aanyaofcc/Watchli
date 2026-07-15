@@ -324,6 +324,10 @@ export function DashboardPage() {
             </span>
           </div>
 
+          <div className="mt-4 rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm leading-6 text-slate-300">
+            Watchli emails alerts only when a tracked product price goes up, goes down, or the item becomes sold out or unavailable.
+          </div>
+
           <div className="mt-5 grid gap-3 sm:grid-cols-3">
             <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
               <p className="text-sm text-slate-400">Tracked pages</p>

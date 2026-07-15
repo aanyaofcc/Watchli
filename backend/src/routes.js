@@ -16,6 +16,7 @@ import {
   createCheckoutSession
 } from "./services/billingService.js";
 import { deleteAccountForUser } from "./services/accountService.js";
+import { updateUserNotificationPreferences } from "./services/userSettingsService.js";
 
 export const router = express.Router();
 const rateLimitStore = new Map();
@@ -84,6 +85,12 @@ const deleteAccountRateLimit = createRateLimiter({
   keyPrefix: "delete-account",
   windowMs: 15 * 60 * 1000,
   maxRequests: 3
+});
+
+const notificationSettingsRateLimit = createRateLimiter({
+  keyPrefix: "notification-settings",
+  windowMs: 60 * 1000,
+  maxRequests: 10
 });
 
 async function requireAuth(request, response, next) {
@@ -260,6 +267,29 @@ router.delete("/api/account", requireAuth, deleteAccountRateLimit, async (reques
     return response.status(400).json({ error: error.message || "Could not delete account." });
   }
 });
+
+router.patch(
+  "/api/account/notification-preferences",
+  requireAuth,
+  notificationSettingsRateLimit,
+  async (request, response) => {
+    try {
+      const preferences = await updateUserNotificationPreferences(
+        request.authUser.uid,
+        request.body || {}
+      );
+
+      return response.json({
+        message: "Notification preferences updated.",
+        notificationPreferences: preferences
+      });
+    } catch (error) {
+      return response.status(400).json({
+        error: error.message || "Could not update notification preferences."
+      });
+    }
+  }
+);
 
 router.delete("/api/websites/:websiteId", requireAuth, async (request, response) => {
   try {
