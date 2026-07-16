@@ -67,6 +67,18 @@ const dashboardPreview = [
   { label: "Monitor", url: "market.com/products/monitor", status: "Watching" }
 ];
 
+const heroSignals = [
+  "Price drops and increases",
+  "Sold out and unavailable alerts",
+  "Snapshot history in one dashboard"
+];
+
+const heroMetrics = [
+  { label: "Free to start", value: "5 pages" },
+  { label: "Built for products", value: "Price-focused" },
+  { label: "Alert channel", value: "Email" }
+];
+
 export function LandingPagePro() {
   useEffect(() => {
     const elements = document.querySelectorAll("[data-scroll-reveal]");
@@ -99,16 +111,19 @@ export function LandingPagePro() {
 
   return (
     <div className="tech-shell min-h-screen text-white">
-      <div className="aurora-orb float-gentle left-[-80px] top-20 h-64 w-64 bg-cyan-400/30" />
-      <div className="aurora-orb float-gentle right-[-60px] top-36 h-72 w-72 bg-blue-500/25" />
-      <div className="aurora-orb float-gentle bottom-24 left-1/2 h-56 w-56 -translate-x-1/2 bg-teal-300/15" />
+      <div className="aurora-orb float-gentle left-[-80px] top-20 h-64 w-64 bg-cyan-400/34" />
+      <div className="aurora-orb float-gentle right-[-60px] top-36 h-72 w-72 bg-blue-500/30" />
+      <div className="aurora-orb float-gentle bottom-24 left-1/2 h-56 w-56 -translate-x-1/2 bg-teal-300/18" />
 
       <header className="reveal-soft relative z-10 mx-auto flex max-w-7xl flex-col gap-4 px-4 py-4 sm:px-6 md:flex-row md:items-center md:justify-between md:py-5">
         <BrandLogoLink to="/" size="hero" />
 
-        <div className="hidden items-center gap-6 text-sm text-slate-300 md:flex">
+        <div className="hidden items-center gap-7 text-sm text-slate-300 md:flex">
           <a href="#how-it-works" className="transition hover:text-white">
             How it works
+          </a>
+          <a href="#features" className="transition hover:text-white">
+            Features
           </a>
           <a href="#pricing" className="transition hover:text-white">
             Pricing
@@ -118,7 +133,7 @@ export function LandingPagePro() {
         <div className="flex w-full flex-col gap-3 sm:flex-row md:w-auto">
           <Link
             to="/login"
-            className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-center text-sm text-slate-100 transition hover:bg-white/10"
+            className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-center text-sm text-slate-100 transition hover:border-white/15 hover:bg-white/10"
           >
             Log In
           </Link>
@@ -133,48 +148,101 @@ export function LandingPagePro() {
 
       <main className="relative z-10">
         <section className="mx-auto max-w-7xl px-4 pb-20 pt-6 sm:px-6 sm:pb-24 sm:pt-10">
-          <div className="mx-auto max-w-5xl text-center">
-            <div className="data-chip reveal-up mx-auto inline-flex max-w-full items-center gap-2 rounded-full px-4 py-2 text-sm text-slate-200">
-              <Sparkles className="h-4 w-4 text-cyan-300" />
-              <span className="truncate sm:whitespace-normal">Track product pages and catch price changes faster</span>
+          <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr] lg:items-stretch">
+            <div className="glass-panel reveal-soft rounded-[34px] p-6 sm:p-8 lg:p-10">
+              <div className="data-chip reveal-up inline-flex max-w-full items-center gap-2 rounded-full px-4 py-2 text-sm text-slate-200">
+                <Sparkles className="h-4 w-4 text-cyan-300" />
+                <span>Professional price monitoring for product pages</span>
+              </div>
+
+              <h1 className="display-font reveal-up delay-1 mt-6 max-w-4xl text-4xl font-bold leading-[0.95] tracking-tight text-white sm:text-6xl lg:text-[4.35rem]">
+                Monitor products with a cleaner signal and fewer missed price moves.
+              </h1>
+
+              <p className="reveal-up delay-2 mt-5 max-w-2xl text-base leading-7 text-slate-300 sm:text-lg sm:leading-8">
+                Watchli tracks shopping pages, pulls likely price signals, and notifies you when a product gets more expensive, drops in price, or disappears from stock.
+              </p>
+
+              <div className="reveal-up delay-3 mt-7 flex flex-col gap-3 sm:flex-row">
+                <Link
+                  to="/signup"
+                  className="glow-button inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#8fb2c3] via-[#7f9fb7] to-[#8cb4a8] px-6 py-3.5 font-semibold text-slate-950 transition hover:scale-[1.02] hover:from-[#9bbccc] hover:via-[#8aabc2] hover:to-[#96beb2]"
+                >
+                  Start Watching
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+                <Link
+                  to="/login"
+                  className="inline-flex items-center justify-center rounded-full border border-white/10 bg-white/5 px-6 py-3.5 font-medium text-white transition hover:border-white/15 hover:bg-white/10"
+                >
+                  Log In
+                </Link>
+              </div>
+
+              <div className="mt-8 grid gap-3 sm:grid-cols-3">
+                {heroMetrics.map((item) => (
+                  <div key={item.label} className="glass-panel-soft reveal-up delay-4 rounded-3xl p-4">
+                    <p className="text-sm text-slate-400">{item.label}</p>
+                    <p className="display-font mt-2 text-xl font-semibold text-white">{item.value}</p>
+                  </div>
+                ))}
+              </div>
             </div>
 
-            <h1 className="display-font reveal-up delay-1 mt-6 max-w-5xl text-4xl font-bold leading-[0.95] tracking-tight text-white sm:mt-8 sm:text-6xl lg:text-7xl">
-              Catch price drops, sellouts, and product changes before everyone else.
-            </h1>
-
-            <p className="reveal-up delay-2 mx-auto mt-5 max-w-3xl text-base leading-7 text-slate-300 sm:mt-6 sm:text-lg sm:leading-8">
-              Watchli monitors shopping and product pages, looks for likely prices, and
-              tells you when the listing changes so you can catch drops, increases, or edits quickly.
-            </p>
-
-            <div className="reveal-up delay-3 mt-7 flex flex-col gap-3 sm:flex-row sm:justify-center">
-              <Link
-                to="/signup"
-                className="glow-button inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#8fb2c3] via-[#7f9fb7] to-[#8cb4a8] px-6 py-3.5 font-semibold text-slate-950 transition hover:scale-[1.02] hover:from-[#9bbccc] hover:via-[#8aabc2] hover:to-[#96beb2]"
-              >
-                Start Watching
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-              <Link
-                to="/login"
-                className="inline-flex items-center justify-center rounded-full border border-white/10 bg-white/5 px-6 py-3.5 font-medium text-white transition hover:bg-white/10"
-              >
-                Log In
-              </Link>
-            </div>
-
-            <div className="mt-8 grid gap-3 text-left sm:mt-9 sm:grid-cols-3">
-              {[
-                ["5 products free", "Start with the items you care about most"],
-                ["Price-aware alerts", "Get notified when a product page appears to change price"],
-                ["Cron-ready backend", "Prepared for automatic checks later"]
-              ].map(([title, body]) => (
-                <div key={title} className="glass-panel-soft reveal-up delay-4 rounded-3xl p-4 sm:p-5">
-                  <p className="display-font text-lg font-semibold text-white">{title}</p>
-                  <p className="mt-2 text-sm leading-6 text-slate-300">{body}</p>
+            <div className="glass-panel-soft reveal-soft rounded-[34px] p-6 sm:p-8 lg:p-10">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <p className="text-sm uppercase tracking-[0.22em] text-cyan-300">Why it feels better</p>
+                  <h2 className="display-font mt-3 text-3xl font-bold text-white">
+                    Built for product changes that actually matter
+                  </h2>
                 </div>
-              ))}
+                <div className="hidden rounded-2xl border border-cyan-300/20 bg-cyan-300/10 p-3 sm:flex">
+                  <BellRing className="h-5 w-5 text-cyan-200" />
+                </div>
+              </div>
+
+              <div className="mt-6 space-y-3">
+                {heroSignals.map((signal) => (
+                  <div
+                    key={signal}
+                    className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.05] px-4 py-3"
+                  >
+                    <div className="rounded-full bg-emerald-300/14 p-1.5">
+                      <ShieldCheck className="h-4 w-4 text-emerald-200" />
+                    </div>
+                    <p className="text-sm text-slate-100">{signal}</p>
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-6 rounded-[28px] border border-white/10 bg-[linear-gradient(180deg,rgba(19,33,53,0.9),rgba(14,25,42,0.74))] p-5">
+                <div className="flex items-center justify-between text-sm text-slate-300">
+                  <span>Example watch</span>
+                  <span className="rounded-full bg-emerald-400/15 px-3 py-1 text-xs font-semibold text-emerald-200">
+                    Watching
+                  </span>
+                </div>
+                <p className="display-font mt-4 text-2xl font-bold text-white">
+                  Running shoes product page
+                </p>
+                <p className="mt-2 text-sm leading-6 text-slate-300">
+                  Watchli keeps the latest snapshot, compares fresh checks, and only emails when the product price changes or stock disappears.
+                </p>
+
+                <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                  <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+                    <p className="text-sm text-slate-400">Latest detected price</p>
+                    <p className="display-font mt-2 text-2xl font-semibold text-white">$118.00</p>
+                  </div>
+                  <div className="rounded-2xl border border-cyan-300/18 bg-cyan-300/10 p-4">
+                    <p className="text-sm text-cyan-100">Alert rule</p>
+                    <p className="mt-2 text-sm leading-6 text-white">
+                      Email only when price increases, decreases, or the item goes unavailable.
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -297,7 +365,7 @@ export function LandingPagePro() {
           </div>
         </section>
 
-        <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
+        <section id="features" className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
           <div className="grid gap-4 lg:grid-cols-3">
             {features.map(({ icon: Icon, title, body }, index) => (
               <div
@@ -322,12 +390,11 @@ export function LandingPagePro() {
             <div className="scroll-reveal" data-scroll-reveal>
               <p className="text-sm uppercase tracking-[0.24em] text-cyan-300">Pricing preview</p>
               <h2 className="display-font mt-3 text-3xl font-bold text-white sm:text-4xl">
-                Start with a few products, scale later
+                Start with the free plan, grow into Pro
               </h2>
             </div>
             <p className="max-w-2xl scroll-reveal scroll-delay-1 text-slate-300" data-scroll-reveal>
-              The MVP stays simple, but the structure is ready for more tracked products,
-              faster checks, and Stripe billing when you want to grow.
+              Watchli starts simple on purpose. The paid tier is ready when you want more watched product pages and a cleaner billing workflow.
             </p>
           </div>
 
