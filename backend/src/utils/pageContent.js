@@ -26,10 +26,14 @@ const UNAVAILABLE_PATTERNS = [
 ];
 const POSITIVE_AVAILABILITY_PATTERNS = [
   /\bin\s*stock\b/i,
+  /\binstock\b/i,
   /\bavailable\s*now\b/i,
   /\bready\s*to\s*ship\b/i,
   /\bships\s*now\b/i,
   /\badd\s*to\s*cart\b/i,
+  /\badd\s*to\s*bag\b/i,
+  /\badd\s*bag\b/i,
+  /\bpick\s*up\s*today\b/i,
   /\bbuy\s*now\b/i
 ];
 const NEGATIVE_PRICE_CONTEXT = [
