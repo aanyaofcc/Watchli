@@ -105,9 +105,9 @@ export function LandingPagePro() {
 
   return (
     <div className="tech-shell min-h-screen text-white">
-      <div className="aurora-orb float-gentle left-[-80px] top-20 h-64 w-64 bg-cyan-400/34" />
-      <div className="aurora-orb float-gentle right-[-60px] top-36 h-72 w-72 bg-blue-500/30" />
-      <div className="aurora-orb float-gentle bottom-24 left-1/2 h-56 w-56 -translate-x-1/2 bg-teal-300/18" />
+      <div className="aurora-orb float-gentle left-[-80px] top-20 h-64 w-64 bg-[#b9d8dd]/34" />
+      <div className="aurora-orb float-gentle right-[-60px] top-36 h-72 w-72 bg-[#9fb8d6]/28" />
+      <div className="aurora-orb float-gentle bottom-24 left-1/2 h-56 w-56 -translate-x-1/2 bg-[#c6ddd3]/16" />
 
       <header className="reveal-soft relative z-10 mx-auto flex max-w-7xl flex-col gap-4 px-4 py-4 sm:px-6 md:flex-row md:items-center md:justify-between md:py-5">
         <BrandLogoLink to="/" size="hero" />
@@ -144,7 +144,7 @@ export function LandingPagePro() {
         <section className="mx-auto max-w-7xl px-4 pb-20 pt-6 sm:px-6 sm:pb-24 sm:pt-10">
           <div className="mx-auto max-w-5xl text-center">
             <div className="data-chip reveal-up mx-auto inline-flex max-w-full items-center gap-2 rounded-full px-4 py-2 text-sm text-slate-200">
-              <Sparkles className="h-4 w-4 text-cyan-300" />
+              <Sparkles className="h-4 w-4 text-[#d5ecef]" />
               <span>Professional price monitoring for product pages</span>
             </div>
 
@@ -185,7 +185,7 @@ export function LandingPagePro() {
 
         <section className="mx-auto max-w-7xl px-4 pb-8 sm:px-6">
           <div className="mb-6 max-w-3xl scroll-reveal" data-scroll-reveal>
-            <p className="text-sm uppercase tracking-[0.24em] text-cyan-300">Product preview</p>
+            <p className="text-sm uppercase tracking-[0.24em] text-[#d5ecef]">Product preview</p>
             <h2 className="display-font mt-3 text-3xl font-bold text-white sm:text-4xl">
               See the monitoring dashboard before you sign up
             </h2>
@@ -199,15 +199,15 @@ export function LandingPagePro() {
               <div className="rounded-[24px] border border-white/10 bg-[linear-gradient(180deg,rgba(19,33,53,0.94),rgba(14,25,42,0.8))] p-4 sm:rounded-[28px] sm:p-5">
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <p className="text-xs uppercase tracking-[0.24em] text-cyan-300/80">
+                    <p className="text-xs uppercase tracking-[0.24em] text-[#d5ecef]/80">
                       Live overview
                     </p>
                     <h2 className="display-font mt-2 text-xl font-bold text-white sm:text-2xl">
                       Monitoring dashboard
                     </h2>
                   </div>
-                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-cyan-400/10 ring-1 ring-cyan-300/20 sm:h-12 sm:w-12">
-                    <BellRing className="h-5 w-5 text-cyan-200" />
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#d5ecef]/10 ring-1 ring-[#d5ecef]/20 sm:h-12 sm:w-12">
+                    <BellRing className="h-5 w-5 text-[#e3f3f5]" />
                   </div>
                 </div>
 
@@ -231,8 +231,8 @@ export function LandingPagePro() {
                             <span
                               className={`w-fit rounded-full px-3 py-1 text-xs font-semibold ${
                                 item.status === "Changed"
-                                  ? "bg-amber-400/15 text-amber-200"
-                                  : "bg-emerald-400/15 text-emerald-200"
+                                  ? "bg-[#d6c38f]/18 text-[#fff0c9]"
+                                  : "bg-[#b8d7c7]/18 text-[#e6f6ee]"
                               }`}
                             >
                               {item.status}
@@ -256,8 +256,8 @@ export function LandingPagePro() {
 
                     <div className="glass-panel-soft rounded-3xl p-5">
                       <div className="flex items-start gap-3">
-                        <div className="rounded-2xl bg-cyan-300/10 p-3">
-                          <Zap className="h-5 w-5 text-cyan-200" />
+                        <div className="rounded-2xl bg-[#d5ecef]/10 p-3">
+                          <Zap className="h-5 w-5 text-[#e3f3f5]" />
                         </div>
                         <div>
                           <p className="text-sm text-slate-400">How it works</p>
@@ -276,7 +276,7 @@ export function LandingPagePro() {
 
         <section id="how-it-works" className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
           <div className="mb-6 max-w-2xl scroll-reveal" data-scroll-reveal>
-            <p className="text-sm uppercase tracking-[0.24em] text-cyan-300">How it works</p>
+            <p className="text-sm uppercase tracking-[0.24em] text-[#d5ecef]">How it works</p>
             <h2 className="display-font mt-3 text-3xl font-bold text-white sm:text-4xl">
               Focus on product pages where price changes matter
             </h2>
@@ -289,7 +289,7 @@ export function LandingPagePro() {
                 className={`glass-panel scroll-reveal rounded-[30px] p-5 sm:p-6 scroll-delay-${index + 1}`}
                 data-scroll-reveal
               >
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-300/25 to-blue-400/20 text-lg font-bold text-cyan-100">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-[#d5ecef]/24 to-[#aebfd5]/20 text-lg font-bold text-[#eef8fa]">
                   {index + 1}
                 </div>
                 <h3 className="display-font mt-6 text-2xl font-semibold text-white">
@@ -310,7 +310,7 @@ export function LandingPagePro() {
                 data-scroll-reveal
               >
                 <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/6 ring-1 ring-white/10">
-                  <Icon className="h-5 w-5 text-cyan-200" />
+                  <Icon className="h-5 w-5 text-[#e3f3f5]" />
                 </div>
                 <h3 className="display-font mt-5 text-2xl font-semibold text-white">
                   {title}
@@ -324,7 +324,7 @@ export function LandingPagePro() {
         <section id="pricing" className="mx-auto max-w-7xl px-4 py-8 pb-20 sm:px-6">
           <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <div className="scroll-reveal" data-scroll-reveal>
-              <p className="text-sm uppercase tracking-[0.24em] text-cyan-300">Pricing preview</p>
+              <p className="text-sm uppercase tracking-[0.24em] text-[#d5ecef]">Pricing preview</p>
               <h2 className="display-font mt-3 text-3xl font-bold text-white sm:text-4xl">
                 Start with the free plan, grow into Pro
               </h2>
@@ -340,7 +340,7 @@ export function LandingPagePro() {
                 key={plan.name}
                 className={`scroll-reveal rounded-[32px] p-[1px] scroll-delay-${index + 1} ${
                   index === 0
-                    ? "bg-gradient-to-br from-cyan-300/40 via-white/10 to-white/5"
+                    ? "bg-gradient-to-br from-[#d5ecef]/40 via-white/10 to-white/5"
                     : "bg-gradient-to-br from-white/10 to-white/5"
                 }`}
                 data-scroll-reveal
@@ -357,7 +357,7 @@ export function LandingPagePro() {
                       <p className="mt-3 max-w-md text-slate-300">{plan.description}</p>
                     </div>
                     {index === 0 ? (
-                      <span className="rounded-full bg-cyan-300/12 px-3 py-1 text-xs font-semibold text-cyan-200">
+                      <span className="rounded-full bg-[#d5ecef]/12 px-3 py-1 text-xs font-semibold text-[#e3f3f5]">
                         Best for MVP
                       </span>
                     ) : (
