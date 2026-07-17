@@ -75,11 +75,11 @@ export function LandingPage() {
       <header className="relative z-10 mx-auto flex max-w-7xl items-center justify-between px-6 py-6">
         <BrandLogoLink to="/" size="hero" />
 
-        <div className="hidden items-center gap-6 text-sm text-slate-100 md:flex">
-          <a href="#how-it-works" className="transition hover:text-white">
+        <div className="hidden items-center gap-6 text-sm font-medium text-white md:flex">
+          <a href="#how-it-works" className="transition hover:text-cyan-50">
             How it works
           </a>
-          <a href="#pricing" className="transition hover:text-white">
+          <a href="#pricing" className="transition hover:text-cyan-50">
             Pricing
           </a>
         </div>
@@ -87,7 +87,7 @@ export function LandingPage() {
         <div className="flex items-center gap-3">
           <Link
             to="/login"
-            className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-slate-100 transition hover:bg-white/10"
+            className="rounded-full border border-white/20 bg-white/12 px-4 py-2 text-sm font-medium text-white shadow-[0_8px_18px_rgba(31,45,61,0.16)] transition hover:bg-white/18"
           >
             Log In
           </Link>
@@ -127,7 +127,7 @@ export function LandingPage() {
               </Link>
               <Link
                 to="/login"
-                className="inline-flex items-center justify-center rounded-full border border-white/10 bg-white/5 px-6 py-3.5 font-medium text-white transition hover:bg-white/10"
+                className="inline-flex items-center justify-center rounded-full border border-white/20 bg-white/12 px-6 py-3.5 font-medium text-white shadow-[0_8px_18px_rgba(31,45,61,0.16)] transition hover:bg-white/18"
               >
                 Log In
               </Link>

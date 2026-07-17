@@ -112,22 +112,22 @@ export function LandingPagePro() {
       <header className="reveal-soft relative z-10 mx-auto flex max-w-7xl flex-col gap-4 px-4 py-4 sm:px-6 md:flex-row md:items-center md:justify-between md:py-5">
         <BrandLogoLink to="/" size="hero" />
 
-        <div className="hidden items-center gap-7 text-sm text-slate-300 md:flex">
-          <a href="#how-it-works" className="transition hover:text-white">
-            How it works
-          </a>
-          <a href="#features" className="transition hover:text-white">
-            Features
-          </a>
-          <a href="#pricing" className="transition hover:text-white">
-            Pricing
-          </a>
-        </div>
+          <div className="hidden items-center gap-7 text-sm font-medium text-white md:flex">
+            <a href="#how-it-works" className="transition hover:text-cyan-50">
+              How it works
+            </a>
+            <a href="#features" className="transition hover:text-cyan-50">
+              Features
+            </a>
+            <a href="#pricing" className="transition hover:text-cyan-50">
+              Pricing
+            </a>
+          </div>
 
         <div className="flex w-full flex-col gap-3 sm:flex-row md:w-auto">
           <Link
             to="/login"
-            className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-center text-sm text-slate-100 transition hover:border-white/15 hover:bg-white/10"
+            className="rounded-full border border-white/20 bg-white/12 px-4 py-2 text-center text-sm font-medium text-white shadow-[0_8px_18px_rgba(31,45,61,0.16)] transition hover:border-white/25 hover:bg-white/18"
           >
             Log In
           </Link>
@@ -166,7 +166,7 @@ export function LandingPagePro() {
               </Link>
               <Link
                 to="/login"
-                className="inline-flex items-center justify-center rounded-full border border-white/10 bg-white/5 px-6 py-3.5 font-medium text-white transition hover:border-white/15 hover:bg-white/10"
+                className="inline-flex items-center justify-center rounded-full border border-white/20 bg-white/12 px-6 py-3.5 font-medium text-white shadow-[0_8px_18px_rgba(31,45,61,0.16)] transition hover:border-white/25 hover:bg-white/18"
               >
                 Log In
               </Link>
