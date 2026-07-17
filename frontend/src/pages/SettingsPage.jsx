@@ -254,7 +254,7 @@ export function SettingsPage() {
             <h1 className="display-font mt-3 text-3xl font-semibold text-white">
               Manage your account, profile, and subscription
             </h1>
-            <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-300 sm:text-base">
+            <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-100 sm:text-base">
               Update your profile details, review your plan, manage billing, and keep your
               Watchli account under control from one place.
             </p>
@@ -285,7 +285,7 @@ export function SettingsPage() {
           <div className="glass-panel rounded-[32px] p-5 sm:p-6">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
               <div>
-                <p className="text-sm text-slate-400">Account health</p>
+                <p className="text-sm text-slate-200">Account health</p>
                 <h2 className="display-font mt-2 text-2xl font-semibold text-white">Your Watchli workspace</h2>
               </div>
               <div className="inline-flex items-center gap-2 rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-1.5 text-xs font-medium text-cyan-100">
@@ -296,17 +296,17 @@ export function SettingsPage() {
 
             <div className="mt-5 grid gap-3 sm:grid-cols-3">
               <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
-                <p className="text-sm text-slate-400">Tracked products</p>
+                <p className="text-sm text-slate-200">Tracked products</p>
                 <p className="display-font mt-2 text-2xl font-semibold text-white">{account?.websiteCount || 0}</p>
                 <p className="mt-2 text-sm text-slate-300">Currently active in your dashboard</p>
               </div>
               <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
-                <p className="text-sm text-slate-400">Available slots</p>
+                <p className="text-sm text-slate-200">Available slots</p>
                 <p className="display-font mt-2 text-2xl font-semibold text-white">{account?.websiteSlotsRemaining ?? 5}</p>
                 <p className="mt-2 text-sm text-slate-300">Remaining before you hit your limit</p>
               </div>
               <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
-                <p className="text-sm text-slate-400">Check cadence</p>
+                <p className="text-sm text-slate-200">Check cadence</p>
                 <p className="display-font mt-2 text-2xl font-semibold text-white">{account?.checkFrequency || "Daily"}</p>
                 <p className="mt-2 text-sm text-slate-300">How often Watchli is set to check</p>
               </div>
@@ -315,7 +315,7 @@ export function SettingsPage() {
             <div className="mt-5 rounded-2xl border border-white/10 bg-slate-950/35 p-4">
               <div className="flex items-center justify-between gap-3 text-sm">
                 <span className="text-slate-300">Plan usage</span>
-                <span className="text-slate-400">
+                <span className="text-slate-200">
                   {account?.websiteCount || 0} / {account?.websiteLimit || 5}
                 </span>
               </div>
@@ -334,7 +334,7 @@ export function SettingsPage() {
                 <UserRound className="h-5 w-5 text-cyan-200" />
               </div>
               <div>
-                <p className="text-sm text-slate-400">Profile</p>
+                <p className="text-sm text-slate-200">Profile</p>
                 <h2 className="display-font text-xl font-semibold text-white">Your account details</h2>
               </div>
             </div>
@@ -378,11 +378,11 @@ export function SettingsPage() {
                 <MailCheck className="h-5 w-5 text-slate-100" />
               </div>
               <div>
-                <p className="text-sm text-slate-400">Email alerts</p>
+                <p className="text-sm text-slate-200">Email alerts</p>
                 <h2 className="display-font text-xl font-semibold text-white">Alert rules and preferences</h2>
               </div>
             </div>
-            <p className="mt-4 text-sm leading-6 text-slate-300">
+            <p className="mt-4 text-sm leading-6 text-slate-100/90">
               Watchli sends emails only when a tracked product price increases, decreases, or the product goes out of stock or becomes unavailable.
             </p>
             <div className="mt-5 space-y-3">
@@ -428,7 +428,7 @@ export function SettingsPage() {
                 </label>
               ))}
             </div>
-            <p className="mt-3 text-xs leading-6 text-slate-400">
+            <p className="mt-3 text-xs leading-6 text-slate-200">
               {savingNotifications
                 ? "Saving your alert preferences..."
                 : "These preferences apply to Watchli product alerts across your account."}
@@ -503,21 +503,21 @@ export function SettingsPage() {
 
                 <div className="mt-6 grid gap-3 md:grid-cols-3">
                   <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-4">
-                    <p className="text-sm text-slate-400">Plan limit</p>
+                <p className="text-sm text-slate-200">Plan limit</p>
                     <p className="display-font mt-2 text-2xl font-semibold text-white">
                       {account?.websiteLimit || 5}
                     </p>
                     <p className="mt-2 text-sm text-slate-300">Watched products allowed</p>
                   </div>
                   <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-4">
-                    <p className="text-sm text-slate-400">Current usage</p>
+                <p className="text-sm text-slate-200">Current usage</p>
                     <p className="display-font mt-2 text-2xl font-semibold text-white">
                       {account?.websiteCount || 0}
                     </p>
                     <p className="mt-2 text-sm text-slate-300">Products currently tracked</p>
                   </div>
                   <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-4">
-                    <p className="text-sm text-slate-400">Check cadence</p>
+                <p className="text-sm text-slate-200">Check cadence</p>
                     <p className="display-font mt-2 text-2xl font-semibold text-white">
                       {account?.checkFrequency || "Daily"}
                     </p>
@@ -527,7 +527,7 @@ export function SettingsPage() {
 
                 <div className="mt-6 grid gap-3 xl:grid-cols-2">
                   <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-4">
-                    <p className="text-sm text-slate-400">Billing experience</p>
+                    <p className="text-sm text-slate-200">Billing experience</p>
                     <p className="mt-2 text-sm leading-6 text-slate-200">
                       {account?.premium
                         ? "Your subscription is active and ready to manage through the customer billing portal."
@@ -535,7 +535,7 @@ export function SettingsPage() {
                     </p>
                   </div>
                   <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-4">
-                    <p className="text-sm text-slate-400">Reset email branding</p>
+                    <p className="text-sm text-slate-200">Reset email branding</p>
                     <p className="mt-2 text-sm leading-6 text-slate-200">
                       Firebase sends password reset emails. For the most trustworthy look, customize the email template in Firebase Console and keep your Watchli sender branding consistent.
                     </p>
@@ -543,7 +543,7 @@ export function SettingsPage() {
                 </div>
 
                 <div className="mt-6 rounded-3xl border border-white/10 bg-white/[0.04] p-5">
-                  <p className="text-sm text-slate-400">Recommended next steps</p>
+                  <p className="text-sm text-slate-200">Recommended next steps</p>
                   <div className="mt-3 grid gap-3 xl:grid-cols-2">
                     <div className="rounded-2xl border border-white/10 bg-slate-950/30 p-4">
                       <p className="text-sm font-medium text-white">Improve account trust</p>
@@ -599,7 +599,7 @@ export function SettingsPage() {
                 <ShieldCheck className="h-5 w-5 text-slate-100" />
               </div>
               <div>
-                <p className="text-sm text-slate-400">Security</p>
+                <p className="text-sm text-slate-200">Security</p>
                 <h2 className="display-font text-xl font-semibold text-white">Password and access</h2>
               </div>
             </div>
@@ -615,7 +615,7 @@ export function SettingsPage() {
               {sendingReset ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <Settings className="h-4 w-4" />}
               Send password reset email
             </button>
-            <p className="mt-3 text-xs leading-6 text-slate-400">
+            <p className="mt-3 text-xs leading-6 text-slate-200">
               Reset emails return to your Watchli login page after the password update. If the email does not appear right away, check spam or junk.
             </p>
           </div>
@@ -626,17 +626,17 @@ export function SettingsPage() {
                 <MailCheck className="h-5 w-5 text-slate-100" />
               </div>
               <div>
-                <p className="text-sm text-slate-400">Account overview</p>
+                <p className="text-sm text-slate-200">Account overview</p>
                 <h2 className="display-font text-xl font-semibold text-white">Identity and support</h2>
               </div>
             </div>
             <div className="mt-5 grid gap-3 sm:grid-cols-2">
               <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
-                <p className="text-sm text-slate-400">Account email</p>
+                <p className="text-sm text-slate-200">Account email</p>
                 <p className="mt-2 break-all text-sm text-white">{user?.email || "Not available"}</p>
               </div>
               <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
-                <p className="text-sm text-slate-400">Member since</p>
+                <p className="text-sm text-slate-200">Member since</p>
                 <p className="mt-2 text-sm text-white">{formatDate(user?.metadata?.creationTime)}</p>
               </div>
             </div>
@@ -651,7 +651,7 @@ export function SettingsPage() {
                 <MailCheck className="h-5 w-5 text-cyan-200" />
               </div>
               <div>
-                <p className="text-sm text-slate-400">Alert reminders</p>
+                <p className="text-sm text-slate-200">Alert reminders</p>
                 <h2 className="display-font text-xl font-semibold text-white">How Watchli contacts you</h2>
               </div>
             </div>

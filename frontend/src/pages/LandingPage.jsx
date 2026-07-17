@@ -75,7 +75,7 @@ export function LandingPage() {
       <header className="relative z-10 mx-auto flex max-w-7xl items-center justify-between px-6 py-6">
         <BrandLogoLink to="/" size="hero" />
 
-        <div className="hidden items-center gap-6 text-sm text-slate-300 md:flex">
+        <div className="hidden items-center gap-6 text-sm text-slate-100 md:flex">
           <a href="#how-it-works" className="transition hover:text-white">
             How it works
           </a>
@@ -103,8 +103,8 @@ export function LandingPage() {
       <main className="relative z-10">
         <section className="mx-auto grid max-w-7xl gap-12 px-6 pb-24 pt-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
           <div>
-            <div className="data-chip inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm text-slate-200">
-              <Sparkles className="h-4 w-4 text-cyan-300" />
+            <div className="data-chip inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm text-slate-100">
+              <Sparkles className="h-4 w-4 text-cyan-100" />
               Track product pages and catch price changes faster
             </div>
 
@@ -112,7 +112,7 @@ export function LandingPage() {
               A glossy price watcher for products you do not want to miss.
             </h1>
 
-            <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-300">
+            <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-100">
               Watchli monitors shopping and product pages, looks for likely prices, and
               tells you when the listing changes so you can catch drops, increases, or edits quickly.
             </p>
@@ -141,7 +141,7 @@ export function LandingPage() {
               ].map(([title, body]) => (
                 <div key={title} className="glass-panel-soft rounded-3xl p-4">
                   <p className="display-font text-lg font-semibold text-white">{title}</p>
-                  <p className="mt-2 text-sm leading-6 text-slate-300">{body}</p>
+                  <p className="mt-2 text-sm leading-6 text-slate-100/90">{body}</p>
                 </div>
               ))}
             </div>
@@ -152,7 +152,7 @@ export function LandingPage() {
               <div className="rounded-[28px] border border-white/10 bg-[linear-gradient(180deg,rgba(9,17,30,0.95),rgba(8,15,26,0.82))] p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-xs uppercase tracking-[0.24em] text-cyan-300/80">
+                    <p className="text-xs uppercase tracking-[0.24em] text-cyan-100/90">
                       Live overview
                     </p>
                     <h2 className="display-font mt-2 text-2xl font-bold text-white">
@@ -166,7 +166,7 @@ export function LandingPage() {
 
                 <div className="mt-6 grid gap-4 sm:grid-cols-[1.1fr_0.9fr]">
                   <div className="glass-panel-soft rounded-3xl p-5">
-                    <div className="flex items-center justify-between text-sm text-slate-300">
+                    <div className="flex items-center justify-between text-sm text-slate-100/90">
                       <span>Tracked pages</span>
                       <span className="display-font text-lg font-semibold text-white">3</span>
                     </div>
@@ -178,7 +178,7 @@ export function LandingPage() {
                         >
                           <div className="flex items-center justify-between gap-4">
                             <div className="min-w-0">
-                              <p className="text-sm text-slate-400">{item.label}</p>
+                              <p className="text-sm text-slate-200">{item.label}</p>
                               <p className="truncate text-sm text-white">{item.url}</p>
                             </div>
                             <span
@@ -198,11 +198,11 @@ export function LandingPage() {
 
                   <div className="space-y-4">
                     <div className="glass-panel-soft rounded-3xl p-5">
-                      <p className="text-sm text-slate-400">Latest signal</p>
+                      <p className="text-sm text-slate-200">Latest signal</p>
                       <p className="mt-3 display-font text-2xl font-bold text-white">
                         Sneaker price updated
                       </p>
-                      <p className="mt-3 text-sm leading-6 text-slate-300">
+                      <p className="mt-3 text-sm leading-6 text-slate-100/90">
                         Watchli detected a likely price change on a watched product page and queued an alert.
                       </p>
                     </div>
@@ -213,7 +213,7 @@ export function LandingPage() {
                           <Zap className="h-5 w-5 text-cyan-200" />
                         </div>
                         <div>
-                          <p className="text-sm text-slate-400">How it works</p>
+                          <p className="text-sm text-slate-200">How it works</p>
                           <p className="text-white">Readable text + price signals + change compare</p>
                         </div>
                       </div>
@@ -242,7 +242,7 @@ export function LandingPage() {
                 <h3 className="display-font mt-6 text-2xl font-semibold text-white">
                   {step.title}
                 </h3>
-                <p className="mt-3 text-sm leading-7 text-slate-300">{step.body}</p>
+                <p className="mt-3 text-sm leading-7 text-slate-100/90">{step.body}</p>
               </div>
             ))}
           </div>
@@ -258,7 +258,7 @@ export function LandingPage() {
                 <h3 className="display-font mt-5 text-2xl font-semibold text-white">
                   {title}
                 </h3>
-                <p className="mt-3 text-sm leading-7 text-slate-300">{body}</p>
+                <p className="mt-3 text-sm leading-7 text-slate-100/90">{body}</p>
               </div>
             ))}
           </div>
@@ -272,7 +272,7 @@ export function LandingPage() {
                 Start with a few products, scale later
               </h2>
             </div>
-            <p className="max-w-2xl text-slate-300">
+            <p className="max-w-2xl text-slate-100/90">
               The MVP stays simple, but the structure is ready for more tracked products,
               faster checks, and Stripe billing when you want to grow.
             </p>
@@ -291,13 +291,13 @@ export function LandingPage() {
                 <div className="glass-panel h-full rounded-[31px] p-8">
                   <div className="flex items-start justify-between gap-4">
                     <div>
-                      <p className="text-sm uppercase tracking-[0.2em] text-slate-400">
+                      <p className="text-sm uppercase tracking-[0.2em] text-slate-200">
                         {plan.name}
                       </p>
                       <h3 className="display-font mt-3 text-4xl font-bold text-white">
                         {plan.price}
                       </h3>
-                      <p className="mt-3 max-w-md text-slate-300">{plan.description}</p>
+                      <p className="mt-3 max-w-md text-slate-100/90">{plan.description}</p>
                     </div>
                     {index === 0 ? (
                       <span className="rounded-full bg-cyan-300/12 px-3 py-1 text-xs font-semibold text-cyan-200">
@@ -339,7 +339,7 @@ export function LandingPage() {
           </div>
         </section>
 
-        <footer className="mx-auto max-w-7xl border-t border-white/10 px-6 py-8 text-sm text-slate-400">
+        <footer className="mx-auto max-w-7xl border-t border-white/12 px-6 py-8 text-sm text-slate-200">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <p>
               © 2026 Watchli. Monitor product pages and get alerts when they change. Contact:{" "}

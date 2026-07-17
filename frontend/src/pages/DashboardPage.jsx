@@ -281,11 +281,11 @@ export function DashboardPage() {
               <h1 className="display-font mt-3 break-words text-2xl font-semibold text-white sm:text-3xl">
                 Welcome back{user?.email ? `, ${user.email}` : ""}
               </h1>
-              <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-300 sm:text-base">
+              <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-100 sm:text-base">
                 Track product pages, capture likely price signals, and review changes without digging through noisy page updates.
               </p>
             </div>
-            <div className="data-chip w-fit rounded-full px-4 py-2 text-sm text-slate-300">
+            <div className="data-chip w-fit rounded-full px-4 py-2 text-sm text-slate-100">
               {account.planLabel}
             </div>
           </div>
@@ -299,7 +299,7 @@ export function DashboardPage() {
                   value={url}
                   onChange={(event) => setUrl(event.target.value)}
                   placeholder="https://store.com/product/example"
-                  className="w-full rounded-2xl border border-[#BDDDFC]/16 bg-[#384959]/45 px-4 py-3 text-white outline-none transition placeholder:text-slate-400 focus:border-[#88BDF2]"
+                  className="w-full rounded-2xl border border-[#BDDDFC]/20 bg-[#2d3f51]/68 px-4 py-3 text-white outline-none transition placeholder:text-slate-300 focus:border-[#bdddfc]"
                 />
                 <button
                   type="submit"
@@ -312,7 +312,7 @@ export function DashboardPage() {
             </label>
           </form>
 
-          <div className="mt-4 flex flex-wrap items-center gap-2 text-sm text-slate-300">
+          <div className="mt-4 flex flex-wrap items-center gap-2 text-sm text-slate-100">
             <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5">
               {account.websiteCount} of {account.websiteLimit} slots used
             </span>
@@ -324,21 +324,21 @@ export function DashboardPage() {
             </span>
           </div>
 
-          <div className="mt-4 rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm leading-6 text-slate-300">
+          <div className="mt-4 rounded-2xl border border-white/12 bg-white/[0.08] px-4 py-3 text-sm leading-6 text-slate-100/90">
             Watchli emails alerts only when a tracked product price goes up, goes down, or the item becomes sold out or unavailable.
           </div>
 
           <div className="mt-5 grid gap-3 sm:grid-cols-3">
             <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
-              <p className="text-sm text-slate-400">Tracked pages</p>
+              <p className="text-sm text-slate-200">Tracked pages</p>
               <p className="display-font mt-2 text-2xl font-semibold text-white">{websites.length}</p>
             </div>
             <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
-              <p className="text-sm text-slate-400">Price found</p>
+              <p className="text-sm text-slate-200">Price found</p>
               <p className="display-font mt-2 text-2xl font-semibold text-white">{priceAwareWebsites.length}</p>
             </div>
             <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
-              <p className="text-sm text-slate-400">Need attention</p>
+              <p className="text-sm text-slate-200">Need attention</p>
               <p className="display-font mt-2 text-2xl font-semibold text-white">{changedWebsites.length + errorWebsites.length}</p>
             </div>
           </div>
@@ -361,13 +361,13 @@ export function DashboardPage() {
             <div className="flex items-center gap-3">
               <RefreshCw className={`h-5 w-5 text-[#BDDDFC] ${scheduler?.running ? "animate-spin" : ""}`} />
               <div>
-                <p className="text-sm text-slate-400">Automatic checks</p>
+                <p className="text-sm text-slate-200">Automatic checks</p>
                 <h2 className="display-font text-xl font-semibold text-white">
                   {schedulerStatusLabel}
                 </h2>
               </div>
             </div>
-            <p className="mt-3 text-sm leading-6 text-slate-300">
+            <p className="mt-3 text-sm leading-6 text-slate-100/90">
               {scheduler?.lastError
                 ? `Last scheduler issue: ${scheduler.lastError}`
                 : scheduler?.lastCompletedAt
@@ -377,7 +377,7 @@ export function DashboardPage() {
                   }).format(new Date(scheduler.lastCompletedAt))}`
                   : "Automatic checks will appear here after the first scheduled run."}
             </p>
-            <div className="mt-4 flex flex-wrap gap-2 text-sm text-slate-300">
+            <div className="mt-4 flex flex-wrap gap-2 text-sm text-slate-100">
               <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5">
                 {scheduler?.lastRunTotal || 0} checked
               </span>
@@ -404,13 +404,13 @@ export function DashboardPage() {
             <div className="flex items-center gap-3">
               <Bell className="h-5 w-5 text-[#BDDDFC]" />
               <div>
-                <p className="text-sm text-slate-400">Quick actions</p>
+                <p className="text-sm text-slate-200">Quick actions</p>
                 <h2 className="display-font text-xl font-semibold text-white">
                   Keep the account moving
                 </h2>
               </div>
             </div>
-            <p className="mt-3 text-sm leading-6 text-slate-300">
+            <p className="mt-3 text-sm leading-6 text-slate-100/90">
               {errorWebsites.length > 0
                 ? `${errorWebsites.length} watch${errorWebsites.length === 1 ? "" : "es"} need another check.`
                 : changedWebsites.length > 0
@@ -441,13 +441,13 @@ export function DashboardPage() {
               <div className="flex items-center gap-3">
                 <Crown className="h-5 w-5 text-[#BDDDFC]" />
                 <div>
-                  <p className="text-sm text-slate-400">Plan</p>
+                  <p className="text-sm text-slate-200">Plan</p>
                   <h2 className="display-font text-lg font-semibold text-white">
                     {account.premium ? "Watchli Pro" : "Free plan"}
                   </h2>
                 </div>
               </div>
-              <p className="mt-3 text-sm leading-6 text-slate-300">
+              <p className="mt-3 text-sm leading-6 text-slate-100/90">
                 {account.premium
                   ? "Manage your subscription and keep room for more watched products."
                   : "Upgrade when you want more watched pages and premium plan headroom."}
@@ -483,19 +483,19 @@ export function DashboardPage() {
             <h2 className="display-font text-2xl font-semibold text-white">
               Your watched product pages
             </h2>
-            <p className="mt-1 text-sm text-slate-400">
+            <p className="mt-1 text-sm text-slate-200">
               {websites.length > 0
                 ? `Latest activity: ${mostRecentWebsite?.latestProductTitle || mostRecentWebsite?.url || "Tracked page"}`
                 : "Start by adding a product page you want Watchli to monitor."}
             </p>
           </div>
-          <p className="text-sm text-slate-400">
+          <p className="text-sm text-slate-200">
             {availableWebsites.length} available now
           </p>
         </div>
 
         {loadingWebsites ? (
-          <div className="glass-panel-soft rounded-3xl p-8 text-center text-slate-300">
+          <div className="glass-panel-soft rounded-3xl p-8 text-center text-slate-100">
             <div className="inline-flex items-center gap-2">
               <LoaderCircle className="h-5 w-5 animate-spin text-cyan-300" />
               Loading your watched websites...
@@ -504,11 +504,11 @@ export function DashboardPage() {
         ) : websites.length === 0 ? (
           <div className="glass-panel-soft rounded-3xl border border-dashed p-8 text-center">
             <p className="display-font text-2xl font-semibold text-white">No watched pages yet</p>
-            <p className="mx-auto mt-3 max-w-xl text-sm leading-7 text-slate-300">
+            <p className="mx-auto mt-3 max-w-xl text-sm leading-7 text-slate-100/90">
               Paste in a product page above and Watchli will save the first snapshot, detect likely prices,
               and keep checking for changes you care about.
             </p>
-            <div className="mt-5 flex flex-wrap justify-center gap-2 text-sm text-slate-300">
+            <div className="mt-5 flex flex-wrap justify-center gap-2 text-sm text-slate-100">
               <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5">
                 Add a public product URL
               </span>

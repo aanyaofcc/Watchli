@@ -28,7 +28,7 @@ export function AuthCard({
           Secure access
         </div>
         <h1 className="display-font mt-4 text-3xl font-bold text-white">{title}</h1>
-        <p className="mt-2 text-sm leading-6 text-slate-300">{subtitle}</p>
+        <p className="mt-2 text-sm leading-6 text-slate-200">{subtitle}</p>
       </div>
 
       <form className="space-y-4" onSubmit={onSubmit}>
@@ -40,7 +40,7 @@ export function AuthCard({
             value={formData.email}
             onChange={onChange}
             required
-            className="w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-white outline-none ring-0 transition placeholder:text-slate-500 focus:border-cyan-300"
+            className="w-full rounded-2xl border border-white/12 bg-slate-950/72 px-4 py-3 text-white outline-none ring-0 transition placeholder:text-slate-400 focus:border-cyan-200"
             placeholder="you@example.com"
           />
         </label>
@@ -55,13 +55,13 @@ export function AuthCard({
               onChange={onChange}
               required
               minLength={6}
-              className="w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 pr-12 text-white outline-none transition placeholder:text-slate-500 focus:border-cyan-300"
+              className="w-full rounded-2xl border border-white/12 bg-slate-950/72 px-4 py-3 pr-12 text-white outline-none transition placeholder:text-slate-400 focus:border-cyan-200"
               placeholder="Minimum 6 characters"
             />
             <button
               type="button"
               onClick={() => setShowPassword((current) => !current)}
-              className="absolute inset-y-0 right-0 flex items-center px-4 text-slate-400 transition hover:text-white"
+              className="absolute inset-y-0 right-0 flex items-center px-4 text-slate-200 transition hover:text-white"
               aria-label={showPassword ? "Hide password" : "Show password"}
             >
               {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
@@ -75,7 +75,7 @@ export function AuthCard({
               type="button"
               onClick={onSecondaryAction}
               disabled={secondaryActionDisabled}
-              className="text-sm text-cyan-300 transition hover:text-cyan-200 disabled:cursor-not-allowed disabled:opacity-60"
+              className="text-sm text-cyan-100 transition hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
             >
               {secondaryActionLabel}
             </button>
@@ -103,9 +103,9 @@ export function AuthCard({
         </button>
       </form>
 
-      <p className="mt-6 text-sm text-slate-300">
+      <p className="mt-6 text-sm text-slate-200">
         {footerText}{" "}
-        <Link to={footerLink} className="text-cyan-300 transition hover:text-cyan-200">
+        <Link to={footerLink} className="text-cyan-100 transition hover:text-white">
           {footerLabel}
         </Link>
       </p>
