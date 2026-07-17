@@ -7,9 +7,7 @@
 :root {
   color: #e7eef6;
   background:
-    radial-gradient(circle at top left, rgba(245, 251, 255, 0.34), transparent 26%),
-    radial-gradient(circle at top right, rgba(230, 241, 248, 0.26), transparent 32%),
-    linear-gradient(180deg, #5f7388 0%, #8299af 46%, #c3d2df 100%);
+    linear-gradient(180deg, #6a7f94 0%, #879eb5 48%, #c3d2df 100%);
   font-family: "Manrope", "Segoe UI", sans-serif;
 }
 
@@ -25,10 +23,7 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  background:
-    radial-gradient(circle at top left, rgba(245, 251, 255, 0.34), transparent 26%),
-    radial-gradient(circle at top right, rgba(230, 241, 248, 0.26), transparent 32%),
-    linear-gradient(180deg, #5f7388 0%, #8299af 46%, #c3d2df 100%);
+  background: linear-gradient(180deg, #6a7f94 0%, #879eb5 48%, #c3d2df 100%);
 }
 
 a {
@@ -56,9 +51,7 @@ h4,
 .tech-shell {
   position: relative;
   overflow: hidden;
-  background:
-    linear-gradient(180deg, rgba(95, 115, 136, 0.94), rgba(130, 153, 175, 0.95)),
-    linear-gradient(135deg, rgba(245, 251, 255, 0.18), rgba(226, 239, 247, 0.08));
+  background: linear-gradient(180deg, rgba(106, 127, 148, 0.98), rgba(135, 158, 181, 0.98));
 }
 
 .glass-panel {
@@ -83,7 +76,7 @@ h4,
   position: absolute;
   border-radius: 9999px;
   filter: blur(36px);
-  opacity: 0.28;
+  opacity: 0.14;
   pointer-events: none;
 }
 
