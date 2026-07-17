@@ -304,7 +304,7 @@ export function DashboardPage() {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="glow-button w-full rounded-2xl bg-[#88BDF2] px-5 py-3 font-semibold text-[#1d2a36] transition hover:bg-[#9cc8f4] disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+                  className="glow-button w-full rounded-2xl bg-[#3d6283] px-5 py-3 font-semibold text-white transition hover:bg-[#345571] disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
                 >
                   {submitting ? "Adding..." : "Add Website"}
                 </button>

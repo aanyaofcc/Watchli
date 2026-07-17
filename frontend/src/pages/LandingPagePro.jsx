@@ -133,7 +133,7 @@ export function LandingPagePro() {
           </Link>
           <Link
             to="/signup"
-            className="glow-button rounded-full bg-gradient-to-r from-[#8fb2c3] via-[#7f9fb7] to-[#8cb4a8] px-5 py-2.5 text-center text-sm font-semibold text-slate-950 transition hover:scale-[1.02] hover:from-[#9bbccc] hover:via-[#8aabc2] hover:to-[#96beb2]"
+            className="glow-button rounded-full bg-gradient-to-r from-[#35506b] via-[#3f6385] to-[#4d7596] px-5 py-2.5 text-center text-sm font-semibold text-white transition hover:scale-[1.02] hover:from-[#2f485f] hover:via-[#395a78] hover:to-[#456b8c]"
           >
             Start Watching
           </Link>
@@ -159,7 +159,7 @@ export function LandingPagePro() {
             <div className="reveal-up delay-3 mt-7 flex flex-col gap-3 sm:flex-row sm:justify-center">
               <Link
                 to="/signup"
-                className="glow-button inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#8fb2c3] via-[#7f9fb7] to-[#8cb4a8] px-6 py-3.5 font-semibold text-slate-950 transition hover:scale-[1.02] hover:from-[#9bbccc] hover:via-[#8aabc2] hover:to-[#96beb2]"
+                className="glow-button inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#35506b] via-[#3f6385] to-[#4d7596] px-6 py-3.5 font-semibold text-white transition hover:scale-[1.02] hover:from-[#2f485f] hover:via-[#395a78] hover:to-[#456b8c]"
               >
                 Start Watching
                 <ArrowRight className="h-4 w-4" />

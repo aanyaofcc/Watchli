@@ -263,7 +263,7 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
           type="button"
           onClick={() => onCheck(website.id)}
           disabled={busy}
-          className="glow-button inline-flex items-center justify-center gap-2 rounded-2xl bg-[#88BDF2] px-4 py-3 font-semibold text-[#1d2a36] transition hover:bg-[#9cc8f4] disabled:cursor-not-allowed disabled:opacity-60"
+          className="glow-button inline-flex items-center justify-center gap-2 rounded-2xl bg-[#3d6283] px-4 py-3 font-semibold text-white transition hover:bg-[#345571] disabled:cursor-not-allowed disabled:opacity-60"
         >
           <RefreshCw className="h-4 w-4" />
           {busy ? "Checking..." : "Check Now"}

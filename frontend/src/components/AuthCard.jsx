@@ -97,7 +97,7 @@ export function AuthCard({
         <button
           type="submit"
           disabled={loading}
-          className="glow-button w-full rounded-2xl border border-[#b8d2dd]/25 bg-gradient-to-r from-[#8fb2c3] via-[#7f9fb7] to-[#8cb4a8] px-4 py-3 font-semibold text-slate-950 transition hover:scale-[1.01] hover:from-[#9bbccc] hover:via-[#8aabc2] hover:to-[#96beb2] disabled:cursor-not-allowed disabled:opacity-60"
+          className="glow-button w-full rounded-2xl border border-[#9ebdd6]/24 bg-gradient-to-r from-[#35506b] via-[#3f6385] to-[#4d7596] px-4 py-3 font-semibold text-white transition hover:scale-[1.01] hover:from-[#2f485f] hover:via-[#395a78] hover:to-[#456b8c] disabled:cursor-not-allowed disabled:opacity-60"
         >
           {loading ? "Please wait..." : submitLabel}
         </button>
