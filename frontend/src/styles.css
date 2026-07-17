@@ -5,9 +5,9 @@
 @tailwind utilities;
 
 :root {
-  color: #eef4f8;
+  color: #edf5ff;
   background:
-    linear-gradient(180deg, #e5edf4 0%, #edf3f8 48%, #f5fbff 100%);
+    linear-gradient(180deg, #9db7cf 0%, #b9cee1 46%, #d7e6f2 100%);
   font-family: "Manrope", "Segoe UI", sans-serif;
 }
 
@@ -23,7 +23,7 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  background: linear-gradient(180deg, #e5edf4 0%, #edf3f8 48%, #f5fbff 100%);
+  background: linear-gradient(180deg, #9db7cf 0%, #b9cee1 46%, #d7e6f2 100%);
 }
 
 a {
@@ -52,24 +52,24 @@ h4,
   position: relative;
   overflow: hidden;
   background:
-    linear-gradient(180deg, rgba(229, 237, 244, 0.98), rgba(237, 243, 248, 0.98)),
-    linear-gradient(135deg, rgba(255, 255, 255, 0.45), rgba(229, 237, 244, 0.22));
+    linear-gradient(180deg, rgba(137, 165, 191, 0.96), rgba(173, 196, 216, 0.95)),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.22), rgba(136, 170, 200, 0.12));
 }
 
 .glass-panel {
-  background: rgba(67, 84, 101, 0.88);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(69, 90, 112, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.16);
   box-shadow:
-    0 10px 22px rgba(54, 69, 83, 0.12),
+    0 10px 24px rgba(48, 66, 84, 0.14),
     inset 0 1px 0 rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(6px);
 }
 
 .glass-panel-soft {
-  background: rgba(88, 108, 129, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(92, 117, 142, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.14);
   box-shadow:
-    0 8px 18px rgba(54, 69, 83, 0.08),
+    0 8px 18px rgba(48, 66, 84, 0.1),
     inset 0 1px 0 rgba(255, 255, 255, 0.06);
   backdrop-filter: blur(4px);
 }
@@ -78,19 +78,19 @@ h4,
   position: absolute;
   border-radius: 9999px;
   filter: blur(36px);
-  opacity: 0.05;
+  opacity: 0.09;
   pointer-events: none;
 }
 
 .glow-button {
   box-shadow:
-    0 8px 16px rgba(78, 106, 133, 0.12),
+    0 10px 20px rgba(72, 108, 145, 0.16),
     inset 0 1px 0 rgba(255, 255, 255, 0.32);
 }
 
 .data-chip {
-  background: rgba(67, 84, 101, 0.78);
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(77, 101, 124, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   backdrop-filter: blur(4px);
 }
 
