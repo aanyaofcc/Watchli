@@ -1,8 +1,11 @@
 import { Resend } from "resend";
 import { config } from "../config.js";
+import { getAdmin, getDb } from "../firebase.js";
 
 const resend = config.resendApiKey ? new Resend(config.resendApiKey) : null;
 const dashboardUrl = `${config.appUrl.replace(/\/+$/, "")}/dashboard`;
+const SYSTEM_COLLECTION = "system";
+const STATUS_DOC = "status";
 
 function buildFromAddress() {
   return config.emailFrom.includes("<")
@@ -48,6 +51,28 @@ function escapeHtml(value = "") {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#39;");
+}
+
+async function recordAlertActivity({ type, email, subject }) {
+  try {
+    const db = getDb();
+    const admin = getAdmin();
+
+    await db.collection(SYSTEM_COLLECTION).doc(STATUS_DOC).set(
+      {
+        scheduler: {
+          lastAlertSentAt: new Date().toISOString(),
+          lastAlertType: type,
+          lastAlertEmail: email,
+          lastAlertSubject: subject,
+          updatedAt: admin.firestore.FieldValue.serverTimestamp()
+        }
+      },
+      { merge: true }
+    );
+  } catch (error) {
+    console.error("[watchli-email] Could not save alert activity.", error);
+  }
 }
 
 export async function sendChangeEmail({ email, url, checkedAt, diffSummary }) {
@@ -111,12 +136,14 @@ export async function sendChangeEmail({ email, url, checkedAt, diffSummary }) {
       "You're receiving this because you asked Watchli to monitor this page for changes. If this alert looks unexpected, review the website list in your dashboard."
   });
 
-  return resend.emails.send({
+  const subject = isPriceAlert
+    ? `Watchli alert: ${priceChange.label || "Product update detected"}`
+    : "Watchli detected a page change";
+
+  const result = await resend.emails.send({
     from: buildFromAddress(),
     to: email,
-    subject: isPriceAlert
-      ? `Watchli alert: ${priceChange.label || "Product update detected"}`
-      : "Watchli detected a page change",
+    subject,
     html,
     text: `${isPriceAlert ? "Watchli detected a product price change." : "Watchli detected a page change."}
 
@@ -131,6 +158,14 @@ ${dashboardUrl}
 
 You are receiving this because this page is on your Watchli watchlist.`
   });
+
+  await recordAlertActivity({
+    type: isPriceAlert ? "price_alert" : "change_alert",
+    email,
+    subject
+  });
+
+  return result;
 }
 
 export async function sendTestEmail(email) {
@@ -156,10 +191,12 @@ export async function sendTestEmail(email) {
       "If you requested this test, no further action is needed. If not, you can ignore this message."
   });
 
-  return resend.emails.send({
+  const subject = "Watchli email test";
+
+  const result = await resend.emails.send({
     from: buildFromAddress(),
     to: email,
-    subject: "Watchli email test",
+    subject,
     html,
     text: `Your Watchli alerts are ready.
 
@@ -168,4 +205,12 @@ This is a test email confirming that your notification setup is working.
 View your dashboard:
 ${dashboardUrl}`
   });
+
+  await recordAlertActivity({
+    type: "test_email",
+    email,
+    subject
+  });
+
+  return result;
 }

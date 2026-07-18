@@ -272,7 +272,7 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
           type="button"
           onClick={() => onViewHistory(website)}
           disabled={busy}
-          className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-slate-200 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-60"
+          className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[#d3b697]/12 bg-white/[0.06] px-4 py-3 text-stone-100 transition hover:bg-white/[0.1] disabled:cursor-not-allowed disabled:opacity-60"
         >
           <History className="h-4 w-4" />
           View history
@@ -281,7 +281,7 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
           type="button"
           onClick={() => onDelete(website.id)}
           disabled={busy}
-          className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-slate-200 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-60"
+          className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[#d3b697]/12 bg-white/[0.06] px-4 py-3 text-stone-100 transition hover:bg-white/[0.1] disabled:cursor-not-allowed disabled:opacity-60"
         >
           <Trash2 className="h-4 w-4" />
           Delete

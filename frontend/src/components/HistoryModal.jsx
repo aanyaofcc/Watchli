@@ -13,8 +13,8 @@ function formatDate(value) {
 
 function StatusBadge({ status }) {
   const statusClasses = {
-    initial: "bg-cyan-400/15 text-cyan-200 border-cyan-300/20",
-    changed: "bg-amber-500/15 text-amber-100 border-amber-400/20",
+    initial: "border-[#c9a37f]/18 bg-[#8d5b40]/20 text-amber-50",
+    changed: "border-[#c9a37f]/18 bg-[#8d5b40]/20 text-amber-50",
     unchanged: "bg-emerald-500/15 text-emerald-200 border-emerald-400/20",
     error: "bg-rose-500/15 text-rose-100 border-rose-400/20"
   };
@@ -46,7 +46,7 @@ function SegmentPreview({ segments, fallback }) {
       {segments.map((segment, index) => (
         <span
           key={`${segment.text}-${index}`}
-          className={segment.changed ? "rounded bg-cyan-300/15 px-1 text-cyan-100" : ""}
+          className={segment.changed ? "rounded bg-[#8d5b40]/20 px-1 text-amber-50" : ""}
         >
           {segment.text}{" "}
         </span>
@@ -65,7 +65,7 @@ function PricePills({ prices }) {
       {prices.map((price) => (
         <span
           key={price}
-          className="rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-1 text-xs font-medium text-cyan-100"
+          className="rounded-full border border-[#c9a37f]/18 bg-[#8d5b40]/20 px-3 py-1 text-xs font-medium text-amber-50"
         >
           {price}
         </span>
@@ -80,12 +80,12 @@ function PrimaryPriceBlock({ snapshot }) {
   }
 
   return (
-    <div className="mt-4 flex flex-wrap items-center gap-2 text-sm text-cyan-100">
-      <span className="rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-1 font-medium">
+    <div className="mt-4 flex flex-wrap items-center gap-2 text-sm text-amber-50">
+      <span className="rounded-full border border-[#c9a37f]/18 bg-[#8d5b40]/20 px-3 py-1 font-medium">
         Tracked price: {snapshot.primaryPrice}
       </span>
       {snapshot.primaryPriceSource ? (
-        <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-slate-300">
+        <span className="rounded-full border border-[#d3b697]/12 bg-white/[0.05] px-3 py-1 text-stone-200">
           Source: {snapshot.primaryPriceSource}
         </span>
       ) : null}
@@ -194,13 +194,13 @@ export function HistoryModal({
         <button
           type="button"
           onClick={onClose}
-          className="absolute right-5 top-5 z-10 rounded-full border border-white/10 bg-white/5 p-2 text-slate-200 transition hover:bg-white/10"
+          className="absolute right-5 top-5 z-10 rounded-full border border-[#d3b697]/12 bg-white/[0.06] p-2 text-stone-100 transition hover:bg-white/[0.1]"
         >
           <X className="h-4 w-4" />
         </button>
 
         <div className="border-b border-white/10 px-4 py-5 sm:px-6 md:px-8">
-          <p className="text-sm uppercase tracking-[0.18em] text-[#BDDDFC]">Watch details</p>
+          <p className="text-sm uppercase tracking-[0.18em] text-amber-200">Watch details</p>
           <h2 className="display-font mt-3 break-all text-2xl font-semibold text-white sm:text-3xl">
             {website.latestProductTitle || website.url}
           </h2>
@@ -238,7 +238,7 @@ export function HistoryModal({
           {loading ? (
             <div className="flex items-center justify-center py-16 text-slate-300">
               <div className="inline-flex items-center gap-2">
-                <LoaderCircle className="h-5 w-5 animate-spin text-[#88BDF2]" />
+                <LoaderCircle className="h-5 w-5 animate-spin text-amber-200" />
                 Loading history...
               </div>
             </div>
@@ -266,8 +266,8 @@ export function HistoryModal({
                       </p>
                     </div>
                     {snapshot.diffSummary?.priceChange?.changed ? (
-                  <div className="text-right">
-                          <p className="text-sm font-medium text-[#BDDDFC]">
+                      <div className="text-right">
+                        <p className="text-sm font-medium text-amber-100">
                           Price alert: {getPriceSummary(snapshot.diffSummary.priceChange)}
                         </p>
                         <p className="mt-1 text-xs text-slate-400">
@@ -285,8 +285,8 @@ export function HistoryModal({
                   {snapshot.status === "changed" && snapshot.diffSummary ? (
                     <div className="mt-5 space-y-4">
                       {snapshot.diffSummary?.priceChange?.changed ? (
-                        <div className="rounded-3xl border border-[#88BDF2]/18 bg-[#88BDF2]/10 p-4">
-                          <p className="text-xs uppercase tracking-[0.16em] text-[#BDDDFC]">
+                        <div className="rounded-3xl border border-[#c9a37f]/18 bg-[#8d5b40]/20 p-4">
+                          <p className="text-xs uppercase tracking-[0.16em] text-amber-50">
                             {getPriceDirectionLabel(snapshot.diffSummary.priceChange)}
                           </p>
                           <div className="mt-3 grid gap-3 sm:grid-cols-2">
@@ -296,8 +296,8 @@ export function HistoryModal({
                                 {snapshot.diffSummary.priceChange.previousPrice || "Not available"}
                               </p>
                             </div>
-                            <div className="rounded-2xl border border-[#88BDF2]/18 bg-[#88BDF2]/10 p-3">
-                              <p className="text-xs uppercase tracking-[0.14em] text-[#BDDDFC]">Current price</p>
+                            <div className="rounded-2xl border border-[#c9a37f]/18 bg-[#8d5b40]/18 p-3">
+                              <p className="text-xs uppercase tracking-[0.14em] text-amber-50">Current price</p>
                               <p className="mt-1 text-lg font-semibold text-white">
                                 {snapshot.diffSummary.priceChange.currentPrice || "Not available"}
                               </p>

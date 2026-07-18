@@ -270,6 +270,20 @@ export function DashboardPage() {
       : scheduler?.lastError
         ? "Needs attention"
         : "Waiting";
+  const lastAlertLabel = scheduler?.lastAlertSentAt
+    ? new Intl.DateTimeFormat("en-US", {
+        dateStyle: "medium",
+        timeStyle: "short"
+      }).format(new Date(scheduler.lastAlertSentAt))
+    : "No alerts sent yet";
+  const lastAlertTypeLabel =
+    scheduler?.lastAlertType === "price_alert"
+      ? "Price alert sent"
+      : scheduler?.lastAlertType === "change_alert"
+        ? "Change alert sent"
+        : scheduler?.lastAlertType === "test_email"
+          ? "Test email sent"
+          : "Alert activity";
 
   return (
     <div className="space-y-5 sm:space-y-6">
@@ -397,6 +411,29 @@ export function DashboardPage() {
                   }).format(new Date(scheduler.nextRunAt))}
                 </span>
               ) : null}
+              {scheduler?.lastDurationMs ? (
+                <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5">
+                  {(scheduler.lastDurationMs / 1000).toFixed(1)}s runtime
+                </span>
+              ) : null}
+            </div>
+            <div className="mt-4 rounded-2xl border border-[#d3b697]/12 bg-white/[0.04] p-4">
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div>
+                  <p className="text-sm text-stone-300">{lastAlertTypeLabel}</p>
+                  <p className="mt-1 text-base font-semibold text-white">{lastAlertLabel}</p>
+                </div>
+                {scheduler?.lastAlertEmail ? (
+                  <span className="rounded-full border border-[#d3b697]/14 bg-white/[0.05] px-3 py-1.5 text-xs text-stone-200">
+                    {scheduler.lastAlertEmail}
+                  </span>
+                ) : null}
+              </div>
+              <p className="mt-3 text-sm leading-6 text-stone-300">
+                {scheduler?.lastAlertSubject
+                  ? `Latest subject: ${scheduler.lastAlertSubject}`
+                  : "When Watchli sends a real product alert or a test email, the latest activity will show here."}
+              </p>
             </div>
           </div>
 
@@ -422,7 +459,7 @@ export function DashboardPage() {
                 type="button"
                 onClick={handleSendTestEmail}
                 disabled={sendingEmail}
-                className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-[#BDDDFC]/16 bg-white/[0.05] px-4 py-3 text-sm text-slate-100 transition hover:bg-white/[0.09] disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-[#d3b697]/12 bg-white/[0.06] px-4 py-3 text-sm text-stone-100 transition hover:bg-white/[0.1] disabled:cursor-not-allowed disabled:opacity-60"
               >
                 <Mail className="h-4 w-4" />
                 {sendingEmail ? "Sending..." : "Send Test Email"}
@@ -431,7 +468,7 @@ export function DashboardPage() {
                 type="button"
                 onClick={() => void loadWebsites({ showRefreshing: true })}
                 disabled={refreshingWebsites || loadingWebsites}
-                className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-[#BDDDFC]/16 bg-white/[0.05] px-4 py-3 text-sm text-slate-100 transition hover:bg-white/[0.09] disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-[#d3b697]/12 bg-white/[0.06] px-4 py-3 text-sm text-stone-100 transition hover:bg-white/[0.1] disabled:cursor-not-allowed disabled:opacity-60"
               >
                 <RefreshCw className={`h-4 w-4 ${refreshingWebsites ? "animate-spin" : ""}`} />
                 Refresh dashboard
@@ -466,7 +503,7 @@ export function DashboardPage() {
                     type="button"
                     onClick={() => void handleManageBilling()}
                     disabled={openingBilling}
-                    className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-[#BDDDFC]/16 bg-white/[0.05] px-4 py-3 text-sm text-slate-100 transition hover:bg-white/[0.09] disabled:cursor-not-allowed disabled:opacity-60"
+                    className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-[#d3b697]/12 bg-white/[0.06] px-4 py-3 text-sm text-stone-100 transition hover:bg-white/[0.1] disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     {openingBilling ? "Opening..." : "Manage Billing"}
                   </button>
