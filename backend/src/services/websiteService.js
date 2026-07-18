@@ -656,7 +656,11 @@ export async function listWebsiteSnapshots({ websiteId, userId, limit = 10 }) {
     throw new Error("You do not have access to this website.");
   }
 
-  const snapshot = await websiteRef.collection(SNAPSHOTS_COLLECTION).limit(limit).get();
+  const snapshot = await websiteRef
+    .collection(SNAPSHOTS_COLLECTION)
+    .orderBy("checkedAt", "desc")
+    .limit(limit)
+    .get();
 
   return snapshot.docs
     .map((document) => serializeSnapshot(document.id, document.data()))

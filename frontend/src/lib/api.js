@@ -14,10 +14,30 @@ async function request(path, options = {}) {
     body: options.body ? JSON.stringify(options.body) : undefined
   });
 
-  const payload = await response.json();
+  const contentType = response.headers.get("content-type") || "";
+  const raw = await response.text();
+  let payload = {};
+
+  if (raw) {
+    if (contentType.includes("application/json")) {
+      try {
+        payload = JSON.parse(raw);
+      } catch (_error) {
+        payload = {};
+      }
+    } else {
+      try {
+        payload = JSON.parse(raw);
+      } catch (_error) {
+        payload = {
+          error: raw.slice(0, 180)
+        };
+      }
+    }
+  }
 
   if (!response.ok) {
-    throw new Error(payload.error || "Request failed");
+    throw new Error(payload.error || response.statusText || "Request failed");
   }
 
   return payload;

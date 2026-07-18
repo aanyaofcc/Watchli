@@ -226,6 +226,24 @@ function findPriceLikeMatch(text) {
   return text.match(PRICE_REGEX)?.[0] || "";
 }
 
+function findNumericOnlyPrice(text, { maxWordCount = 4 } = {}) {
+  const normalized = normalizeWhitespace(text || "");
+
+  if (!normalized) {
+    return "";
+  }
+
+  if (normalized.includes("%")) {
+    return "";
+  }
+
+  if (normalized.split(/\s+/).length > maxWordCount) {
+    return "";
+  }
+
+  return parseNumericPrice(normalized) !== null ? normalized : "";
+}
+
 function readAttributePrice(element, $) {
   const attributeKeys = [
     "data-price",
@@ -275,11 +293,7 @@ function collectJsonLdCandidates(node, candidates, inheritedTitle = "") {
   }
 
   const productTitle = firstText(node.name || inheritedTitle);
-  const offers = [
-    ...toArray(node.offers),
-    ...toArray(node.priceSpecification),
-    ...(node.aggregateRating ? [] : [])
-  ];
+  const offers = [...toArray(node.offers), ...toArray(node.priceSpecification)];
   const directCandidate = makePriceCandidate({
     value: node.price ?? node.lowPrice,
     currency: node.priceCurrency,
@@ -376,15 +390,21 @@ function collectScriptJsonCandidates($, candidates, productTitle) {
       /"sale[_-]?price"\s*:\s*"?(?<price>\d+(?:\.\d{2})?)"?/gi,
       /"current[_-]?price"\s*:\s*"?(?<price>\d+(?:\.\d{2})?)"?/gi,
       /"final[_-]?price"\s*:\s*"?(?<price>\d+(?:\.\d{2})?)"?/gi,
+      /"list[_-]?price"\s*:\s*"?(?<price>\d+(?:\.\d{2})?)"?/gi,
       /"price"\s*:\s*"?(?<price>\d+(?:\.\d{2})?)"?/gi,
       /"amount"\s*:\s*"?(?<price>\d+(?:\.\d{2})?)"?/gi
     ];
 
     patterns.forEach((pattern, patternIndex) => {
-      const matches = compact.match(pattern) || [];
+      const matches = [...compact.matchAll(pattern)];
 
-      matches.slice(0, 4).forEach((match) => {
-        const priceValue = match.match(pattern)?.groups?.price;
+      matches.slice(0, 6).forEach((match) => {
+        const priceValue = match.groups?.price;
+
+        if (!priceValue) {
+          return;
+        }
+
         const currency =
           compact.match(/"priceCurrency"\s*:\s*"(?<currency>[A-Z]{3})"/i)?.groups?.currency ||
           compact.match(/"currency"\s*:\s*"(?<currency>[A-Z]{3})"/i)?.groups?.currency ||
@@ -392,9 +412,9 @@ function collectScriptJsonCandidates($, candidates, productTitle) {
         const candidate = makePriceCandidate({
           value: priceValue,
           currency,
-          raw: priceValue || "",
+          raw: priceValue,
           source: "script json",
-          score: scoreContext(match, 88 + Math.max(0, 4 - patternIndex)),
+          score: scoreContext(match[0], 88 + Math.max(0, 4 - patternIndex)),
           productTitle
         });
 
@@ -435,7 +455,11 @@ function collectSelectorCandidates($, candidates) {
   selectors.forEach(([selector, baseScore]) => {
     $(selector).slice(0, 20).each((_, element) => {
       const text = readText($, element);
-      const match = findPriceLikeMatch(text) || readAttributePrice(element, $) || "";
+      const match =
+        findPriceLikeMatch(text) ||
+        readAttributePrice(element, $) ||
+        findNumericOnlyPrice(text) ||
+        "";
       const className = ($(element).attr("class") || "").toLowerCase();
       const id = ($(element).attr("id") || "").toLowerCase();
       const dataTestId = ($(element).attr("data-testid") || "").toLowerCase();
@@ -506,7 +530,11 @@ function collectTitleProximityCandidates($, candidates, productTitle) {
 
     element.find("*").addBack().slice(0, 40).each((_, node) => {
       const text = readText($, node);
-      const match = findPriceLikeMatch(text) || readAttributePrice(node, $) || "";
+      const match =
+        findPriceLikeMatch(text) ||
+        readAttributePrice(node, $) ||
+        findNumericOnlyPrice(text, { maxWordCount: 3 }) ||
+        "";
 
       if (!match) {
         return;
@@ -547,7 +575,7 @@ function collectVisibleTextCandidates($, candidates, productTitle) {
         return;
       }
 
-      const match = findPriceLikeMatch(text);
+      const match = findPriceLikeMatch(text) || findNumericOnlyPrice(text, { maxWordCount: 2 });
 
       if (!match) {
         return;
@@ -687,7 +715,8 @@ export function extractProductSignals(html) {
   const candidates = [];
   const productTitle =
     firstText($("meta[property='og:title']").attr("content")) ||
-    firstText($("title").text());
+    firstText($("title").text()) ||
+    firstText($("h1").first().text());
   const pageText = extractPageText(html);
   const markupAvailability = collectAvailabilityFromMarkup($);
   const availability = detectAvailability(`${markupAvailability} ${pageText}`);
