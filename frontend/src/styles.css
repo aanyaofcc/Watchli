@@ -143,6 +143,29 @@ h4,
   background: rgba(255, 251, 246, 0.88);
 }
 
+.auth-input {
+  border: 1px solid rgba(211, 182, 151, 0.18);
+  background: rgba(246, 238, 229, 0.94);
+  color: #2f2722;
+  caret-color: #7b4d36;
+}
+
+.auth-input::placeholder {
+  color: #8b7765;
+}
+
+.auth-input:focus {
+  border-color: #b5835a;
+}
+
+.auth-input:-webkit-autofill,
+.auth-input:-webkit-autofill:hover,
+.auth-input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #2f2722;
+  -webkit-box-shadow: 0 0 0 1000px rgba(246, 238, 229, 0.96) inset;
+  transition: background-color 9999s ease-in-out 0s;
+}
+
 .reveal-up {
   animation: revealUp 0.82s cubic-bezier(0.2, 0.8, 0.2, 1) both;
   will-change: transform, opacity;

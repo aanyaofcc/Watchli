@@ -40,7 +40,7 @@ export function AuthCard({
             value={formData.email}
             onChange={onChange}
             required
-            className="w-full rounded-2xl border border-[#d3b697]/12 bg-[#171311]/76 px-4 py-3 text-white outline-none ring-0 transition placeholder:text-stone-500 focus:border-[#d6b091]"
+            className="auth-input w-full rounded-2xl px-4 py-3 outline-none ring-0 transition"
             placeholder="you@example.com"
           />
         </label>
@@ -55,13 +55,13 @@ export function AuthCard({
               onChange={onChange}
               required
               minLength={6}
-              className="w-full rounded-2xl border border-[#d3b697]/12 bg-[#171311]/76 px-4 py-3 pr-12 text-white outline-none transition placeholder:text-stone-500 focus:border-[#d6b091]"
+              className="auth-input w-full rounded-2xl px-4 py-3 pr-12 outline-none transition"
               placeholder="Minimum 6 characters"
             />
             <button
               type="button"
               onClick={() => setShowPassword((current) => !current)}
-              className="absolute inset-y-0 right-0 flex items-center px-4 text-slate-200 transition hover:text-white"
+              className="absolute inset-y-0 right-0 flex items-center px-4 text-stone-500 transition hover:text-stone-700"
               aria-label={showPassword ? "Hide password" : "Show password"}
             >
               {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
@@ -103,7 +103,7 @@ export function AuthCard({
         </button>
       </form>
 
-      <p className="mt-6 text-sm text-slate-200">
+      <p className="mt-6 text-sm text-stone-200">
         {footerText}{" "}
         <Link to={footerLink} className="text-amber-100 transition hover:text-white">
           {footerLabel}
