@@ -77,14 +77,14 @@ export function UpgradePage() {
     <div className="space-y-8">
       <div className="flex items-center justify-between gap-4">
         <div>
-          <p className="text-sm uppercase tracking-[0.18em] text-cyan-300">Upgrade</p>
+          <p className="text-sm uppercase tracking-[0.18em] text-amber-200">Upgrade</p>
           <h1 className="display-font mt-3 text-4xl font-semibold text-white">
             Watchli Pro
           </h1>
         </div>
         <Link
           to="/dashboard"
-          className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-slate-200 transition hover:bg-white/10"
+          className="inline-flex items-center gap-2 rounded-full border border-[#d3b697]/12 bg-white/[0.06] px-4 py-2 text-sm text-stone-100 transition hover:bg-white/[0.1]"
         >
           <ArrowLeft className="h-4 w-4" />
           Back to dashboard
@@ -134,13 +134,13 @@ export function UpgradePage() {
 
       <section className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
         <div className="glass-panel rounded-[32px] p-8">
-          <div className="inline-flex items-center gap-2 rounded-full border border-cyan-300/20 bg-cyan-300/10 px-4 py-2 text-sm text-cyan-100">
+          <div className="inline-flex items-center gap-2 rounded-full border border-[#c9a37f]/18 bg-[#8d5b40]/22 px-4 py-2 text-sm text-amber-50">
             <Sparkles className="h-4 w-4" />
             Built for shoppers and price tracking power users
           </div>
 
           <h2 className="display-font mt-6 text-5xl font-semibold text-white">
-            $7<span className="text-2xl text-slate-400">/month</span>
+            $7<span className="text-2xl text-stone-400">/month</span>
           </h2>
           <p className="mt-4 max-w-2xl text-lg leading-8 text-slate-300">
             Pro gives Watchli a real paid tier: more watched products, billing support,
@@ -168,7 +168,7 @@ export function UpgradePage() {
                 key={perk}
                 className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-slate-200"
               >
-                <Check className="h-4 w-4 text-cyan-300" />
+                <Check className="h-4 w-4 text-amber-200" />
                 {perk}
               </div>
             ))}
@@ -179,7 +179,7 @@ export function UpgradePage() {
               type="button"
               onClick={handleUpgrade}
               disabled={checkingOut || loading || account?.premium}
-              className="glow-button inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#35506b] via-[#3f6385] to-[#4d7596] px-5 py-3 font-semibold text-white transition hover:scale-[1.01] hover:from-[#2f485f] hover:via-[#395a78] hover:to-[#456b8c] disabled:cursor-not-allowed disabled:opacity-60"
+              className="glow-button inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#7b4d36] via-[#8d5b40] to-[#a06b49] px-5 py-3 font-semibold text-white transition hover:scale-[1.01] hover:from-[#6e4531] hover:via-[#7f543d] hover:to-[#936345] disabled:cursor-not-allowed disabled:opacity-60"
             >
               {checkingOut ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <Crown className="h-4 w-4" />}
               {account?.premium ? "You are on Pro" : checkingOut ? "Opening checkout..." : "Upgrade to Pro"}
@@ -189,7 +189,7 @@ export function UpgradePage() {
               type="button"
               onClick={handleManageBilling}
               disabled={openingPortal || loading}
-              className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-5 py-3 text-slate-200 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-60"
+              className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[#d3b697]/12 bg-white/[0.06] px-5 py-3 text-stone-100 transition hover:bg-white/[0.1] disabled:cursor-not-allowed disabled:opacity-60"
             >
               {openingPortal ? <LoaderCircle className="h-4 w-4 animate-spin" /> : null}
               Manage Billing
@@ -200,7 +200,7 @@ export function UpgradePage() {
         <div className="glass-panel-soft rounded-[32px] p-8">
           {loading ? (
             <div className="inline-flex items-center gap-2 text-slate-300">
-              <LoaderCircle className="h-5 w-5 animate-spin text-cyan-300" />
+              <LoaderCircle className="h-5 w-5 animate-spin text-amber-200" />
               Loading billing details...
             </div>
           ) : (

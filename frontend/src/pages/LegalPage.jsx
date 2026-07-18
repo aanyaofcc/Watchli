@@ -4,15 +4,15 @@ import { BrandLogoLink } from "../components/BrandLogo";
 function LegalShell({ eyebrow, title, lastUpdated, children }) {
   return (
     <div className="tech-shell min-h-screen text-slate-100">
-      <div className="aurora-orb left-[-80px] top-20 h-64 w-64 bg-cyan-400/20" />
-      <div className="aurora-orb right-[-70px] top-32 h-72 w-72 bg-blue-500/20" />
+      <div className="aurora-orb left-[-80px] top-20 h-64 w-64 bg-[#b98d63]/20" />
+      <div className="aurora-orb right-[-70px] top-32 h-72 w-72 bg-[#8f6a4c]/18" />
 
-      <header className="relative z-10 border-b border-white/10 bg-slate-950/55 backdrop-blur-xl">
+      <header className="relative z-10 border-b border-[#d3b697]/12 bg-[#221d19]/76 backdrop-blur-xl">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-5">
           <BrandLogoLink to="/" size="legal" />
           <Link
             to="/"
-            className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-slate-200 transition hover:bg-white/10"
+            className="rounded-full border border-[#d3b697]/12 bg-white/[0.06] px-4 py-2 text-sm text-stone-100 transition hover:bg-white/[0.1]"
           >
             Back to home
           </Link>
@@ -21,7 +21,7 @@ function LegalShell({ eyebrow, title, lastUpdated, children }) {
 
       <main className="relative z-10 mx-auto max-w-5xl px-6 py-12">
         <div className="glass-panel rounded-[32px] p-8 md:p-10">
-          <p className="text-sm uppercase tracking-[0.18em] text-cyan-300">{eyebrow}</p>
+          <p className="text-sm uppercase tracking-[0.18em] text-amber-200">{eyebrow}</p>
           <h1 className="display-font mt-4 text-4xl font-semibold text-white md:text-5xl">
             {title}
           </h1>
@@ -100,7 +100,7 @@ export function PrivacyPolicyPage() {
       <Section title="Contact">
         <p>
           If you have questions about this Privacy Policy, contact Watchli at{" "}
-          <a className="text-cyan-200 hover:text-cyan-100" href="mailto:contactwatchli@gmail.com">
+          <a className="text-amber-100 hover:text-white" href="mailto:contactwatchli@gmail.com">
             contactwatchli@gmail.com
           </a>
           .
@@ -186,7 +186,7 @@ export function TermsOfServicePage() {
       <Section title="Contact">
         <p>
           Questions about these terms can be sent to{" "}
-          <a className="text-cyan-200 hover:text-cyan-100" href="mailto:contactwatchli@gmail.com">
+          <a className="text-amber-100 hover:text-white" href="mailto:contactwatchli@gmail.com">
             contactwatchli@gmail.com
           </a>
           .

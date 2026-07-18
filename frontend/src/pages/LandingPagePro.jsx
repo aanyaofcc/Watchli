@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
   ArrowRight,
@@ -16,33 +15,33 @@ import { SiteFooterDense } from "../components/SiteFooterDense";
 const steps = [
   {
     title: "Paste a product URL",
-    body: "Drop in a product or shopping page you want to keep an eye on."
+    body: "Add the product page you care about and let Watchli keep the tab open for you."
   },
   {
     title: "We watch the listing",
-    body: "Watchli saves the page text, looks for likely prices, and compares future checks."
+    body: "Watchli captures the readable page content, looks for likely prices, and compares future checks."
   },
   {
-    title: "Get a price-change alert",
-    body: "If the product price or key listing details change, you get an email instead of checking manually."
+    title: "Get a useful alert",
+    body: "You only hear from Watchli when a product price moves or the listing becomes unavailable."
   }
 ];
 
 const features = [
   {
     icon: Globe,
-    title: "Price-focused tracking",
-    body: "Built for shopping and product pages where the biggest question is usually simple: did the price change?"
+    title: "Made for product pages",
+    body: "Built around shopping pages where price changes, stock changes, and listing edits matter most."
   },
   {
     icon: LayoutDashboard,
-    title: "Snapshot-first dashboard",
-    body: "See what changed, the latest detected price, and the before-and-after text from one clean control panel."
+    title: "Clean watch dashboard",
+    body: "Review tracked pages, price signals, and status updates from one simple control surface."
   },
   {
     icon: ShieldCheck,
-    title: "Simple, trustworthy stack",
-    body: "Firebase auth, Firestore storage, and dependable email alerts without unnecessary moving parts."
+    title: "Trustworthy by design",
+    body: "Firebase, Firestore, email alerts, and a straightforward monitoring flow without extra clutter."
   }
 ];
 
@@ -50,14 +49,14 @@ const plans = [
   {
     name: "Free",
     price: "$0",
-    description: "For shoppers and small teams tracking a few important product pages.",
-    features: ["5 product pages", "Email alerts", "Daily checks"]
+    description: "A simple starting point for shoppers tracking a handful of product pages.",
+    features: ["5 watched product pages", "Email alerts", "Daily checks"]
   },
   {
     name: "Pro",
     price: "$7/mo",
-    description: "For heavier price monitoring with more tracked items and the first paid Watchli tier.",
-    features: ["100 product pages", "Billing portal", "Premium roadmap access"]
+    description: "For people tracking more products and wanting room to scale with Watchli.",
+    features: ["100 watched pages", "Billing portal", "Premium feature path"]
   }
 ];
 
@@ -68,72 +67,43 @@ const dashboardPreview = [
 ];
 
 const heroMetrics = [
-  { label: "Free to start", value: "5 pages" },
-  { label: "Built for products", value: "Price-focused" },
-  { label: "Alert channel", value: "Email" }
+  { label: "Free plan", value: "5 pages" },
+  { label: "Core signal", value: "Price alerts" },
+  { label: "Check style", value: "Daily by default" }
 ];
 
 export function LandingPagePro() {
-  useEffect(() => {
-    const elements = document.querySelectorAll("[data-scroll-reveal]");
-
-    if (!elements.length) {
-      return undefined;
-    }
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) {
-            return;
-          }
-
-          entry.target.classList.add("is-visible");
-          observer.unobserve(entry.target);
-        });
-      },
-      {
-        threshold: 0.16,
-        rootMargin: "0px 0px -8% 0px"
-      }
-    );
-
-    elements.forEach((element) => observer.observe(element));
-
-    return () => observer.disconnect();
-  }, []);
-
   return (
-    <div className="tech-shell min-h-screen text-white">
-      <div className="aurora-orb float-gentle left-[-80px] top-20 h-64 w-64 bg-[#b9d8dd]/34" />
-      <div className="aurora-orb float-gentle right-[-60px] top-36 h-72 w-72 bg-[#9fb8d6]/28" />
-      <div className="aurora-orb float-gentle bottom-24 left-1/2 h-56 w-56 -translate-x-1/2 bg-[#c6ddd3]/16" />
+    <div className="homepage-shell min-h-screen text-slate-900">
+      <div className="aurora-orb left-[-80px] top-20 h-64 w-64 bg-[#d2b08e]/34" />
+      <div className="aurora-orb right-[-60px] top-36 h-72 w-72 bg-[#c49776]/28" />
+      <div className="aurora-orb bottom-24 left-1/2 h-56 w-56 -translate-x-1/2 bg-[#b5835a]/18" />
 
-      <header className="reveal-soft relative z-10 mx-auto flex max-w-7xl flex-col gap-4 px-4 py-4 sm:px-6 md:flex-row md:items-center md:justify-between md:py-5">
+      <header className="relative z-10 mx-auto flex max-w-7xl flex-col gap-4 px-4 py-4 sm:px-6 md:flex-row md:items-center md:justify-between md:py-5">
         <BrandLogoLink to="/" size="hero" />
 
-          <div className="hidden items-center gap-7 text-sm font-medium text-white md:flex">
-            <a href="#how-it-works" className="transition hover:text-cyan-50">
-              How it works
-            </a>
-            <a href="#features" className="transition hover:text-cyan-50">
-              Features
-            </a>
-            <a href="#pricing" className="transition hover:text-cyan-50">
-              Pricing
-            </a>
-          </div>
+        <div className="hidden items-center gap-7 text-sm font-medium text-slate-700 md:flex">
+          <a href="#how-it-works" className="transition hover:text-slate-950">
+            How it works
+          </a>
+          <a href="#features" className="transition hover:text-slate-950">
+            Features
+          </a>
+          <a href="#pricing" className="transition hover:text-slate-950">
+            Pricing
+          </a>
+        </div>
 
         <div className="flex w-full flex-col gap-3 sm:flex-row md:w-auto">
           <Link
             to="/login"
-            className="rounded-full border border-white/20 bg-white/12 px-4 py-2 text-center text-sm font-medium text-white shadow-[0_8px_18px_rgba(31,45,61,0.16)] transition hover:border-white/25 hover:bg-white/18"
+            className="homepage-button-secondary rounded-full px-4 py-2 text-center text-sm font-medium transition"
           >
             Log In
           </Link>
           <Link
             to="/signup"
-            className="glow-button rounded-full bg-gradient-to-r from-[#35506b] via-[#3f6385] to-[#4d7596] px-5 py-2.5 text-center text-sm font-semibold text-white transition hover:scale-[1.02] hover:from-[#2f485f] hover:via-[#395a78] hover:to-[#456b8c]"
+            className="glow-button rounded-full bg-gradient-to-r from-[#7b4d36] via-[#8d5b40] to-[#a06b49] px-5 py-2.5 text-center text-sm font-semibold text-white transition hover:scale-[1.02] hover:from-[#6e4531] hover:via-[#7f543d] hover:to-[#936345]"
           >
             Start Watching
           </Link>
@@ -141,32 +111,32 @@ export function LandingPagePro() {
       </header>
 
       <main className="relative z-10">
-        <section className="mx-auto max-w-7xl px-4 pb-20 pt-6 sm:px-6 sm:pb-24 sm:pt-10">
+        <section className="mx-auto max-w-7xl px-4 pb-18 pt-6 sm:px-6 sm:pb-24 sm:pt-10">
           <div className="mx-auto max-w-5xl text-center">
-            <div className="data-chip reveal-up mx-auto inline-flex max-w-full items-center gap-2 rounded-full px-4 py-2 text-sm text-slate-200">
-              <Sparkles className="h-4 w-4 text-[#d5ecef]" />
-              <span>Professional price monitoring for product pages</span>
+            <div className="homepage-chip mx-auto inline-flex max-w-full items-center gap-2 rounded-full px-4 py-2 text-sm text-slate-700">
+              <Sparkles className="h-4 w-4 text-[#8d5b40]" />
+              <span>Product monitoring that feels calm, clear, and useful</span>
             </div>
 
-            <h1 className="display-font reveal-up delay-1 mt-6 max-w-5xl text-4xl font-bold leading-[0.95] tracking-tight text-white sm:text-6xl lg:text-7xl">
-              Monitor product pages and catch the price moves that matter.
+            <h1 className="display-font mt-6 max-w-5xl text-4xl font-bold leading-[0.95] tracking-tight text-slate-900 sm:text-6xl lg:text-7xl">
+              Catch product price changes before you miss the moment.
             </h1>
 
-            <p className="reveal-up delay-2 mx-auto mt-5 max-w-3xl text-base leading-7 text-slate-300 sm:text-lg sm:leading-8">
+            <p className="mx-auto mt-5 max-w-3xl text-base leading-7 text-slate-700 sm:text-lg sm:leading-8">
               Watchli tracks shopping pages, detects likely prices, and emails you when a product price rises, drops, or goes out of stock so you do not have to keep checking manually.
             </p>
 
-            <div className="reveal-up delay-3 mt-7 flex flex-col gap-3 sm:flex-row sm:justify-center">
+            <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:justify-center">
               <Link
                 to="/signup"
-                className="glow-button inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#35506b] via-[#3f6385] to-[#4d7596] px-6 py-3.5 font-semibold text-white transition hover:scale-[1.02] hover:from-[#2f485f] hover:via-[#395a78] hover:to-[#456b8c]"
+                className="glow-button inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#7b4d36] via-[#8d5b40] to-[#a06b49] px-6 py-3.5 font-semibold text-white transition hover:scale-[1.02] hover:from-[#6e4531] hover:via-[#7f543d] hover:to-[#936345]"
               >
                 Start Watching
                 <ArrowRight className="h-4 w-4" />
               </Link>
               <Link
                 to="/login"
-                className="inline-flex items-center justify-center rounded-full border border-white/20 bg-white/12 px-6 py-3.5 font-medium text-white shadow-[0_8px_18px_rgba(31,45,61,0.16)] transition hover:border-white/25 hover:bg-white/18"
+                className="homepage-button-secondary inline-flex items-center justify-center rounded-full px-6 py-3.5 font-medium transition"
               >
                 Log In
               </Link>
@@ -174,9 +144,9 @@ export function LandingPagePro() {
 
             <div className="mt-8 grid gap-3 text-left sm:mt-9 sm:grid-cols-3">
               {heroMetrics.map((item) => (
-                <div key={item.label} className="glass-panel-soft reveal-up delay-4 rounded-3xl p-4 sm:p-5">
-                  <p className="text-sm text-slate-400">{item.label}</p>
-                  <p className="display-font mt-2 text-xl font-semibold text-white">{item.value}</p>
+                <div key={item.label} className="homepage-panel-soft rounded-3xl p-4 sm:p-5">
+                  <p className="text-sm text-slate-500">{item.label}</p>
+                  <p className="display-font mt-2 text-xl font-semibold text-slate-900">{item.value}</p>
                 </div>
               ))}
             </div>
@@ -184,36 +154,36 @@ export function LandingPagePro() {
         </section>
 
         <section className="mx-auto max-w-7xl px-4 pb-8 sm:px-6">
-          <div className="mb-6 max-w-3xl scroll-reveal" data-scroll-reveal>
-            <p className="text-sm uppercase tracking-[0.24em] text-[#d5ecef]">Product preview</p>
-            <h2 className="display-font mt-3 text-3xl font-bold text-white sm:text-4xl">
+          <div className="mb-6 max-w-3xl">
+            <p className="text-sm uppercase tracking-[0.24em] text-[#8d5b40]">Product preview</p>
+            <h2 className="display-font mt-3 text-3xl font-bold text-slate-900 sm:text-4xl">
               See the monitoring dashboard before you sign up
             </h2>
-            <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-300 sm:text-base">
-              Watchli highlights tracked pages, recent alerts, and the latest status in one calm dashboard built for product monitoring.
+            <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-700 sm:text-base">
+              Watchli highlights tracked pages, recent alerts, and the latest status in one dashboard designed for product monitoring.
             </p>
           </div>
 
-          <div className="relative scroll-reveal scroll-delay-1" data-scroll-reveal>
-            <div className="glass-panel rounded-[28px] p-3 sm:rounded-[34px] sm:p-4">
-              <div className="rounded-[24px] border border-white/10 bg-[linear-gradient(180deg,rgba(19,33,53,0.94),rgba(14,25,42,0.8))] p-4 sm:rounded-[28px] sm:p-5">
+          <div className="relative">
+            <div className="homepage-panel rounded-[28px] p-3 sm:rounded-[34px] sm:p-4">
+              <div className="rounded-[24px] border border-[#3b312a]/10 bg-[linear-gradient(180deg,rgba(41,34,29,0.96),rgba(29,24,21,0.92))] p-4 sm:rounded-[28px] sm:p-5">
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <p className="text-xs uppercase tracking-[0.24em] text-[#d5ecef]/80">
+                    <p className="text-xs uppercase tracking-[0.24em] text-[#dcc1a5]/80">
                       Live overview
                     </p>
                     <h2 className="display-font mt-2 text-xl font-bold text-white sm:text-2xl">
                       Monitoring dashboard
                     </h2>
                   </div>
-                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#d5ecef]/10 ring-1 ring-[#d5ecef]/20 sm:h-12 sm:w-12">
-                    <BellRing className="h-5 w-5 text-[#e3f3f5]" />
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#b5835a]/12 ring-1 ring-[#d5b08d]/18 sm:h-12 sm:w-12">
+                    <BellRing className="h-5 w-5 text-[#f0dfcf]" />
                   </div>
                 </div>
 
                 <div className="mt-5 grid gap-3 lg:grid-cols-[1.15fr_0.85fr]">
                   <div className="glass-panel-soft rounded-3xl p-4 sm:p-5">
-                    <div className="flex items-center justify-between text-sm text-slate-300">
+                    <div className="flex items-center justify-between text-sm text-stone-200">
                       <span>Tracked pages</span>
                       <span className="display-font text-lg font-semibold text-white">3</span>
                     </div>
@@ -221,18 +191,18 @@ export function LandingPagePro() {
                       {dashboardPreview.map((item) => (
                         <div
                           key={item.url}
-                          className="rounded-2xl border border-white/10 bg-white/[0.04] p-4"
+                          className="rounded-2xl border border-white/8 bg-white/[0.03] p-4"
                         >
                           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                             <div className="min-w-0">
-                              <p className="text-sm text-slate-400">{item.label}</p>
+                              <p className="text-sm text-stone-400">{item.label}</p>
                               <p className="break-all text-sm text-white sm:truncate">{item.url}</p>
                             </div>
                             <span
                               className={`w-fit rounded-full px-3 py-1 text-xs font-semibold ${
                                 item.status === "Changed"
-                                  ? "bg-[#d6c38f]/18 text-[#fff0c9]"
-                                  : "bg-[#b8d7c7]/18 text-[#e6f6ee]"
+                                  ? "bg-[#c8a27b]/18 text-[#f4d9bf]"
+                                  : "bg-[#8f9a7a]/18 text-[#edf1e4]"
                               }`}
                             >
                               {item.status}
@@ -245,22 +215,22 @@ export function LandingPagePro() {
 
                   <div className="space-y-3">
                     <div className="glass-panel-soft rounded-3xl p-5">
-                      <p className="text-sm text-slate-400">Latest signal</p>
+                      <p className="text-sm text-stone-400">Latest signal</p>
                       <p className="mt-3 display-font text-xl font-bold text-white sm:text-2xl">
                         Sneaker price updated
                       </p>
-                      <p className="mt-3 text-sm leading-6 text-slate-300">
+                      <p className="mt-3 text-sm leading-6 text-stone-300">
                         Watchli detected a likely price change on a watched product page and queued an alert.
                       </p>
                     </div>
 
                     <div className="glass-panel-soft rounded-3xl p-5">
                       <div className="flex items-start gap-3">
-                        <div className="rounded-2xl bg-[#d5ecef]/10 p-3">
-                          <Zap className="h-5 w-5 text-[#e3f3f5]" />
+                        <div className="rounded-2xl bg-[#b5835a]/12 p-3">
+                          <Zap className="h-5 w-5 text-[#f0dfcf]" />
                         </div>
                         <div>
-                          <p className="text-sm text-slate-400">How it works</p>
+                          <p className="text-sm text-stone-400">How it works</p>
                           <p className="text-sm leading-6 text-white sm:text-base">
                             Readable text + price signals + change compare
                           </p>
@@ -275,27 +245,23 @@ export function LandingPagePro() {
         </section>
 
         <section id="how-it-works" className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
-          <div className="mb-6 max-w-2xl scroll-reveal" data-scroll-reveal>
-            <p className="text-sm uppercase tracking-[0.24em] text-[#d5ecef]">How it works</p>
-            <h2 className="display-font mt-3 text-3xl font-bold text-white sm:text-4xl">
+          <div className="mb-6 max-w-2xl">
+            <p className="text-sm uppercase tracking-[0.24em] text-[#8d5b40]">How it works</p>
+            <h2 className="display-font mt-3 text-3xl font-bold text-slate-900 sm:text-4xl">
               Focus on product pages where price changes matter
             </h2>
           </div>
 
           <div className="grid gap-4 lg:grid-cols-3">
             {steps.map((step, index) => (
-              <div
-                key={step.title}
-                className={`glass-panel scroll-reveal rounded-[30px] p-5 sm:p-6 scroll-delay-${index + 1}`}
-                data-scroll-reveal
-              >
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-[#d5ecef]/24 to-[#aebfd5]/20 text-lg font-bold text-[#eef8fa]">
+              <div key={step.title} className="homepage-panel rounded-[30px] p-5 sm:p-6">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-[#e0c2a7] to-[#d6b091] text-lg font-bold text-[#5c3b2a]">
                   {index + 1}
                 </div>
-                <h3 className="display-font mt-6 text-2xl font-semibold text-white">
+                <h3 className="display-font mt-6 text-2xl font-semibold text-slate-900">
                   {step.title}
                 </h3>
-                <p className="mt-3 text-sm leading-7 text-slate-300">{step.body}</p>
+                <p className="mt-3 text-sm leading-7 text-slate-700">{step.body}</p>
               </div>
             ))}
           </div>
@@ -303,19 +269,15 @@ export function LandingPagePro() {
 
         <section id="features" className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
           <div className="grid gap-4 lg:grid-cols-3">
-            {features.map(({ icon: Icon, title, body }, index) => (
-              <div
-                key={title}
-                className={`glass-panel-soft scroll-reveal rounded-[30px] p-5 sm:p-6 scroll-delay-${index + 1}`}
-                data-scroll-reveal
-              >
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/6 ring-1 ring-white/10">
-                  <Icon className="h-5 w-5 text-[#e3f3f5]" />
+            {features.map(({ icon: Icon, title, body }) => (
+              <div key={title} className="homepage-panel-soft rounded-[30px] p-5 sm:p-6">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#ead7c7] ring-1 ring-[#dcc0a6]">
+                  <Icon className="h-5 w-5 text-[#7b4d36]" />
                 </div>
-                <h3 className="display-font mt-5 text-2xl font-semibold text-white">
+                <h3 className="display-font mt-5 text-2xl font-semibold text-slate-900">
                   {title}
                 </h3>
-                <p className="mt-3 text-sm leading-7 text-slate-300">{body}</p>
+                <p className="mt-3 text-sm leading-7 text-slate-700">{body}</p>
               </div>
             ))}
           </div>
@@ -323,13 +285,13 @@ export function LandingPagePro() {
 
         <section id="pricing" className="mx-auto max-w-7xl px-4 py-8 pb-20 sm:px-6">
           <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-            <div className="scroll-reveal" data-scroll-reveal>
-              <p className="text-sm uppercase tracking-[0.24em] text-[#d5ecef]">Pricing preview</p>
-              <h2 className="display-font mt-3 text-3xl font-bold text-white sm:text-4xl">
+            <div>
+              <p className="text-sm uppercase tracking-[0.24em] text-[#8d5b40]">Pricing preview</p>
+              <h2 className="display-font mt-3 text-3xl font-bold text-slate-900 sm:text-4xl">
                 Start with the free plan, grow into Pro
               </h2>
             </div>
-            <p className="max-w-2xl scroll-reveal scroll-delay-1 text-slate-300" data-scroll-reveal>
+            <p className="max-w-2xl text-slate-700">
               Watchli starts simple on purpose. The paid tier is ready when you want more watched product pages and a cleaner billing workflow.
             </p>
           </div>
@@ -338,30 +300,29 @@ export function LandingPagePro() {
             {plans.map((plan, index) => (
               <div
                 key={plan.name}
-                className={`scroll-reveal rounded-[32px] p-[1px] scroll-delay-${index + 1} ${
+                className={`rounded-[32px] p-[1px] ${
                   index === 0
-                    ? "bg-gradient-to-br from-[#d5ecef]/40 via-white/10 to-white/5"
-                    : "bg-gradient-to-br from-white/10 to-white/5"
+                    ? "bg-gradient-to-br from-[#d7b08d]/40 via-white/30 to-white/14"
+                    : "bg-gradient-to-br from-[#b99674]/22 via-white/24 to-white/12"
                 }`}
-                data-scroll-reveal
               >
-                <div className="glass-panel reveal-up h-full rounded-[31px] p-6 sm:p-8">
+                <div className="homepage-panel h-full rounded-[31px] p-6 sm:p-8">
                   <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                     <div>
-                      <p className="text-sm uppercase tracking-[0.2em] text-slate-400">
+                      <p className="text-sm uppercase tracking-[0.2em] text-slate-500">
                         {plan.name}
                       </p>
-                      <h3 className="display-font mt-3 text-3xl font-bold text-white sm:text-4xl">
+                      <h3 className="display-font mt-3 text-3xl font-bold text-slate-900 sm:text-4xl">
                         {plan.price}
                       </h3>
-                      <p className="mt-3 max-w-md text-slate-300">{plan.description}</p>
+                      <p className="mt-3 max-w-md text-slate-700">{plan.description}</p>
                     </div>
                     {index === 0 ? (
-                      <span className="rounded-full bg-[#d5ecef]/12 px-3 py-1 text-xs font-semibold text-[#e3f3f5]">
+                      <span className="rounded-full bg-[#ead7c7] px-3 py-1 text-xs font-semibold text-[#6b4430]">
                         Best for MVP
                       </span>
                     ) : (
-                      <span className="rounded-full bg-amber-300/12 px-3 py-1 text-xs font-semibold text-amber-100">
+                      <span className="rounded-full bg-[#f1e3d2] px-3 py-1 text-xs font-semibold text-[#7b4d36]">
                         New
                       </span>
                     )}
@@ -371,7 +332,7 @@ export function LandingPagePro() {
                     {plan.features.map((feature) => (
                       <div
                         key={feature}
-                        className="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-slate-200"
+                        className="rounded-2xl border border-[#d6c0ae]/50 bg-white/52 px-4 py-3 text-sm text-slate-700"
                       >
                         {feature}
                       </div>
@@ -382,8 +343,8 @@ export function LandingPagePro() {
                       to={index === 0 ? "/signup" : "/upgrade"}
                       className={`inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-medium transition ${
                         index === 0
-                          ? "border border-white/10 bg-white/5 text-white hover:bg-white/10"
-                          : "bg-gradient-to-r from-[#8fb2c3] via-[#7f9fb7] to-[#8cb4a8] text-slate-950 hover:scale-[1.01] hover:from-[#9bbccc] hover:via-[#8aabc2] hover:to-[#96beb2]"
+                          ? "homepage-button-secondary"
+                          : "glow-button bg-gradient-to-r from-[#7b4d36] via-[#8d5b40] to-[#a06b49] text-white hover:scale-[1.01] hover:from-[#6e4531] hover:via-[#7f543d] hover:to-[#936345]"
                       }`}
                     >
                       {index === 0 ? "Start Free" : "See Pro"}

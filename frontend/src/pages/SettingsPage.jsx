@@ -250,7 +250,7 @@ export function SettingsPage() {
       <section className="glass-panel rounded-[32px] p-6 sm:p-8">
         <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
           <div>
-            <p className="text-sm uppercase tracking-[0.18em] text-cyan-300">Settings</p>
+            <p className="text-sm uppercase tracking-[0.18em] text-amber-200">Settings</p>
             <h1 className="display-font mt-3 text-3xl font-semibold text-white">
               Manage your account, profile, and subscription
             </h1>
@@ -288,7 +288,7 @@ export function SettingsPage() {
                 <p className="text-sm text-slate-200">Account health</p>
                 <h2 className="display-font mt-2 text-2xl font-semibold text-white">Your Watchli workspace</h2>
               </div>
-              <div className="inline-flex items-center gap-2 rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-1.5 text-xs font-medium text-cyan-100">
+              <div className="inline-flex items-center gap-2 rounded-full border border-[#c9a37f]/18 bg-[#8d5b40]/20 px-3 py-1.5 text-xs font-medium text-amber-50">
                 <Sparkles className="h-4 w-4" />
                 {account?.planLabel || "Free plan"}
               </div>
@@ -330,8 +330,8 @@ export function SettingsPage() {
 
           <div className="glass-panel-soft rounded-3xl p-5 sm:p-6">
             <div className="flex items-center gap-3">
-              <div className="rounded-2xl bg-cyan-300/10 p-3">
-                <UserRound className="h-5 w-5 text-cyan-200" />
+              <div className="rounded-2xl bg-[#8d5b40]/20 p-3">
+                <UserRound className="h-5 w-5 text-amber-100" />
               </div>
               <div>
                 <p className="text-sm text-slate-200">Profile</p>
@@ -347,7 +347,7 @@ export function SettingsPage() {
                   value={displayName}
                   onChange={(event) => setDisplayName(event.target.value)}
                   placeholder="Your name"
-                  className="w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-white outline-none transition placeholder:text-slate-500 focus:border-cyan-300"
+                  className="w-full rounded-2xl border border-[#d3b697]/12 bg-[#171311]/76 px-4 py-3 text-white outline-none transition placeholder:text-stone-500 focus:border-[#d6b091]"
                 />
               </label>
 
@@ -364,7 +364,7 @@ export function SettingsPage() {
               <button
                 type="submit"
                 disabled={savingProfile}
-                className="glow-button inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#35506b] via-[#3f6385] to-[#4d7596] px-5 py-3 font-semibold text-white transition hover:scale-[1.01] hover:from-[#2f485f] hover:via-[#395a78] hover:to-[#456b8c] disabled:cursor-not-allowed disabled:opacity-60"
+                className="glow-button inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#7b4d36] via-[#8d5b40] to-[#a06b49] px-5 py-3 font-semibold text-white transition hover:scale-[1.01] hover:from-[#6e4531] hover:via-[#7f543d] hover:to-[#936345] disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {savingProfile ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}
                 Save profile
@@ -423,7 +423,7 @@ export function SettingsPage() {
                     onChange={(event) => {
                       void handleNotificationToggle(item.key, event.target.checked);
                     }}
-                    className="mt-1 h-5 w-5 rounded border-white/20 bg-slate-950/40 text-cyan-300 focus:ring-cyan-300"
+                    className="mt-1 h-5 w-5 rounded border-white/20 bg-slate-950/40 text-amber-200 focus:ring-amber-200"
                   />
                 </label>
               ))}
@@ -480,14 +480,14 @@ export function SettingsPage() {
 
         <div className="space-y-4">
           <div className="glass-panel rounded-[32px] p-6 sm:p-8">
-            <div className="inline-flex items-center gap-2 rounded-full border border-cyan-300/20 bg-cyan-300/10 px-4 py-2 text-sm text-cyan-100">
+            <div className="inline-flex items-center gap-2 rounded-full border border-[#c9a37f]/18 bg-[#8d5b40]/20 px-4 py-2 text-sm text-amber-50">
               <Sparkles className="h-4 w-4" />
               Subscription and plan
             </div>
 
             {loading ? (
               <div className="mt-6 inline-flex items-center gap-2 text-slate-300">
-                <LoaderCircle className="h-5 w-5 animate-spin text-cyan-300" />
+                <LoaderCircle className="h-5 w-5 animate-spin text-amber-200" />
                 Loading account details...
               </div>
             ) : (
@@ -576,7 +576,7 @@ export function SettingsPage() {
                       type="button"
                       onClick={handleUpgrade}
                       disabled={checkingOut}
-                      className="glow-button inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#35506b] via-[#3f6385] to-[#4d7596] px-5 py-3 font-semibold text-white transition hover:scale-[1.01] hover:from-[#2f485f] hover:via-[#395a78] hover:to-[#456b8c] disabled:cursor-not-allowed disabled:opacity-60"
+                      className="glow-button inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#7b4d36] via-[#8d5b40] to-[#a06b49] px-5 py-3 font-semibold text-white transition hover:scale-[1.01] hover:from-[#6e4531] hover:via-[#7f543d] hover:to-[#936345] disabled:cursor-not-allowed disabled:opacity-60"
                     >
                       {checkingOut ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <CreditCard className="h-4 w-4" />}
                       Upgrade to Pro
@@ -647,8 +647,8 @@ export function SettingsPage() {
 
           <div className="glass-panel-soft rounded-3xl p-5 sm:p-6">
             <div className="flex items-center gap-3">
-              <div className="rounded-2xl bg-cyan-300/10 p-3">
-                <MailCheck className="h-5 w-5 text-cyan-200" />
+              <div className="rounded-2xl bg-[#8d5b40]/20 p-3">
+                <MailCheck className="h-5 w-5 text-amber-100" />
               </div>
               <div>
                 <p className="text-sm text-slate-200">Alert reminders</p>

@@ -109,7 +109,7 @@ function formatDollarAmount(value) {
 export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy }) {
   const statusClasses = {
     Watching: "bg-white/[0.04] text-slate-200 border-white/10",
-    Changed: "bg-[#88BDF2]/14 text-[#BDDDFC] border-[#88BDF2]/18",
+    Changed: "bg-[#8d5b40]/18 text-amber-50 border-[#c9a37f]/18",
     Error: "bg-rose-500/15 text-rose-100 border-rose-400/20"
   };
   const availability = website.latestAvailabilityStatus || website.lastDiffSummary?.currentAvailabilityStatus || "unknown";
@@ -125,7 +125,7 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
     availability === "sold_out" || availability === "unavailable"
       ? "border-amber-300/18 bg-amber-300/10 text-amber-100"
       : availability === "available"
-        ? "border-[#88BDF2]/18 bg-[#88BDF2]/10 text-[#BDDDFC]"
+        ? "border-[#c9a37f]/18 bg-[#8d5b40]/20 text-amber-50"
         : "border-white/10 bg-white/[0.04] text-slate-300";
 
   return (
@@ -165,7 +165,7 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
         <div className="space-y-3">
           <div className="flex flex-wrap gap-2.5">
         {website.latestPrimaryPrice ? (
-          <div className="inline-flex items-center gap-2 rounded-full border border-[#88BDF2]/18 bg-[#88BDF2]/10 px-3 py-1.5 text-sm text-[#BDDDFC]">
+          <div className="inline-flex items-center gap-2 rounded-full border border-[#c9a37f]/18 bg-[#8d5b40]/20 px-3 py-1.5 text-sm text-amber-50">
             <DollarSign className="h-4 w-4" />
             {website.latestPrimaryPrice}
           </div>
@@ -182,7 +182,7 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
             Check failed
           </div>
         ) : website.lastDiffSummary?.priceChange?.changed ? (
-          <div className="inline-flex items-center gap-2 rounded-full border border-[#88BDF2]/18 bg-[#88BDF2]/10 px-3 py-1.5 text-sm text-[#BDDDFC]">
+          <div className="inline-flex items-center gap-2 rounded-full border border-[#c9a37f]/18 bg-[#8d5b40]/20 px-3 py-1.5 text-sm text-amber-50">
             <DollarSign className="h-4 w-4" />
             {getPriceSummary(website.lastDiffSummary.priceChange)}
           </div>
@@ -219,8 +219,8 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
         </div>
 
         {website.lastDiffSummary?.priceChange?.changed ? (
-          <div className="rounded-3xl border border-[#88BDF2]/18 bg-[#88BDF2]/10 p-4">
-            <p className="text-xs uppercase tracking-[0.16em] text-[#BDDDFC]">Latest price change</p>
+          <div className="rounded-3xl border border-[#c9a37f]/18 bg-[#8d5b40]/20 p-4">
+            <p className="text-xs uppercase tracking-[0.16em] text-amber-50">Latest price change</p>
             <p className="mt-2 text-base font-semibold text-white">{getPriceDirectionLabel(website.lastDiffSummary.priceChange)}</p>
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
               <div className="rounded-2xl border border-white/10 bg-slate-950/30 p-3">
@@ -229,8 +229,8 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
                   {website.lastDiffSummary.priceChange.previousPrice || "Not available"}
                 </p>
               </div>
-              <div className="rounded-2xl border border-[#88BDF2]/18 bg-[#88BDF2]/10 p-3">
-                <p className="text-xs uppercase tracking-[0.14em] text-[#BDDDFC]">Current price</p>
+              <div className="rounded-2xl border border-[#c9a37f]/18 bg-[#8d5b40]/20 p-3">
+                <p className="text-xs uppercase tracking-[0.14em] text-amber-50">Current price</p>
                 <p className="mt-1 break-words text-lg font-semibold text-white">
                   {website.lastDiffSummary.priceChange.currentPrice || "Not available"}
                 </p>
@@ -290,7 +290,7 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
 
       {website.latestSnapshotText ? (
         <div className="mt-4 inline-flex items-center gap-2 text-sm text-slate-400">
-          <TextSearch className="h-4 w-4 text-[#BDDDFC]" />
+          <TextSearch className="h-4 w-4 text-amber-200" />
           Snapshot history is available from the history view.
         </div>
       ) : null}

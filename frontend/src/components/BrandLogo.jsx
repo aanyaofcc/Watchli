@@ -70,17 +70,32 @@ function brandText(size) {
 
 export function BrandLogoLink({ to = "/", size = "hero", subtitle, className = "" }) {
   const details = brandText(size);
+  const isLightSurface = size === "hero";
 
   return (
     <Link to={to} className={`flex items-center gap-3 ${className}`.trim()}>
-      <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-0 shadow-soft backdrop-blur-sm">
+      <div
+        className={`rounded-2xl p-0 shadow-soft backdrop-blur-sm ${
+          isLightSurface
+            ? "border border-[#c9a37f]/16 bg-white/60"
+            : "border border-white/10 bg-white/[0.04]"
+        }`}
+      >
         <BrandLogo size={size} />
       </div>
       <div>
-        <p className={`display-font font-bold tracking-wide text-white ${details.title}`.trim()}>
+        <p
+          className={`display-font font-bold tracking-wide ${
+            isLightSurface ? "text-slate-900" : "text-white"
+          } ${details.title}`.trim()}
+        >
           Watchli
         </p>
-        <p className="text-xs uppercase tracking-[0.22em] text-slate-400">
+        <p
+          className={`text-xs uppercase tracking-[0.22em] ${
+            isLightSurface ? "text-slate-500" : "text-slate-400"
+          }`}
+        >
           {subtitle || details.subtitle}
         </p>
       </div>

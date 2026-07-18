@@ -34,17 +34,17 @@ export function SignupPage() {
 
   return (
     <div className="tech-shell flex min-h-screen items-center justify-center px-6 py-10">
-      <div className="aurora-orb left-[-70px] top-16 h-72 w-72 bg-teal-300/20" />
-      <div className="aurora-orb right-[-60px] bottom-20 h-72 w-72 bg-blue-500/20" />
+      <div className="aurora-orb left-[-70px] top-16 h-72 w-72 bg-[#c79b74]/18" />
+      <div className="aurora-orb right-[-60px] bottom-20 h-72 w-72 bg-[#8f6a4c]/18" />
       <div className="relative z-10 w-full max-w-6xl">
         <div className="grid gap-10 lg:grid-cols-[0.95fr_0.7fr] lg:items-center">
         <div className="hidden lg:block">
           <div className="max-w-xl">
-            <p className="text-sm uppercase tracking-[0.24em] text-cyan-300">Start watching</p>
+            <p className="text-sm uppercase tracking-[0.24em] text-amber-200">Start watching</p>
             <h1 className="display-font mt-4 text-6xl font-bold leading-[0.95] text-white">
               Turn scattered tabs into a single signal feed.
             </h1>
-            <p className="mt-6 text-lg leading-8 text-slate-300">
+            <p className="mt-6 text-lg leading-8 text-stone-300">
               Create your account and begin tracking the pages that matter to your
               workflow, your product research, or your team’s competitive awareness.
             </p>
@@ -64,7 +64,7 @@ export function SignupPage() {
             loading={loading}
           />
         </div>
-        <div className="mt-8 flex items-center justify-center gap-4 text-sm text-slate-400">
+        <div className="mt-8 flex items-center justify-center gap-4 text-sm text-stone-400">
           <Link to="/privacy" className="transition hover:text-white">
             Privacy Policy
           </Link>
