@@ -6,6 +6,7 @@ import {
   checkWebsite,
   createWebsiteForUser,
   deleteWebsiteForUser,
+  inspectWebsiteUrl,
   listWebsiteSnapshots,
   listUserWebsites,
   syncUserWebsites
@@ -73,6 +74,12 @@ const createWebsiteRateLimit = createRateLimiter({
   keyPrefix: "create-website",
   windowMs: 60 * 1000,
   maxRequests: 15
+});
+
+const inspectWebsiteRateLimit = createRateLimiter({
+  keyPrefix: "inspect-website",
+  windowMs: 60 * 1000,
+  maxRequests: 12
 });
 
 const billingRateLimit = createRateLimiter({
@@ -170,6 +177,21 @@ router.post("/api/websites", requireAuth, createWebsiteRateLimit, async (request
     return response.status(201).json(result);
   } catch (error) {
     return response.status(400).json({ error: error.message });
+  }
+});
+
+router.post("/api/inspect-website", requireAuth, inspectWebsiteRateLimit, async (request, response) => {
+  try {
+    const { url } = request.body;
+
+    if (!url) {
+      return response.status(400).json({ error: "url is required." });
+    }
+
+    const result = await inspectWebsiteUrl({ url });
+    return response.json(result);
+  } catch (error) {
+    return response.status(400).json({ error: error.message || "Could not inspect this website." });
   }
 });
 

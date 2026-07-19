@@ -247,6 +247,34 @@ async function fetchHtml(url) {
   throw lastError || new Error("Website check failed.");
 }
 
+export async function inspectWebsiteUrl({ url }) {
+  const normalizedUrl = normalizeWebsiteUrl(url);
+
+  try {
+    const html = await fetchHtml(normalizedUrl);
+    const readableText = extractPageText(html).slice(0, 1200);
+    const priceData = extractProductSignals(html);
+
+    return {
+      ok: true,
+      url: normalizedUrl,
+      fetchedAt: new Date().toISOString(),
+      productSignals: priceData,
+      pagePreview: readableText,
+      summary: priceData.primaryPrice
+        ? `Detected ${priceData.primaryPrice} from ${priceData.primaryPriceSource || "page content"}.`
+        : "No reliable price was detected on this product page."
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      url: normalizedUrl,
+      fetchedAt: new Date().toISOString(),
+      error: describeCheckFailure(error)
+    };
+  }
+}
+
 export async function createWebsiteForUser({ userId, url }) {
   const db = getDb();
   const adminDb = getAdmin();

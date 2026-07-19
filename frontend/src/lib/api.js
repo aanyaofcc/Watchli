@@ -58,6 +58,10 @@ export function createWebsite(url) {
   return post("/api/websites", { url });
 }
 
+export function inspectWebsite(url) {
+  return post("/api/inspect-website", { url });
+}
+
 export function deleteWebsite(websiteId) {
   return request(`/api/websites/${websiteId}`, {
     method: "DELETE"

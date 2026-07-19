@@ -123,6 +123,14 @@ function normalizeCurrency(currency, raw = "") {
     return "GBP";
   }
 
+  if (normalizedRaw.includes("€")) {
+    return "EUR";
+  }
+
+  if (normalizedRaw.includes("£")) {
+    return "GBP";
+  }
+
   return "";
 }
 
@@ -137,9 +145,31 @@ function parseNumericPrice(raw) {
     return null;
   }
 
-  const decimalNormalized = normalized.includes(".")
-    ? normalized.replace(/,/g, "")
-    : normalized.replace(/,/g, ".");
+  const commaCount = (normalized.match(/,/g) || []).length;
+  const dotCount = (normalized.match(/\./g) || []).length;
+  let decimalNormalized = normalized;
+
+  if (commaCount > 0 && dotCount > 0) {
+    if (normalized.lastIndexOf(",") > normalized.lastIndexOf(".")) {
+      decimalNormalized = normalized.replace(/\./g, "").replace(",", ".");
+    } else {
+      decimalNormalized = normalized.replace(/,/g, "");
+    }
+  } else if (commaCount > 0) {
+    const parts = normalized.split(",");
+    const lastPart = parts[parts.length - 1] || "";
+
+    if (parts.length > 2 || lastPart.length === 3) {
+      decimalNormalized = normalized.replace(/,/g, "");
+    } else {
+      decimalNormalized = normalized.replace(",", ".");
+    }
+  } else if (dotCount > 1) {
+    const parts = normalized.split(".");
+    const lastPart = parts.pop() || "";
+    decimalNormalized = `${parts.join("")}.${lastPart}`;
+  }
+
   const value = Number(decimalNormalized);
 
   if (!Number.isFinite(value) || value <= 0 || value > 1000000) {
@@ -224,6 +254,14 @@ function findPriceLikeMatch(text) {
   }
 
   return text.match(PRICE_REGEX)?.[0] || "";
+}
+
+function findCurrencySymbolPrice(text) {
+  if (!text) {
+    return "";
+  }
+
+  return text.match(/[€£]\s?(?:\d{1,3}(?:[.,]\d{3})*|\d+)(?:[.,]\d{2})?/i)?.[0] || "";
 }
 
 function findNumericOnlyPrice(text, { maxWordCount = 4 } = {}) {
@@ -552,6 +590,7 @@ function collectSelectorCandidates($, candidates) {
       const text = readText($, element);
       const match =
         findPriceLikeMatch(text) ||
+        findCurrencySymbolPrice(text) ||
         readAttributePrice(element, $) ||
         findNumericOnlyPrice(text) ||
         "";
@@ -627,6 +666,7 @@ function collectTitleProximityCandidates($, candidates, productTitle) {
       const text = readText($, node);
       const match =
         findPriceLikeMatch(text) ||
+        findCurrencySymbolPrice(text) ||
         readAttributePrice(node, $) ||
         findNumericOnlyPrice(text, { maxWordCount: 3 }) ||
         "";
@@ -670,7 +710,10 @@ function collectVisibleTextCandidates($, candidates, productTitle) {
         return;
       }
 
-      const match = findPriceLikeMatch(text) || findNumericOnlyPrice(text, { maxWordCount: 2 });
+      const match =
+        findPriceLikeMatch(text) ||
+        findCurrencySymbolPrice(text) ||
+        findNumericOnlyPrice(text, { maxWordCount: 2 });
 
       if (!match) {
         return;

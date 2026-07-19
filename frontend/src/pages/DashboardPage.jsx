@@ -20,6 +20,7 @@ import {
   deleteWebsite,
   fetchMyWebsites,
   fetchWebsiteSnapshots,
+  inspectWebsite,
   sendTestEmail,
   syncWebsites
 } from "../lib/api";
@@ -78,6 +79,10 @@ export function DashboardPage() {
   const [historyLoading, setHistoryLoading] = useState(false);
   const [historyError, setHistoryError] = useState("");
   const [openingBilling, setOpeningBilling] = useState(false);
+  const [inspectUrl, setInspectUrl] = useState("");
+  const [inspectLoading, setInspectLoading] = useState(false);
+  const [inspectResult, setInspectResult] = useState(null);
+  const [inspectError, setInspectError] = useState("");
   const [onboardingDismissed, setOnboardingDismissed] = useState(false);
   const urlInputRef = useRef(null);
   const changedWebsites = websites.filter((website) => website.status === "Changed");
@@ -319,6 +324,28 @@ export function DashboardPage() {
     }
   };
 
+  const handleInspectWebsite = async (event) => {
+    event.preventDefault();
+    setInspectError("");
+    setInspectResult(null);
+
+    if (!isValidUrl(inspectUrl)) {
+      setInspectError("Enter a full product URL starting with http:// or https://");
+      return;
+    }
+
+    setInspectLoading(true);
+
+    try {
+      const result = await inspectWebsite(inspectUrl);
+      setInspectResult(result);
+    } catch (requestError) {
+      setInspectError(requestError.message || "Could not inspect this website.");
+    } finally {
+      setInspectLoading(false);
+    }
+  };
+
   const handleDismissOnboarding = () => {
     setOnboardingDismissed(true);
 
@@ -524,6 +551,97 @@ export function DashboardPage() {
         </div>
 
         <div className="space-y-3">
+          <div className="glass-panel-soft rounded-3xl p-5 sm:p-6">
+            <div className="flex items-center gap-3">
+              <Sparkles className="h-5 w-5 text-amber-200" />
+              <div>
+                <p className="text-sm text-slate-200">Compatibility tester</p>
+                <h2 className="display-font text-xl font-semibold text-white">
+                  QA a real product page
+                </h2>
+              </div>
+            </div>
+            <p className="mt-3 text-sm leading-6 text-slate-100/90">
+              Paste a live store link to see whether Watchli can detect the product title, price,
+              source, and stock status before you rely on alerts.
+            </p>
+            <form className="mt-4 space-y-3" onSubmit={handleInspectWebsite}>
+              <input
+                type="url"
+                value={inspectUrl}
+                onChange={(event) => setInspectUrl(event.target.value)}
+                placeholder="https://store.com/product/example"
+                className="w-full rounded-2xl border border-[#d3b697]/18 bg-[#f6eee5] px-4 py-3 text-[#2f2722] outline-none transition placeholder:text-[#8b7765] focus:border-[#b5835a]"
+              />
+              <button
+                type="submit"
+                disabled={inspectLoading}
+                className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-[#c9a37f]/18 bg-[#8d5b40]/88 px-4 py-3 text-sm font-medium text-white transition hover:bg-[#7b4d36] disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {inspectLoading ? "Checking store..." : "Test compatibility"}
+              </button>
+            </form>
+
+            {inspectError ? (
+              <p className="mt-4 rounded-2xl border border-rose-400/30 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">
+                {inspectError}
+              </p>
+            ) : null}
+
+            {inspectResult ? (
+              <div className="mt-4 rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+                <div className="flex flex-wrap items-center gap-2 text-sm">
+                  <span className={`rounded-full border px-3 py-1.5 ${
+                    inspectResult.ok
+                      ? "border-emerald-400/20 bg-emerald-500/10 text-emerald-100"
+                      : "border-rose-400/20 bg-rose-500/10 text-rose-100"
+                  }`}>
+                    {inspectResult.ok ? "Store reachable" : "Check failed"}
+                  </span>
+                  {inspectResult.productSignals?.primaryPrice ? (
+                    <span className="rounded-full border border-[#c9a37f]/18 bg-[#8d5b40]/20 px-3 py-1.5 text-amber-50">
+                      Price found
+                    </span>
+                  ) : null}
+                </div>
+                <p className="mt-3 text-sm leading-6 text-slate-200">
+                  {inspectResult.ok
+                    ? inspectResult.summary
+                    : inspectResult.error}
+                </p>
+
+                {inspectResult.ok ? (
+                  <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                    <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+                      <p className="text-sm text-slate-300">Product title</p>
+                      <p className="mt-2 text-sm font-medium text-white">
+                        {inspectResult.productSignals?.productTitle || "Not detected"}
+                      </p>
+                    </div>
+                    <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+                      <p className="text-sm text-slate-300">Detected price</p>
+                      <p className="mt-2 text-sm font-medium text-white">
+                        {inspectResult.productSignals?.primaryPrice || "No reliable price yet"}
+                      </p>
+                    </div>
+                    <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+                      <p className="text-sm text-slate-300">Price source</p>
+                      <p className="mt-2 text-sm font-medium text-white">
+                        {inspectResult.productSignals?.primaryPriceSource || "No source"}
+                      </p>
+                    </div>
+                    <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+                      <p className="text-sm text-slate-300">Availability</p>
+                      <p className="mt-2 text-sm font-medium text-white">
+                        {inspectResult.productSignals?.availabilityLabel || "Unknown"}
+                      </p>
+                    </div>
+                  </div>
+                ) : null}
+              </div>
+            ) : null}
+          </div>
+
           <div className="glass-panel-soft rounded-3xl p-5 sm:p-6">
             <div className="flex items-center gap-3">
               <RefreshCw className={`h-5 w-5 text-amber-200 ${scheduler?.running ? "animate-spin" : ""}`} />
