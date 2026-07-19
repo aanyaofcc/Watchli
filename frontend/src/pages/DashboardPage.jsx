@@ -1,5 +1,16 @@
-import { useEffect, useState } from "react";
-import { Bell, Crown, LoaderCircle, Mail, RefreshCw, Zap } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import {
+  Bell,
+  CheckCircle2,
+  CircleDashed,
+  Crown,
+  LoaderCircle,
+  Mail,
+  RefreshCw,
+  Sparkles,
+  X,
+  Zap
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../providers/AuthProvider";
 import {
@@ -36,6 +47,8 @@ function formatStatusLabel(status) {
   return status || "Unknown";
 }
 
+const ONBOARDING_STORAGE_KEY = "watchli-dashboard-onboarding-dismissed";
+
 export function DashboardPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -65,6 +78,8 @@ export function DashboardPage() {
   const [historyLoading, setHistoryLoading] = useState(false);
   const [historyError, setHistoryError] = useState("");
   const [openingBilling, setOpeningBilling] = useState(false);
+  const [onboardingDismissed, setOnboardingDismissed] = useState(false);
+  const urlInputRef = useRef(null);
   const changedWebsites = websites.filter((website) => website.status === "Changed");
   const errorWebsites = websites.filter((website) => website.status === "Error");
   const availableWebsites = websites.filter(
@@ -76,6 +91,47 @@ export function DashboardPage() {
     const rightDate = new Date(right.lastChanged || right.lastChecked || right.createdAt || 0).getTime();
     return rightDate - leftDate;
   })[0];
+  const checkedWebsites = websites.filter((website) => website.lastChecked);
+  const historyReadyWebsite = websites.find(
+    (website) => website.latestSnapshotText || website.lastChecked
+  );
+  const onboardingSteps = [
+    {
+      id: "add",
+      title: "Add a product page",
+      description: "Paste in a public product URL so Watchli can save the first snapshot.",
+      done: websites.length > 0
+    },
+    {
+      id: "check",
+      title: "Run a manual check",
+      description: "Use Check Now once to pull the first readable price and page details.",
+      done: checkedWebsites.length > 0
+    },
+    {
+      id: "history",
+      title: "Open history and compare",
+      description: "Review saved snapshots and the latest price movement from one place.",
+      done: Boolean(historyReadyWebsite)
+    },
+    {
+      id: "alerts",
+      title: "Wait for alerts",
+      description: "Watchli will only email you for price increases, drops, or out-of-stock changes.",
+      done: checkedWebsites.length > 0
+    }
+  ];
+  const completedOnboardingSteps = onboardingSteps.filter((step) => step.done).length;
+  const showOnboarding = !onboardingDismissed && websites.length < 3;
+
+  useEffect(() => {
+    try {
+      const storedValue = window.localStorage.getItem(ONBOARDING_STORAGE_KEY);
+      setOnboardingDismissed(storedValue === "true");
+    } catch (_error) {
+      setOnboardingDismissed(false);
+    }
+  }, []);
 
   const loadWebsites = async ({ showRefreshing = false } = {}) => {
     if (!user) {
@@ -263,6 +319,35 @@ export function DashboardPage() {
     }
   };
 
+  const handleDismissOnboarding = () => {
+    setOnboardingDismissed(true);
+
+    try {
+      window.localStorage.setItem(ONBOARDING_STORAGE_KEY, "true");
+    } catch (_error) {
+      // Ignore local storage errors so the guide can still close.
+    }
+  };
+
+  const handleOnboardingAction = async () => {
+    if (websites.length === 0) {
+      urlInputRef.current?.focus();
+      return;
+    }
+
+    if (!checkedWebsites.length) {
+      await handleCheckWebsite(websites[0].id);
+      return;
+    }
+
+    if (historyReadyWebsite) {
+      await handleViewHistory(historyReadyWebsite);
+      return;
+    }
+
+    urlInputRef.current?.focus();
+  };
+
   const schedulerStatusLabel = scheduler?.running
     ? "Running now"
     : scheduler?.lastRunSucceeded
@@ -309,6 +394,7 @@ export function DashboardPage() {
               <span className="mb-2 block text-sm text-slate-200">Add Product Page</span>
               <div className="flex flex-col gap-3 sm:flex-row">
                 <input
+                  ref={urlInputRef}
                   type="url"
                   value={url}
                   onChange={(event) => setUrl(event.target.value)}
@@ -367,6 +453,73 @@ export function DashboardPage() {
             <p className="mt-4 rounded-2xl border border-emerald-400/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-200">
               {success}
             </p>
+          ) : null}
+
+          {showOnboarding ? (
+            <div className="mt-5 rounded-[28px] border border-[#d3b697]/12 bg-white/[0.05] p-5">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                <div>
+                  <div className="inline-flex items-center gap-2 rounded-full border border-[#c9a37f]/18 bg-[#8d5b40]/20 px-3 py-1.5 text-xs font-medium uppercase tracking-[0.14em] text-amber-50">
+                    <Sparkles className="h-4 w-4" />
+                    Getting started
+                  </div>
+                  <h2 className="display-font mt-3 text-xl font-semibold text-white">
+                    Set up your first Watchli product watch
+                  </h2>
+                  <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-200">
+                    Add a product page, run one check, and open history once so you can see exactly
+                    how Watchli tracks prices and listing changes.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleDismissOnboarding}
+                  className="inline-flex items-center gap-2 self-start rounded-full border border-[#d3b697]/12 bg-white/[0.06] px-3 py-2 text-sm text-stone-100 transition hover:bg-white/[0.1]"
+                >
+                  <X className="h-4 w-4" />
+                  Hide guide
+                </button>
+              </div>
+
+              <div className="mt-5 grid gap-3 lg:grid-cols-4">
+                {onboardingSteps.map((step, index) => (
+                  <div
+                    key={step.id}
+                    className="rounded-2xl border border-white/10 bg-white/[0.04] p-4"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <span className="text-xs uppercase tracking-[0.14em] text-slate-400">
+                        Step {index + 1}
+                      </span>
+                      {step.done ? (
+                        <CheckCircle2 className="h-5 w-5 text-emerald-200" />
+                      ) : (
+                        <CircleDashed className="h-5 w-5 text-amber-200" />
+                      )}
+                    </div>
+                    <p className="mt-3 text-base font-semibold text-white">{step.title}</p>
+                    <p className="mt-2 text-sm leading-6 text-slate-300">{step.description}</p>
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <p className="text-sm text-slate-200">
+                  {completedOnboardingSteps} of {onboardingSteps.length} steps completed
+                </p>
+                <button
+                  type="button"
+                  onClick={() => void handleOnboardingAction()}
+                  className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[#c9a37f]/18 bg-[#8d5b40]/88 px-4 py-3 text-sm font-medium text-white transition hover:bg-[#7b4d36]"
+                >
+                  {websites.length === 0
+                    ? "Focus add website"
+                    : !checkedWebsites.length
+                      ? "Run first check"
+                      : "Open history"}
+                </button>
+              </div>
+            </div>
           ) : null}
         </div>
 

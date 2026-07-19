@@ -248,10 +248,17 @@ function readAttributePrice(element, $) {
   const attributeKeys = [
     "data-price",
     "data-price-amount",
+    "data-price-string",
     "data-product-price",
     "data-sale-price",
     "data-current-price",
+    "data-final-price",
+    "data-regular-price",
     "data-amount",
+    "data-value",
+    "data-qa",
+    "data-testid",
+    "data-test",
     "content",
     "value",
     "aria-label"
@@ -340,8 +347,10 @@ function collectMetaCandidates($, candidates) {
   const selectors = [
     ["meta[property='product:price:amount']", "meta product price", 98],
     ["meta[property='product:sale_price:amount']", "meta sale price", 97],
+    ["meta[property='product:price']", "meta product price", 97],
     ["meta[name='twitter:data1']", "twitter meta price", 90],
     ["meta[property='og:price:amount']", "meta og price", 95],
+    ["meta[property='og:price']", "meta og price", 93],
     ["meta[itemprop='price']", "itemprop meta", 96],
     ["[itemprop='price']", "itemprop price", 94]
   ];
@@ -426,6 +435,82 @@ function collectScriptJsonCandidates($, candidates, productTitle) {
   });
 }
 
+function collectEmbeddedStoreDataCandidates($, candidates, productTitle) {
+  const valuePatterns = [
+    {
+      pattern:
+        /["'](?<key>(?:sale|current|final|product|member|promo|offer|list|full|unit|min|max)?[_-]?(?:price|amount|priceString|formattedValue))["']\s*[:=]\s*["'](?<price>[^"']{1,32})["']/gi,
+      baseScore: 90
+    },
+    {
+      pattern:
+        /["'](?<key>(?:sale|current|final|product|member|promo|offer|list|full|unit|min|max)?[_-]?(?:price|amount))["']\s*[:=]\s*(?<price>\d+(?:\.\d{2})?)/gi,
+      baseScore: 86
+    }
+  ];
+
+  $("script, [data-product], [data-product-json], [data-state], [data-store]").each((_, element) => {
+    const rawContent = [
+      $(element).attr("data-product"),
+      $(element).attr("data-product-json"),
+      $(element).attr("data-state"),
+      $(element).attr("data-store"),
+      $(element).contents().text()
+    ]
+      .filter(Boolean)
+      .join(" ");
+
+    if (!rawContent || rawContent.length > 500000) {
+      return;
+    }
+
+    const compact = rawContent.replace(/\s+/g, " ");
+
+    valuePatterns.forEach(({ pattern, baseScore }) => {
+      const matches = [...compact.matchAll(pattern)];
+
+      matches.slice(0, 10).forEach((match) => {
+        const rawPrice = normalizeWhitespace(match.groups?.price || "");
+        const key = String(match.groups?.key || "").toLowerCase();
+
+        if (!rawPrice) {
+          return;
+        }
+
+        const surroundingText = compact.slice(
+          Math.max(0, (match.index || 0) - 180),
+          Math.min(compact.length, (match.index || 0) + 220)
+        );
+        const currency =
+          surroundingText.match(/["'](?:priceCurrency|currency|currencyCode)["']\s*[:=]\s*["'](?<currency>[A-Z]{3})["']/i)
+            ?.groups?.currency || "";
+        let score = scoreContext(`${key} ${surroundingText}`, baseScore);
+
+        if (key.includes("sale") || key.includes("current") || key.includes("final") || key.includes("member")) {
+          score += 8;
+        }
+
+        if (key.includes("list") || key.includes("full") || key.includes("max")) {
+          score -= 8;
+        }
+
+        const candidate = makePriceCandidate({
+          value: rawPrice,
+          currency,
+          raw: rawPrice,
+          source: "embedded store data",
+          score,
+          productTitle
+        });
+
+        if (candidate) {
+          candidates.push(candidate);
+        }
+      });
+    });
+  });
+}
+
 function collectSelectorCandidates($, candidates) {
   const selectors = [
     [".price", 75],
@@ -433,18 +518,28 @@ function collectSelectorCandidates($, candidates) {
     [".sale-price", 84],
     [".current-price", 85],
     [".our-price", 82],
+    [".price-current", 86],
+    [".price-final", 86],
+    [".price-sales", 84],
+    [".product-detail-price", 84],
+    [".pricing", 76],
     ["[data-price]", 80],
     ["[data-price-amount]", 87],
+    ["[data-price-string]", 87],
     ["[data-product-price]", 86],
     ["[data-sale-price]", 86],
     ["[data-current-price]", 87],
+    ["[data-final-price]", 87],
     ["[data-testid*='price' i]", 86],
     ["[data-qa*='price' i]", 84],
     ["[data-test*='price' i]", 84],
+    ["[data-automation*='price' i]", 84],
+    ["[data-selenium*='price' i]", 82],
     ["[itemprop='offers']", 76],
     ["[itemprop='price']", 94],
     ["[itemprop='lowPrice']", 92],
     ["[aria-label*='price' i]", 74],
+    ["[aria-label*='$']", 76],
     ["[class*='price']", 68],
     ["[id*='price']", 66],
     ["[class*='sale']", 78],
@@ -727,6 +822,7 @@ export function extractProductSignals(html) {
   });
 
   collectScriptJsonCandidates($, candidates, productTitle);
+  collectEmbeddedStoreDataCandidates($, candidates, productTitle);
   collectMetaCandidates($, candidates);
   collectSelectorCandidates($, candidates);
   collectTitleProximityCandidates($, candidates, productTitle);
