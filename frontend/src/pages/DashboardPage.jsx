@@ -700,6 +700,25 @@ export function DashboardPage() {
                     : inspectResult.error}
                 </p>
 
+                {inspectResult.diagnostic ? (
+                  <div className={`mt-4 rounded-2xl border p-4 ${
+                    inspectResult.ok
+                      ? "border-amber-300/18 bg-amber-300/10"
+                      : "border-rose-400/25 bg-rose-500/10"
+                  }`}>
+                    <p className={`text-sm font-medium ${
+                      inspectResult.ok ? "text-amber-100" : "text-rose-100"
+                    }`}>
+                      {inspectResult.diagnostic.title}
+                    </p>
+                    <p className={`mt-2 text-sm leading-6 ${
+                      inspectResult.ok ? "text-amber-50/90" : "text-rose-100/90"
+                    }`}>
+                      {inspectResult.diagnostic.detail}
+                    </p>
+                  </div>
+                ) : null}
+
                 {inspectResult.ok ? (
                   <div className="mt-4 grid gap-3 sm:grid-cols-2">
                     <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">

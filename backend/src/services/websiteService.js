@@ -124,6 +124,61 @@ function describeCheckFailure(error) {
   return message;
 }
 
+function classifyCheckFailure(error) {
+  const message = error?.message || "Website check failed.";
+  const lowerMessage = message.toLowerCase();
+
+  if (lowerMessage.includes("timed out") || lowerMessage.includes("timeout")) {
+    return {
+      code: "timeout",
+      title: "Website responded too slowly",
+      detail: "The page took too long to load, so Watchli could not finish checking it."
+    };
+  }
+
+  if (
+    lowerMessage.includes("403") ||
+    lowerMessage.includes("401") ||
+    lowerMessage.includes("429")
+  ) {
+    return {
+      code: "blocked",
+      title: "Website blocked automated checks",
+      detail: "This store appears to be limiting or blocking automated requests right now."
+    };
+  }
+
+  if (lowerMessage.includes("404")) {
+    return {
+      code: "not_found",
+      title: "Product page was not found",
+      detail: "The listing may have moved, expired, or been removed."
+    };
+  }
+
+  if (lowerMessage.includes("empty page")) {
+    return {
+      code: "incomplete_page",
+      title: "Page loaded but looked incomplete",
+      detail: "Watchli received too little readable content to extract product details safely."
+    };
+  }
+
+  if (lowerMessage.includes("fetch failed") || lowerMessage.includes("network")) {
+    return {
+      code: "network",
+      title: "Website could not be reached",
+      detail: "The page may be temporarily down, the URL may be wrong, or the network request failed."
+    };
+  }
+
+  return {
+    code: "unknown",
+    title: "Check did not complete",
+    detail: "Watchli could not finish checking this page for an unexpected reason."
+  };
+}
+
 async function deleteCollectionDocuments(collectionRef) {
   const snapshot = await collectionRef.get();
 
@@ -254,6 +309,22 @@ export async function inspectWebsiteUrl({ url }) {
     const html = await fetchHtml(normalizedUrl);
     const readableText = extractPageText(html).slice(0, 1200);
     const priceData = extractProductSignals(html);
+    const pageLooksIncomplete = readableText.length < 180;
+    const noReliablePrice = !priceData.primaryPrice;
+    const diagnostic =
+      noReliablePrice && pageLooksIncomplete
+        ? {
+            code: "incomplete_page",
+            title: "Page loaded but looked incomplete",
+            detail: "Watchli could read the page, but it did not contain enough clear product text to trust the result."
+          }
+        : noReliablePrice
+          ? {
+              code: "no_price_found",
+              title: "No reliable product price found",
+              detail: "The page loaded, but Watchli could not find a confident price signal in the content it could read."
+            }
+          : null;
 
     return {
       ok: true,
@@ -261,16 +332,20 @@ export async function inspectWebsiteUrl({ url }) {
       fetchedAt: new Date().toISOString(),
       productSignals: priceData,
       pagePreview: readableText,
+      diagnostic,
       summary: priceData.primaryPrice
         ? `Detected ${priceData.primaryPrice} from ${priceData.primaryPriceSource || "page content"}.`
         : "No reliable price was detected on this product page."
     };
   } catch (error) {
+    const failure = classifyCheckFailure(error);
+
     return {
       ok: false,
       url: normalizedUrl,
       fetchedAt: new Date().toISOString(),
-      error: describeCheckFailure(error)
+      error: describeCheckFailure(error),
+      diagnostic: failure
     };
   }
 }
