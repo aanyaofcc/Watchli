@@ -313,7 +313,7 @@ export function DashboardPage() {
                   value={url}
                   onChange={(event) => setUrl(event.target.value)}
                   placeholder="https://store.com/product/example"
-                  className="w-full rounded-2xl border border-[#d3b697]/16 bg-[#171311]/78 px-4 py-3 text-white outline-none transition placeholder:text-stone-500 focus:border-[#d6b091]"
+                  className="w-full rounded-2xl border border-[#d3b697]/18 bg-[#f6eee5] px-4 py-3 text-[#2f2722] outline-none transition placeholder:text-[#8b7765] focus:border-[#b5835a]"
                 />
                 <button
                   type="submit"
