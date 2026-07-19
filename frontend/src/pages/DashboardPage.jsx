@@ -398,9 +398,9 @@ export function DashboardPage() {
           : "Alert activity";
 
   return (
-    <div className="space-y-5 sm:space-y-6">
-      <section className="grid gap-4 xl:grid-cols-[minmax(0,1.55fr)_360px] xl:items-start">
-        <div className="glass-panel rounded-[30px] p-5 sm:p-7">
+    <div className="grid gap-5 xl:grid-cols-[minmax(0,1.55fr)_360px] xl:items-start">
+      <div className="space-y-5 sm:space-y-6">
+        <section className="glass-panel rounded-[30px] p-5 sm:p-7">
           <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-start sm:justify-between">
             <div>
               <p className="text-sm uppercase tracking-[0.16em] text-amber-200">Dashboard</p>
@@ -548,9 +548,69 @@ export function DashboardPage() {
               </div>
             </div>
           ) : null}
-        </div>
+        </section>
 
-        <div className="space-y-3">
+        <section className="space-y-4">
+          <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h2 className="display-font text-2xl font-semibold text-white">
+                Your watched product pages
+              </h2>
+              <p className="mt-1 text-sm text-slate-200">
+                {websites.length > 0
+                  ? `Latest activity: ${mostRecentWebsite?.latestProductTitle || mostRecentWebsite?.url || "Tracked page"}`
+                  : "Start by adding a product page you want Watchli to monitor."}
+              </p>
+            </div>
+            <p className="text-sm text-slate-200">
+              {availableWebsites.length} available now
+            </p>
+          </div>
+
+          {loadingWebsites ? (
+            <div className="glass-panel-soft rounded-3xl p-8 text-center text-slate-100">
+              <div className="inline-flex items-center gap-2">
+                <LoaderCircle className="h-5 w-5 animate-spin text-amber-200" />
+                Loading your watched websites...
+              </div>
+            </div>
+          ) : websites.length === 0 ? (
+            <div className="glass-panel-soft rounded-3xl border border-dashed p-8 text-center">
+              <p className="display-font text-2xl font-semibold text-white">No watched pages yet</p>
+              <p className="mx-auto mt-3 max-w-xl text-sm leading-7 text-slate-100/90">
+                Paste in a product page above and Watchli will save the first snapshot, detect likely prices,
+                and keep checking for changes you care about.
+              </p>
+              <div className="mt-5 flex flex-wrap justify-center gap-2 text-sm text-slate-100">
+                <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5">
+                  Add a public product URL
+                </span>
+                <span className="rounded-full border border-[#c9a37f]/18 bg-[#8d5b40]/20 px-3 py-1.5 text-amber-50">
+                  Run manual checks anytime
+                </span>
+              </div>
+            </div>
+          ) : (
+            <div className="grid gap-3">
+              {websites.map((website) => (
+                <WebsiteCard
+                  key={website.id}
+                  website={{
+                    ...website,
+                    statusLabel: formatStatusLabel(website.status)
+                  }}
+                  onCheck={handleCheckWebsite}
+                  onDelete={handleDeleteWebsite}
+                  onViewHistory={handleViewHistory}
+                  busy={checkingId === website.id}
+                />
+              ))}
+            </div>
+          )}
+        </section>
+      </div>
+
+      <aside className="space-y-3">
           <div className="glass-panel-soft rounded-3xl p-5 sm:p-6">
             <div className="flex items-center gap-3">
               <Sparkles className="h-5 w-5 text-amber-200" />
@@ -782,67 +842,7 @@ export function DashboardPage() {
               </div>
             </div>
           </div>
-        </div>
-      </section>
-
-      <section className="space-y-4">
-        <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h2 className="display-font text-2xl font-semibold text-white">
-              Your watched product pages
-            </h2>
-            <p className="mt-1 text-sm text-slate-200">
-              {websites.length > 0
-                ? `Latest activity: ${mostRecentWebsite?.latestProductTitle || mostRecentWebsite?.url || "Tracked page"}`
-                : "Start by adding a product page you want Watchli to monitor."}
-            </p>
-          </div>
-          <p className="text-sm text-slate-200">
-            {availableWebsites.length} available now
-          </p>
-        </div>
-
-        {loadingWebsites ? (
-          <div className="glass-panel-soft rounded-3xl p-8 text-center text-slate-100">
-            <div className="inline-flex items-center gap-2">
-              <LoaderCircle className="h-5 w-5 animate-spin text-amber-200" />
-              Loading your watched websites...
-            </div>
-          </div>
-        ) : websites.length === 0 ? (
-          <div className="glass-panel-soft rounded-3xl border border-dashed p-8 text-center">
-            <p className="display-font text-2xl font-semibold text-white">No watched pages yet</p>
-            <p className="mx-auto mt-3 max-w-xl text-sm leading-7 text-slate-100/90">
-              Paste in a product page above and Watchli will save the first snapshot, detect likely prices,
-              and keep checking for changes you care about.
-            </p>
-            <div className="mt-5 flex flex-wrap justify-center gap-2 text-sm text-slate-100">
-              <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5">
-                Add a public product URL
-              </span>
-              <span className="rounded-full border border-[#c9a37f]/18 bg-[#8d5b40]/20 px-3 py-1.5 text-amber-50">
-                Run manual checks anytime
-              </span>
-            </div>
-          </div>
-        ) : (
-          <div className="grid gap-3">
-            {websites.map((website) => (
-              <WebsiteCard
-                key={website.id}
-                website={{
-                  ...website,
-                  statusLabel: formatStatusLabel(website.status)
-                }}
-                onCheck={handleCheckWebsite}
-                onDelete={handleDeleteWebsite}
-                onViewHistory={handleViewHistory}
-                busy={checkingId === website.id}
-              />
-            ))}
-          </div>
-        )}
-      </section>
+      </aside>
 
       <HistoryModal
         website={selectedWebsite}
