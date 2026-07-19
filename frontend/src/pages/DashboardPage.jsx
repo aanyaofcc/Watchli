@@ -589,6 +589,26 @@ export function DashboardPage() {
                   Run manual checks anytime
                 </span>
               </div>
+              <div className="mt-5 grid gap-3 text-left sm:grid-cols-3">
+                <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+                  <p className="text-sm font-medium text-white">1. Add a product page</p>
+                  <p className="mt-2 text-sm leading-6 text-slate-300">
+                    Paste in a public shopping or product URL into the field above.
+                  </p>
+                </div>
+                <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+                  <p className="text-sm font-medium text-white">2. Run your first check</p>
+                  <p className="mt-2 text-sm leading-6 text-slate-300">
+                    Watchli saves a first snapshot and tries to detect the current price.
+                  </p>
+                </div>
+                <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+                  <p className="text-sm font-medium text-white">3. Review history later</p>
+                  <p className="mt-2 text-sm leading-6 text-slate-300">
+                    Open history to compare changes and see whether price or stock moved.
+                  </p>
+                </div>
+              </div>
             </div>
           ) : (
             <div className="grid gap-3">
@@ -641,6 +661,16 @@ export function DashboardPage() {
                 {inspectLoading ? "Checking store..." : "Test compatibility"}
               </button>
             </form>
+
+            {!inspectResult && !inspectError ? (
+              <div className="mt-4 rounded-2xl border border-dashed border-white/10 bg-white/[0.03] p-4">
+                <p className="text-sm font-medium text-white">What you’ll see here</p>
+                <p className="mt-2 text-sm leading-6 text-slate-300">
+                  Watchli will show whether the page loaded, whether it found a likely price,
+                  what source that price came from, and whether the item appears available.
+                </p>
+              </div>
+            ) : null}
 
             {inspectError ? (
               <p className="mt-4 rounded-2xl border border-rose-400/30 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">

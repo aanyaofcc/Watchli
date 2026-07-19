@@ -3,6 +3,7 @@ import {
   DollarSign,
   ExternalLink,
   History,
+  Info,
   PackageSearch,
   RefreshCw,
   TextSearch,
@@ -106,6 +107,26 @@ function formatDollarAmount(value) {
   }).format(value);
 }
 
+function formatConfidence(confidence) {
+  if (!confidence || confidence <= 0) {
+    return "Unknown";
+  }
+
+  if (confidence >= 90) {
+    return "High";
+  }
+
+  if (confidence >= 75) {
+    return "Strong";
+  }
+
+  if (confidence >= 55) {
+    return "Medium";
+  }
+
+  return "Low";
+}
+
 export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy }) {
   const statusClasses = {
     Watching: "bg-white/[0.04] text-slate-200 border-white/10",
@@ -127,6 +148,9 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
       : availability === "available"
         ? "border-[#c9a37f]/18 bg-[#8d5b40]/20 text-amber-50"
         : "border-white/10 bg-white/[0.04] text-slate-300";
+  const confidenceLabel = formatConfidence(website.latestPrimaryPriceConfidence);
+  const hasPriceMeta =
+    website.latestPrimaryPriceSource || website.latestPrimaryPriceConfidence || availability !== "unknown";
 
   return (
     <article className="glass-panel rounded-[26px] p-4 sm:p-5">
@@ -161,43 +185,37 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
         </div>
       </div>
 
-      <div className="mt-5 grid gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(260px,320px)]">
+      <div className="mt-5 grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(280px,340px)]">
         <div className="space-y-3">
           <div className="flex flex-wrap gap-2.5">
-        {website.latestPrimaryPrice ? (
-          <div className="inline-flex items-center gap-2 rounded-full border border-[#c9a37f]/18 bg-[#8d5b40]/20 px-3 py-1.5 text-sm text-amber-50">
-            <DollarSign className="h-4 w-4" />
-            {website.latestPrimaryPrice}
-          </div>
-        ) : (
-          <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-slate-300">
-            <DollarSign className="h-4 w-4" />
-            No price yet
-          </div>
-        )}
+            {website.latestPrimaryPrice ? (
+              <div className="inline-flex items-center gap-2 rounded-full border border-[#c9a37f]/18 bg-[#8d5b40]/20 px-3 py-1.5 text-sm text-amber-50">
+                <DollarSign className="h-4 w-4" />
+                {website.latestPrimaryPrice}
+              </div>
+            ) : (
+              <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-slate-300">
+                <DollarSign className="h-4 w-4" />
+                No price yet
+              </div>
+            )}
 
-        {website.status === "Error" ? (
-          <div className="inline-flex items-center gap-2 rounded-full border border-rose-400/20 bg-rose-500/10 px-3 py-1.5 text-sm text-rose-100">
-            <PackageSearch className="h-4 w-4" />
-            Check failed
-          </div>
-        ) : website.lastDiffSummary?.priceChange?.changed ? (
-          <div className="inline-flex items-center gap-2 rounded-full border border-[#c9a37f]/18 bg-[#8d5b40]/20 px-3 py-1.5 text-sm text-amber-50">
-            <DollarSign className="h-4 w-4" />
-            {getPriceSummary(website.lastDiffSummary.priceChange)}
-          </div>
-        ) : (
-          <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-slate-300">
-            <PackageSearch className="h-4 w-4" />
-            Watching
-          </div>
-        )}
-
-        {website.latestPrimaryPriceSource ? (
-          <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-sm text-slate-300">
-            Source: {website.latestPrimaryPriceSource}
-          </div>
-        ) : null}
+            {website.status === "Error" ? (
+              <div className="inline-flex items-center gap-2 rounded-full border border-rose-400/20 bg-rose-500/10 px-3 py-1.5 text-sm text-rose-100">
+                <PackageSearch className="h-4 w-4" />
+                Check failed
+              </div>
+            ) : website.lastDiffSummary?.priceChange?.changed ? (
+              <div className="inline-flex items-center gap-2 rounded-full border border-[#c9a37f]/18 bg-[#8d5b40]/20 px-3 py-1.5 text-sm text-amber-50">
+                <DollarSign className="h-4 w-4" />
+                {getPriceSummary(website.lastDiffSummary.priceChange)}
+              </div>
+            ) : (
+              <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-slate-300">
+                <PackageSearch className="h-4 w-4" />
+                Watching
+              </div>
+            )}
           </div>
 
           <div>
@@ -209,6 +227,28 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
                   : "Watchli is standing by for price, availability, or content changes on this page."}
             </p>
           </div>
+
+          {hasPriceMeta ? (
+            <div className="grid gap-3 sm:grid-cols-3">
+              <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-3.5">
+                <p className="text-xs uppercase tracking-[0.14em] text-slate-400">Price source</p>
+                <p className="mt-2 text-sm font-medium text-white">
+                  {website.latestPrimaryPriceSource || "Not identified"}
+                </p>
+              </div>
+              <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-3.5">
+                <p className="text-xs uppercase tracking-[0.14em] text-slate-400">Confidence</p>
+                <div className="mt-2 flex items-center gap-2 text-sm font-medium text-white">
+                  <Info className="h-4 w-4 text-amber-200" />
+                  {confidenceLabel}
+                </div>
+              </div>
+              <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-3.5">
+                <p className="text-xs uppercase tracking-[0.14em] text-slate-400">Availability</p>
+                <p className="mt-2 text-sm font-medium text-white">{availabilityLabel}</p>
+              </div>
+            </div>
+          ) : null}
 
           {website.status === "Error" && website.lastErrorMessage ? (
             <div className="rounded-3xl border border-rose-400/25 bg-rose-500/10 p-4">
@@ -254,6 +294,20 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
                     ? "The latest check suggests the page is no longer available."
                     : "Run another check or open history for more detail."}
             </p>
+            {website.latestPrimaryPriceSource || website.latestPrimaryPriceConfidence ? (
+              <div className="mt-4 flex flex-wrap gap-2 text-xs text-stone-200">
+                {website.latestPrimaryPriceSource ? (
+                  <span className="rounded-full border border-[#d3b697]/12 bg-white/[0.06] px-3 py-1.5">
+                    Source: {website.latestPrimaryPriceSource}
+                  </span>
+                ) : null}
+                {website.latestPrimaryPriceConfidence ? (
+                  <span className="rounded-full border border-[#d3b697]/12 bg-white/[0.06] px-3 py-1.5">
+                    Confidence: {confidenceLabel}
+                  </span>
+                ) : null}
+              </div>
+            ) : null}
           </div>
         )}
       </div>
