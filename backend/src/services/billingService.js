@@ -51,6 +51,18 @@ async function updateUserBilling(userId, data) {
   await db.collection("users").doc(userId).set(data, { merge: true });
 }
 
+function getStripeEnvironmentLabel() {
+  if (config.stripeSecretKey.startsWith("sk_live_")) {
+    return "live";
+  }
+
+  if (config.stripeSecretKey.startsWith("sk_test_")) {
+    return "test";
+  }
+
+  return "unknown";
+}
+
 async function findUserByStripeCustomerId(stripeCustomerId) {
   if (!stripeCustomerId) {
     return null;
@@ -79,6 +91,7 @@ export async function createCheckoutSession({ userId, email }) {
     mode: "subscription",
     "line_items[0][price]": config.stripeProPriceId,
     "line_items[0][quantity]": "1",
+    "payment_method_types[0]": "card",
     success_url: buildAbsoluteUrl("/upgrade?checkout=success"),
     cancel_url: buildAbsoluteUrl("/upgrade?checkout=cancelled"),
     customer_email: email,
@@ -91,6 +104,34 @@ export async function createCheckoutSession({ userId, email }) {
   return {
     url: session.url,
     sessionId: session.id
+  };
+}
+
+export async function getBillingStatus({ userId }) {
+  const db = getDb();
+  const userSnapshot = await db.collection("users").doc(userId).get();
+  const userData = userSnapshot.data() || {};
+  const configured = Boolean(
+    config.stripeSecretKey && config.stripeProPriceId && config.stripeWebhookSecret
+  );
+
+  return {
+    configured,
+    environment: configured ? getStripeEnvironmentLabel() : "not_configured",
+    missing: {
+      stripeSecretKey: !config.stripeSecretKey,
+      stripePriceId: !config.stripeProPriceId,
+      stripeWebhookSecret: !config.stripeWebhookSecret
+    },
+    appUrl: config.appUrl,
+    checkoutReady: Boolean(config.stripeSecretKey && config.stripeProPriceId),
+    webhookReady: Boolean(config.stripeWebhookSecret),
+    customerCreated: Boolean(userData.stripeCustomerId),
+    subscriptionCreated: Boolean(userData.stripeSubscriptionId),
+    stripeCustomerId: userData.stripeCustomerId || "",
+    stripeSubscriptionId: userData.stripeSubscriptionId || "",
+    billingStatus: userData.billingStatus || "inactive",
+    plan: userData.plan || "free"
   };
 }
 

@@ -14,7 +14,8 @@ import {
 import { sendTestEmail } from "./services/emailService.js";
 import {
   createBillingPortalSession,
-  createCheckoutSession
+  createCheckoutSession,
+  getBillingStatus
 } from "./services/billingService.js";
 import { deleteAccountForUser } from "./services/accountService.js";
 import { updateUserNotificationPreferences } from "./services/userSettingsService.js";
@@ -158,6 +159,18 @@ router.post("/api/billing/portal-session", requireAuth, billingRateLimit, async 
     return response.json(result);
   } catch (error) {
     return response.status(400).json({ error: error.message });
+  }
+});
+
+router.get("/api/billing/status", requireAuth, async (request, response) => {
+  try {
+    const result = await getBillingStatus({
+      userId: request.authUser.uid
+    });
+
+    return response.json(result);
+  } catch (error) {
+    return response.status(400).json({ error: error.message || "Could not load billing status." });
   }
 });
 

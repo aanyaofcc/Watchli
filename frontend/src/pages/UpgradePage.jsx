@@ -1,7 +1,12 @@
 import { useEffect, useState } from "react";
 import { ArrowLeft, Check, Crown, LoaderCircle, Sparkles } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
-import { createBillingPortalSession, createCheckoutSession, fetchMyWebsites } from "../lib/api";
+import {
+  createBillingPortalSession,
+  createCheckoutSession,
+  fetchBillingStatus,
+  fetchMyWebsites
+} from "../lib/api";
 
 const perks = [
   "Up to 100 watched product pages",
@@ -13,6 +18,7 @@ const perks = [
 export function UpgradePage() {
   const [searchParams] = useSearchParams();
   const [account, setAccount] = useState(null);
+  const [billingStatus, setBillingStatus] = useState(null);
   const [loading, setLoading] = useState(true);
   const [checkingOut, setCheckingOut] = useState(false);
   const [openingPortal, setOpeningPortal] = useState(false);
@@ -23,10 +29,14 @@ export function UpgradePage() {
 
     async function loadAccount() {
       try {
-        const payload = await fetchMyWebsites();
+        const [payload, billingPayload] = await Promise.all([
+          fetchMyWebsites(),
+          fetchBillingStatus()
+        ]);
 
         if (active) {
           setAccount(payload.account || null);
+          setBillingStatus(billingPayload || null);
         }
       } catch (loadError) {
         if (active) {
@@ -93,7 +103,7 @@ export function UpgradePage() {
 
       {checkoutState === "success" ? (
         <div className="rounded-3xl border border-emerald-400/30 bg-emerald-500/10 px-5 py-4 text-sm text-emerald-100">
-          Stripe checkout finished. If your payment completed, your plan should update to Pro as soon as the webhook arrives.
+          Stripe checkout finished. If your payment completed, your plan should update to Pro as soon as the webhook arrives. Refresh this page after a few seconds if the billing status below has not updated yet.
         </div>
       ) : null}
 
@@ -215,7 +225,35 @@ export function UpgradePage() {
                   : "You are currently on the free plan with the starter limit."}
               </p>
 
-              <div className="mt-8 grid gap-4">
+                <div className="mt-8 grid gap-4">
+                <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-5">
+                  <p className="text-sm text-slate-400">Stripe setup status</p>
+                  <p className="display-font mt-2 text-2xl font-semibold text-white">
+                    {billingStatus?.configured ? "Configured" : "Needs setup"}
+                  </p>
+                  <p className="mt-2 text-sm text-slate-300">
+                    {billingStatus?.configured
+                      ? `Running in ${billingStatus.environment} mode with checkout and webhook secrets present.`
+                      : "One or more Stripe environment variables are still missing on the backend."}
+                  </p>
+                  <div className="mt-4 flex flex-wrap gap-2 text-xs">
+                    <span className={`rounded-full border px-3 py-1.5 ${
+                      billingStatus?.checkoutReady
+                        ? "border-emerald-400/20 bg-emerald-500/10 text-emerald-100"
+                        : "border-rose-400/20 bg-rose-500/10 text-rose-100"
+                    }`}>
+                      Checkout {billingStatus?.checkoutReady ? "ready" : "not ready"}
+                    </span>
+                    <span className={`rounded-full border px-3 py-1.5 ${
+                      billingStatus?.webhookReady
+                        ? "border-emerald-400/20 bg-emerald-500/10 text-emerald-100"
+                        : "border-rose-400/20 bg-rose-500/10 text-rose-100"
+                    }`}>
+                      Webhook {billingStatus?.webhookReady ? "ready" : "not ready"}
+                    </span>
+                  </div>
+                </div>
+
                 <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-5">
                   <p className="text-sm text-slate-400">Watched products</p>
                   <p className="display-font mt-2 text-2xl font-semibold text-white">
@@ -240,6 +278,32 @@ export function UpgradePage() {
                       ? "Your account is using premium limits and billing management."
                       : "Upgrade when you need more tracked products and a stronger monitoring setup."}
                   </p>
+                </div>
+
+                <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-5">
+                  <p className="text-sm text-slate-400">Stripe account link</p>
+                  <p className="display-font mt-2 text-2xl font-semibold text-white">
+                    {billingStatus?.customerCreated ? "Customer created" : "No customer yet"}
+                  </p>
+                  <p className="mt-2 text-sm text-slate-300">
+                    {billingStatus?.subscriptionCreated
+                      ? "A Stripe subscription record exists for this account."
+                      : "No Stripe subscription record has been saved for this account yet."}
+                  </p>
+                  <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                    <div className="rounded-2xl border border-white/10 bg-slate-950/30 p-4">
+                      <p className="text-xs uppercase tracking-[0.14em] text-slate-400">Billing status</p>
+                      <p className="mt-2 text-sm font-medium text-white">
+                        {billingStatus?.billingStatus || "inactive"}
+                      </p>
+                    </div>
+                    <div className="rounded-2xl border border-white/10 bg-slate-950/30 p-4">
+                      <p className="text-xs uppercase tracking-[0.14em] text-slate-400">Current plan record</p>
+                      <p className="mt-2 text-sm font-medium text-white">
+                        {billingStatus?.plan || account?.plan || "free"}
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </div>
             </>

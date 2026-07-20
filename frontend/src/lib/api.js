@@ -94,6 +94,10 @@ export function createBillingPortalSession() {
   return post("/api/billing/portal-session", {});
 }
 
+export function fetchBillingStatus() {
+  return request("/api/billing/status");
+}
+
 export function syncWebsites() {
   return post("/api/sync-websites", {});
 }
