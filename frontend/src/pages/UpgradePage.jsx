@@ -7,6 +7,7 @@ import {
   fetchBillingStatus,
   fetchMyWebsites
 } from "../lib/api";
+import { trackEvent } from "../lib/analytics";
 
 const perks = [
   "Up to 100 watched product pages",
@@ -57,11 +58,22 @@ export function UpgradePage() {
 
   const checkoutState = searchParams.get("checkout");
 
+  useEffect(() => {
+    if (checkoutState === "success") {
+      trackEvent("checkout_success", {
+        source: "stripe_checkout_return"
+      });
+    }
+  }, [checkoutState]);
+
   const handleUpgrade = async () => {
     setError("");
     setCheckingOut(true);
 
     try {
+      trackEvent("upgrade_clicked", {
+        source: "upgrade_page"
+      });
       const payload = await createCheckoutSession();
       window.location.href = payload.url;
     } catch (requestError) {

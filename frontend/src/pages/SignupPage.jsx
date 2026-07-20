@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthCard } from "../components/AuthCard";
+import { trackEvent } from "../lib/analytics";
 import { useAuth } from "../providers/AuthProvider";
 
 export function SignupPage() {
@@ -24,6 +25,9 @@ export function SignupPage() {
 
     try {
       await signup(formData.email, formData.password);
+      trackEvent("sign_up", {
+        method: "email_password"
+      });
       navigate("/dashboard");
     } catch (submitError) {
       setError(submitError.message);

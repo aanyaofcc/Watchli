@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { AuthCard } from "../components/AuthCard";
+import { trackEvent } from "../lib/analytics";
 import { useAuth } from "../providers/AuthProvider";
 
 export function LoginPage() {
@@ -34,6 +35,9 @@ export function LoginPage() {
 
     try {
       await login(formData.email, formData.password);
+      trackEvent("login", {
+        method: "email_password"
+      });
       navigate("/dashboard");
     } catch (submitError) {
       setError(submitError.message);

@@ -24,6 +24,7 @@ import {
   sendTestEmail,
   syncWebsites
 } from "../lib/api";
+import { trackEvent } from "../lib/analytics";
 import { HistoryModal } from "../components/HistoryModal";
 import { WebsiteCard } from "../components/WebsiteCard";
 import { normalizeWebsiteUrl } from "../lib/url";
@@ -220,6 +221,16 @@ export function DashboardPage() {
 
     try {
       const payload = await createWebsite(normalizedUrl);
+      trackEvent("add_website", {
+        source: "dashboard",
+        hostname: (() => {
+          try {
+            return new URL(normalizedUrl).hostname;
+          } catch (_error) {
+            return "";
+          }
+        })()
+      });
       setAccount((current) => ({
         ...current,
         ...(payload.account || {})
@@ -241,6 +252,10 @@ export function DashboardPage() {
 
     try {
       const result = await checkSite(websiteId, user.uid);
+      trackEvent("check_now", {
+        source: "dashboard",
+        website_id: websiteId
+      });
       await loadWebsites({ showRefreshing: true });
       setSuccess(result.message || "Website checked successfully.");
     } catch (requestError) {
@@ -338,6 +353,21 @@ export function DashboardPage() {
 
     try {
       const result = await inspectWebsite(inspectUrl);
+      trackEvent("inspect_website", {
+        source: "dashboard",
+        hostname: (() => {
+          try {
+            return new URL(inspectUrl).hostname;
+          } catch (_error) {
+            return "";
+          }
+        })(),
+        result: result.ok
+          ? result.productSignals?.primaryPrice
+            ? "price_found"
+            : result.diagnostic?.code || "loaded_without_price"
+          : result.diagnostic?.code || "check_failed"
+      });
       setInspectResult(result);
     } catch (requestError) {
       setInspectError(requestError.message || "Could not inspect this website.");
@@ -373,6 +403,13 @@ export function DashboardPage() {
     }
 
     urlInputRef.current?.focus();
+  };
+
+  const handleUpgradeFromDashboard = () => {
+    trackEvent("upgrade_clicked", {
+      source: "dashboard"
+    });
+    handleUpgradeClick();
   };
 
   const schedulerStatusLabel = scheduler?.running
@@ -872,7 +909,7 @@ export function DashboardPage() {
               <div className="mt-4 flex flex-col gap-3">
                 <button
                   type="button"
-                  onClick={handleUpgradeClick}
+                  onClick={handleUpgradeFromDashboard}
                   className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-[#c9a37f]/18 bg-[#8d5b40]/88 px-4 py-3 text-sm font-medium text-white transition hover:bg-[#7b4d36]"
                 >
                   <Zap className="h-4 w-4" />
