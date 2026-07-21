@@ -27,6 +27,52 @@ const DEFAULT_NOTIFICATION_PREFERENCES = {
 
 const AuthContext = createContext(null);
 
+function getAuthErrorCode(error) {
+  if (!error) {
+    return "";
+  }
+
+  return String(error.code || error.message || "").toLowerCase();
+}
+
+function formatAuthError(error, fallbackMessage) {
+  const code = getAuthErrorCode(error);
+
+  if (code.includes("invalid-credential") || code.includes("wrong-password") || code.includes("user-not-found")) {
+    return "Incorrect email or password.";
+  }
+
+  if (code.includes("invalid-email")) {
+    return "Enter a valid email address.";
+  }
+
+  if (code.includes("email-already-in-use")) {
+    return "An account with that email already exists.";
+  }
+
+  if (code.includes("weak-password")) {
+    return "Choose a stronger password with at least 6 characters.";
+  }
+
+  if (code.includes("too-many-requests")) {
+    return "Too many attempts. Please wait a moment and try again.";
+  }
+
+  if (code.includes("network-request-failed")) {
+    return "Network error. Check your internet connection and try again.";
+  }
+
+  if (code.includes("missing-password")) {
+    return "Enter your password.";
+  }
+
+  if (code.includes("missing-email")) {
+    return "Enter your email address.";
+  }
+
+  return fallbackMessage;
+}
+
 function getPasswordResetSettings() {
   if (typeof window === "undefined") {
     return undefined;
@@ -52,25 +98,39 @@ export function AuthProvider({ children }) {
   }, []);
 
   const signup = async (email, password) => {
-    const credential = await createUserWithEmailAndPassword(auth, email, password);
-    await setDoc(
-      doc(db, "users", credential.user.uid),
-      {
-        email,
-        plan: "free",
-        createdAt: serverTimestamp(),
-        notificationPreferences: DEFAULT_NOTIFICATION_PREFERENCES
-      },
-      { merge: true }
-    );
-    return credential.user;
+    try {
+      const credential = await createUserWithEmailAndPassword(auth, email, password);
+      await setDoc(
+        doc(db, "users", credential.user.uid),
+        {
+          email,
+          plan: "free",
+          createdAt: serverTimestamp(),
+          notificationPreferences: DEFAULT_NOTIFICATION_PREFERENCES
+        },
+        { merge: true }
+      );
+      return credential.user;
+    } catch (error) {
+      throw new Error(formatAuthError(error, "Could not create your account."));
+    }
   };
 
-  const login = (email, password) =>
-    signInWithEmailAndPassword(auth, email, password);
+  const login = async (email, password) => {
+    try {
+      return await signInWithEmailAndPassword(auth, email, password);
+    } catch (error) {
+      throw new Error(formatAuthError(error, "Could not log you in."));
+    }
+  };
 
-  const resetPassword = (email) =>
-    sendPasswordResetEmail(auth, email, getPasswordResetSettings());
+  const resetPassword = async (email) => {
+    try {
+      return await sendPasswordResetEmail(auth, email, getPasswordResetSettings());
+    } catch (error) {
+      throw new Error(formatAuthError(error, "Could not send reset email."));
+    }
+  };
 
   const logout = () => signOut(auth);
 
