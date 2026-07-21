@@ -10,6 +10,25 @@ import {
   Trash2
 } from "lucide-react";
 
+function getDomainLabel(url) {
+  try {
+    return new URL(url).hostname.replace(/^www\./, "");
+  } catch (_error) {
+    return "Product page";
+  }
+}
+
+function getFallbackLabel(website) {
+  const source = website.latestProductTitle || getDomainLabel(website.url);
+
+  return source
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((word) => word[0]?.toUpperCase() || "")
+    .join("");
+}
+
 function formatDate(value) {
   if (!value) {
     return "Not yet";
@@ -151,28 +170,58 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
   const confidenceLabel = formatConfidence(website.latestPrimaryPriceConfidence);
   const hasPriceMeta =
     website.latestPrimaryPriceSource || website.latestPrimaryPriceConfidence || availability !== "unknown";
+  const productImage = website.latestProductImage || "";
+  const fallbackLabel = getFallbackLabel(website);
+  const domainLabel = getDomainLabel(website.url);
 
   return (
     <article className="glass-panel rounded-[26px] p-4 sm:p-5">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-center gap-2">
-            <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Watched page</p>
-            <div
-              className={`inline-flex rounded-full border px-3 py-1 text-xs font-medium ${statusClasses[website.status] || statusClasses.Watching}`}
-            >
-              {website.statusLabel || website.status}
+          <div className="flex gap-4">
+            <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-3xl border border-white/10 bg-white/[0.05] shadow-[0_18px_35px_rgba(15,23,42,0.18)]">
+              {productImage ? (
+                <img
+                  src={productImage}
+                  alt={website.latestProductTitle || "Tracked product"}
+                  className="h-full w-full object-cover"
+                  loading="lazy"
+                />
+              ) : (
+                <div className="flex h-full w-full flex-col items-center justify-center bg-[linear-gradient(135deg,rgba(96,165,250,0.22),rgba(148,163,184,0.08))] text-center">
+                  <span className="display-font text-lg font-semibold text-white">{fallbackLabel || "WP"}</span>
+                  <span className="mt-1 px-3 text-[10px] uppercase tracking-[0.18em] text-slate-300">
+                    {domainLabel}
+                  </span>
+                </div>
+              )}
             </div>
-            <div className={`inline-flex rounded-full border px-3 py-1 text-xs font-medium ${availabilityClasses}`}>
-              {availabilityLabel}
+
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap items-center gap-2">
+                <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Watched page</p>
+                <div
+                  className={`inline-flex rounded-full border px-3 py-1 text-xs font-medium ${statusClasses[website.status] || statusClasses.Watching}`}
+                >
+                  {website.statusLabel || website.status}
+                </div>
+                <div className={`inline-flex rounded-full border px-3 py-1 text-xs font-medium ${availabilityClasses}`}>
+                  {availabilityLabel}
+                </div>
+                {website.latestProductImageSource ? (
+                  <div className="inline-flex rounded-full border border-white/10 bg-white/[0.05] px-3 py-1 text-xs font-medium text-slate-300">
+                    Image: {website.latestProductImageSource}
+                  </div>
+                ) : null}
+              </div>
+              <h3 className="display-font mt-3 break-words text-xl font-semibold text-white sm:text-2xl">
+                {website.latestProductTitle || "Tracked product page"}
+              </h3>
+              <div className="mt-2 flex items-start gap-2 text-sm text-slate-400">
+                <ExternalLink className="mt-0.5 h-4 w-4 shrink-0 text-slate-500" />
+                <p className="break-all">{website.url}</p>
+              </div>
             </div>
-          </div>
-          <h3 className="display-font mt-2 break-words text-xl font-semibold text-white sm:text-2xl">
-            {website.latestProductTitle || "Tracked product page"}
-          </h3>
-          <div className="mt-2 flex items-start gap-2 text-sm text-slate-400">
-            <ExternalLink className="mt-0.5 h-4 w-4 shrink-0 text-slate-500" />
-            <p className="break-all">{website.url}</p>
           </div>
         </div>
 

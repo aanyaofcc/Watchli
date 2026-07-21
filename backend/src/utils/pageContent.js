@@ -88,6 +88,193 @@ function firstText(value) {
   return typeof value === "string" ? normalizeWhitespace(value) : "";
 }
 
+function toAbsoluteUrl(value, baseUrl = "") {
+  const raw = firstText(value);
+
+  if (!raw || raw.startsWith("data:")) {
+    return "";
+  }
+
+  try {
+    return new URL(raw, baseUrl || undefined).toString();
+  } catch (_error) {
+    return "";
+  }
+}
+
+function firstSrcFromSrcSet(srcSet, baseUrl = "") {
+  const firstEntry = String(srcSet || "")
+    .split(",")
+    .map((entry) => entry.trim().split(/\s+/)[0])
+    .find(Boolean);
+
+  return toAbsoluteUrl(firstEntry, baseUrl);
+}
+
+function scoreImageCandidate(candidate, productTitle = "") {
+  const url = String(candidate?.url || "").toLowerCase();
+  const alt = String(candidate?.alt || "").toLowerCase();
+  const title = String(productTitle || "").toLowerCase();
+  let score = Number(candidate?.score || 0);
+
+  if (!url) {
+    return -1;
+  }
+
+  if (/logo|icon|sprite|avatar|placeholder|spacer|tracking|pixel/.test(url)) {
+    score -= 40;
+  }
+
+  if (/logo|icon|placeholder/.test(alt)) {
+    score -= 30;
+  }
+
+  if (/product|products|item|items|gallery|hero|primary/.test(url)) {
+    score += 8;
+  }
+
+  if (title) {
+    const significantWords = title
+      .split(/\s+/)
+      .filter((word) => word.length >= 4)
+      .slice(0, 4);
+
+    if (significantWords.some((word) => url.includes(word) || alt.includes(word))) {
+      score += 10;
+    }
+  }
+
+  return score;
+}
+
+function addImageCandidate(candidates, value, source, score, baseUrl = "", alt = "") {
+  const url =
+    typeof value === "object" && value
+      ? toAbsoluteUrl(value.url || value.contentUrl || value.thumbnailUrl || value.src, baseUrl)
+      : toAbsoluteUrl(value, baseUrl);
+
+  if (!url) {
+    return;
+  }
+
+  candidates.push({
+    url,
+    source,
+    score,
+    alt: firstText(alt)
+  });
+}
+
+function collectJsonLdImageCandidates(node, candidates, baseUrl = "") {
+  if (!node) {
+    return;
+  }
+
+  if (Array.isArray(node)) {
+    node.forEach((entry) => collectJsonLdImageCandidates(entry, candidates, baseUrl));
+    return;
+  }
+
+  if (typeof node !== "object") {
+    return;
+  }
+
+  const objectType = normalizeWhitespace(
+    [...toArray(node["@type"]), ...toArray(node.type)].join(" ")
+  ).toLowerCase();
+
+  if (objectType.includes("product") || node.image || node.thumbnailUrl) {
+    toArray(node.image).forEach((value) => {
+      addImageCandidate(candidates, value, "structured data", objectType.includes("product") ? 98 : 92, baseUrl, node.name);
+    });
+    toArray(node.thumbnailUrl).forEach((value) => {
+      addImageCandidate(candidates, value, "structured data thumbnail", 90, baseUrl, node.name);
+    });
+  }
+
+  Object.values(node).forEach((value) => {
+    if (typeof value === "object") {
+      collectJsonLdImageCandidates(value, candidates, baseUrl);
+    }
+  });
+}
+
+function collectMetaImageCandidates($, candidates, baseUrl = "") {
+  [
+    ["meta[property='og:image']", "og:image", 100],
+    ["meta[property='og:image:url']", "og:image", 99],
+    ["meta[name='twitter:image']", "twitter:image", 96],
+    ["meta[name='twitter:image:src']", "twitter:image", 95],
+    ["meta[itemprop='image']", "itemprop image", 94]
+  ].forEach(([selector, source, score]) => {
+    $(selector).each((_, element) => {
+      addImageCandidate(candidates, $(element).attr("content"), source, score, baseUrl);
+    });
+  });
+}
+
+function collectDomImageCandidates($, candidates, baseUrl = "", productTitle = "") {
+  const selectors = [
+    "main img",
+    "[class*='product' i] img",
+    "[id*='product' i] img",
+    "[class*='gallery' i] img",
+    "img"
+  ];
+
+  selectors.forEach((selector, selectorIndex) => {
+    $(selector)
+      .slice(0, selector === "img" ? 12 : 8)
+      .each((index, element) => {
+        const src =
+          $(element).attr("src") ||
+          $(element).attr("data-src") ||
+          $(element).attr("data-original") ||
+          firstSrcFromSrcSet($(element).attr("srcset"), baseUrl);
+        const context = `${$(element).attr("class") || ""} ${$(element).attr("id") || ""} ${
+          $(element).closest("[class],[id]").attr("class") || ""
+        }`;
+        const baseScore = selectorIndex === 0 ? 88 : selectorIndex === 1 ? 86 : selectorIndex === 2 ? 84 : 76;
+        const contextualBoost = /product|gallery|hero|media|image/i.test(context) ? 6 : 0;
+        const titleBoost =
+          productTitle && firstText($(element).attr("alt")).toLowerCase().includes(productTitle.toLowerCase().split(" ")[0])
+            ? 4
+            : 0;
+
+        addImageCandidate(
+          candidates,
+          src,
+          "page image",
+          baseScore - index + contextualBoost + titleBoost,
+          baseUrl,
+          $(element).attr("alt")
+        );
+      });
+  });
+}
+
+function selectPrimaryImage(candidates, productTitle = "") {
+  const deduped = new Map();
+
+  candidates.forEach((candidate) => {
+    if (!candidate?.url) {
+      return;
+    }
+
+    const existing = deduped.get(candidate.url);
+    const scoredCandidate = {
+      ...candidate,
+      score: scoreImageCandidate(candidate, productTitle)
+    };
+
+    if (!existing || scoredCandidate.score > existing.score) {
+      deduped.set(candidate.url, scoredCandidate);
+    }
+  });
+
+  return [...deduped.values()].sort((left, right) => right.score - left.score)[0] || null;
+}
+
 function normalizeCurrency(currency, raw = "") {
   const trimmed = (currency || "").trim().toUpperCase();
 
@@ -848,9 +1035,10 @@ function detectAvailability(text) {
   };
 }
 
-export function extractProductSignals(html) {
+export function extractProductSignals(html, pageUrl = "") {
   const $ = cheerio.load(html);
   const candidates = [];
+  const imageCandidates = [];
   const productTitle =
     firstText($("meta[property='og:title']").attr("content")) ||
     firstText($("title").text()) ||
@@ -862,6 +1050,7 @@ export function extractProductSignals(html) {
   $("script[type='application/ld+json']").each((_, element) => {
     const parsed = safeJsonParse($(element).contents().text());
     collectJsonLdCandidates(parsed, candidates, productTitle);
+    collectJsonLdImageCandidates(parsed, imageCandidates, pageUrl);
   });
 
   collectScriptJsonCandidates($, candidates, productTitle);
@@ -870,12 +1059,17 @@ export function extractProductSignals(html) {
   collectSelectorCandidates($, candidates);
   collectTitleProximityCandidates($, candidates, productTitle);
   collectVisibleTextCandidates($, candidates, productTitle);
+  collectMetaImageCandidates($, imageCandidates, pageUrl);
+  collectDomImageCandidates($, imageCandidates, pageUrl, productTitle);
 
   const uniqueCandidates = dedupeCandidates(candidates);
   const primaryCandidate = uniqueCandidates[0] || null;
+  const primaryImage = selectPrimaryImage(imageCandidates, productTitle);
 
   return {
     productTitle: primaryCandidate?.productTitle || productTitle,
+    productImage: primaryImage?.url || "",
+    productImageSource: primaryImage?.source || "",
     priceDetected: Boolean(primaryCandidate),
     primaryPrice: primaryCandidate?.display || "",
     primaryPriceValue: primaryCandidate?.value ?? null,

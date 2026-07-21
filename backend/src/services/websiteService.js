@@ -230,6 +230,8 @@ async function saveSnapshotRecord({
     primaryPriceSource: priceData?.primaryPriceSource || "",
     primaryPriceConfidence: priceData?.primaryPriceConfidence || 0,
     productTitle: priceData?.productTitle || "",
+    productImage: priceData?.productImage || "",
+    productImageSource: priceData?.productImageSource || "",
     availabilityStatus: priceData?.availabilityStatus || "unknown",
     availabilityLabel: priceData?.availabilityLabel || "",
     available: priceData?.available ?? null,
@@ -308,7 +310,7 @@ export async function inspectWebsiteUrl({ url }) {
   try {
     const html = await fetchHtml(normalizedUrl);
     const readableText = extractPageText(html).slice(0, 1200);
-    const priceData = extractProductSignals(html);
+    const priceData = extractProductSignals(html, normalizedUrl);
     const pageLooksIncomplete = readableText.length < 180;
     const noReliablePrice = !priceData.primaryPrice;
     const diagnostic =
@@ -335,7 +337,9 @@ export async function inspectWebsiteUrl({ url }) {
       diagnostic,
       summary: priceData.primaryPrice
         ? `Detected ${priceData.primaryPrice} from ${priceData.primaryPriceSource || "page content"}.`
-        : "No reliable price was detected on this product page."
+        : priceData.productImage
+          ? "No reliable price was detected, but Watchli did identify a likely product image."
+          : "No reliable price was detected on this product page."
     };
   } catch (error) {
     const failure = classifyCheckFailure(error);
@@ -393,6 +397,8 @@ export async function createWebsiteForUser({ userId, url }) {
     previousSnapshotHash: "",
     previousSnapshotText: "",
     latestProductTitle: "",
+    latestProductImage: "",
+    previousProductImage: "",
     latestDetectedPrices: [],
     previousDetectedPrices: [],
     latestPrimaryPrice: "",
@@ -476,7 +482,7 @@ export async function checkWebsite({ websiteId, userId }) {
   try {
     const html = await fetchHtml(normalizedUrl);
     const readableText = extractPageText(html).slice(0, MAX_SNAPSHOT_LENGTH);
-    const priceData = extractProductSignals(html);
+    const priceData = extractProductSignals(html, normalizedUrl);
     const snapshotHash = hashText(readableText);
     const now = adminDb.firestore.FieldValue.serverTimestamp();
     const currentIsoTime = new Date().toISOString();
@@ -508,6 +514,8 @@ export async function checkWebsite({ websiteId, userId }) {
           previousSnapshotHash: "",
           previousSnapshotText: "",
           latestProductTitle: priceData.productTitle || "",
+          latestProductImage: priceData.productImage || "",
+          previousProductImage: "",
           latestDetectedPrices: priceData.detectedPrices,
           previousDetectedPrices: [],
           latestPrimaryPrice: priceData.primaryPrice,
@@ -536,6 +544,7 @@ export async function checkWebsite({ websiteId, userId }) {
 
     const previousPriceData = {
       productTitle: website.latestProductTitle || "",
+      productImage: website.latestProductImage || "",
       priceDetected: Boolean(website.latestPrimaryPrice),
       primaryPrice: website.latestPrimaryPrice || "",
       primaryPriceValue: website.latestPrimaryPriceValue ?? null,
@@ -591,6 +600,8 @@ export async function checkWebsite({ websiteId, userId }) {
           previousSnapshotHash: website.latestSnapshotHash || "",
           previousSnapshotText: website.latestSnapshotText || "",
           latestProductTitle: priceData.productTitle || website.latestProductTitle || "",
+          latestProductImage: priceData.productImage || website.latestProductImage || "",
+          previousProductImage: website.latestProductImage || "",
           latestDetectedPrices: priceData.detectedPrices,
           previousDetectedPrices: website.latestDetectedPrices || [],
           latestPrimaryPrice: priceData.primaryPrice,
@@ -654,6 +665,7 @@ export async function checkWebsite({ websiteId, userId }) {
         latestSnapshotHash: snapshotHash,
         latestSnapshotText: readableText,
         latestProductTitle: priceData.productTitle || website.latestProductTitle || "",
+        latestProductImage: priceData.productImage || website.latestProductImage || "",
         latestDetectedPrices: priceData.detectedPrices,
         latestPrimaryPrice: priceData.primaryPrice,
         latestPrimaryPriceValue: priceData.primaryPriceValue,
