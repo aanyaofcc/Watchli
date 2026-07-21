@@ -15,14 +15,29 @@ const SOLD_OUT_PATTERNS = [
   /\bsold\s*out\b/i,
   /\bout\s*of\s*stock\b/i,
   /\bcurrently\s*unavailable\b/i,
-  /\btemporarily\s*out\s*of\s*stock\b/i
+  /\btemporarily\s*out\s*of\s*stock\b/i,
+  /\bsoldout\b/i,
+  /\bnot\s*available\s*for\s*pickup\b/i,
+  /\bnot\s*available\s*for\s*delivery\b/i,
+  /\bback\s*soon\b/i,
+  /\bcoming\s*soon\b/i,
+  /\bjoin\s*waitlist\b/i,
+  /\bjoin\s*the\s*waitlist\b/i,
+  /\bwaitlist\b/i,
+  /\bnotify\s*me\s*when\s*available\b/i,
+  /\bemail\s*me\s*when\s*available\b/i
 ];
 const UNAVAILABLE_PATTERNS = [
   /\bno\s*longer\s*available\b/i,
   /\bitem\s*unavailable\b/i,
   /\bproduct\s*unavailable\b/i,
   /\bunavailable\b/i,
-  /\bdiscontinued\b/i
+  /\bdiscontinued\b/i,
+  /\bitem\s*is\s*no\s*longer\s*available\b/i,
+  /\bpage\s*not\s*found\b/i,
+  /\b404\b/i,
+  /\bremoved\b/i,
+  /\bhas\s*been\s*retired\b/i
 ];
 const POSITIVE_AVAILABILITY_PATTERNS = [
   /\bin\s*stock\b/i,
@@ -950,13 +965,20 @@ function collectAvailabilityFromMarkup($) {
   const selectors = [
     "[data-stock]",
     "[data-availability]",
+    "[data-instock]",
+    "[data-testid*='stock' i]",
+    "[data-testid*='availability' i]",
     "[itemprop='availability']",
     "[class*='stock']",
     "[class*='availability']",
+    "[class*='sold' i]",
+    "[class*='cart' i]",
     "[id*='stock']",
     "[id*='availability']",
     "button",
-    "[role='button']"
+    "[role='button']",
+    "form",
+    "[aria-live]"
   ];
 
   selectors.forEach((selector) => {
@@ -965,8 +987,17 @@ function collectAvailabilityFromMarkup($) {
         [
           $(element).attr("data-stock"),
           $(element).attr("data-availability"),
+          $(element).attr("data-instock"),
           $(element).attr("content"),
           $(element).attr("aria-label"),
+          $(element).attr("title"),
+          $(element).attr("value"),
+          $(element).attr("name"),
+          $(element).attr("class"),
+          $(element).attr("id"),
+          $(element).attr("data-testid"),
+          $(element).attr("disabled") ? "disabled" : "",
+          $(element).attr("aria-disabled") === "true" ? "aria-disabled" : "",
           $(element).text()
         ]
           .filter(Boolean)
@@ -980,6 +1011,49 @@ function collectAvailabilityFromMarkup($) {
   });
 
   return statusSignals.join(" ");
+}
+
+function collectAvailabilityFromStructuredData($) {
+  const signals = [];
+
+  $("script[type='application/ld+json']").each((_, element) => {
+    const parsed = safeJsonParse($(element).contents().text());
+    const stack = toArray(parsed);
+
+    while (stack.length) {
+      const current = stack.pop();
+
+      if (!current || typeof current !== "object") {
+        continue;
+      }
+
+      const availability = normalizeWhitespace(
+        [
+          current.availability,
+          current.offerAvailability,
+          current.itemAvailability
+        ]
+          .filter(Boolean)
+          .join(" ")
+      );
+
+      if (availability) {
+        signals.push(availability);
+      }
+
+      Object.values(current).forEach((value) => {
+        if (value && typeof value === "object") {
+          if (Array.isArray(value)) {
+            value.forEach((entry) => stack.push(entry));
+          } else {
+            stack.push(value);
+          }
+        }
+      });
+    }
+  });
+
+  return signals.join(" ");
 }
 
 export function normalizeWhitespace(text) {
@@ -1045,7 +1119,10 @@ export function extractProductSignals(html, pageUrl = "") {
     firstText($("h1").first().text());
   const pageText = extractPageText(html);
   const markupAvailability = collectAvailabilityFromMarkup($);
-  const availability = detectAvailability(`${markupAvailability} ${pageText}`);
+  const structuredAvailability = collectAvailabilityFromStructuredData($);
+  const availability = detectAvailability(
+    `${markupAvailability} ${structuredAvailability} ${pageText}`
+  );
 
   $("script[type='application/ld+json']").each((_, element) => {
     const parsed = safeJsonParse($(element).contents().text());
