@@ -3,6 +3,7 @@ import {
   ArrowRight,
   BellRing,
   Crown,
+  Eye,
   Globe,
   LayoutDashboard,
   ShieldCheck,
@@ -101,6 +102,33 @@ export function LandingPage() {
       </header>
 
       <main className="relative z-10">
+        <section className="mx-auto max-w-7xl px-6 pt-2">
+          <div className="homepage-panel-soft flex flex-col gap-3 rounded-[28px] border border-[#9a76591a] px-5 py-4 text-sm text-slate-700 shadow-[0_16px_32px_rgba(77,57,39,0.08)] sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-start gap-3">
+              <div className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[#4b6278]/10 text-[#4b6278]">
+                <Eye className="h-5 w-5" />
+              </div>
+              <div>
+                <p className="display-font text-base font-semibold text-slate-900">
+                  Watchli tracks product pages for price drops, increases, sellouts, and listing changes.
+                </p>
+                <p className="mt-1 text-sm leading-6 text-slate-600">
+                  Add a shopping URL, let Watchli monitor the page, and get emailed when something important changes.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex shrink-0 items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+              <span className="rounded-full border border-[#9a765926] bg-white/55 px-3 py-2">
+                Product monitoring
+              </span>
+              <span className="rounded-full border border-[#9a765926] bg-white/55 px-3 py-2">
+                Email alerts
+              </span>
+            </div>
+          </div>
+        </section>
+
         <section className="mx-auto grid max-w-7xl gap-12 px-6 pb-24 pt-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
           <div>
             <div className="homepage-chip inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm text-slate-700">
