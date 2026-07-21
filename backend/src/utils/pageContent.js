@@ -450,6 +450,91 @@ function readText($, element) {
   return normalizeWhitespace($(element).text() || $(element).attr("content") || "");
 }
 
+function readOwnText($, element) {
+  return normalizeWhitespace(
+    $(element)
+      .contents()
+      .filter((_, node) => node.type === "text")
+      .text() || ""
+  );
+}
+
+function buildCombinedPriceFromParts(whole, fraction = "", currency = "") {
+  const normalizedWhole = String(whole || "").replace(/[^\d,-]/g, "").trim();
+  const normalizedFraction = String(fraction || "").replace(/[^\d]/g, "").trim();
+
+  if (!normalizedWhole) {
+    return "";
+  }
+
+  let combined = normalizedWhole;
+
+  if (normalizedFraction) {
+    combined = `${normalizedWhole}.${normalizedFraction.slice(0, 2).padEnd(2, "0")}`;
+  }
+
+  return `${currency || ""}${combined}`.trim();
+}
+
+function readSplitPrice(element, $) {
+  const root = $(element);
+  const wholeSelectors = [
+    "[class*='price-whole' i]",
+    "[class*='whole' i]",
+    "[data-price-whole]",
+    "[data-testid*='whole' i]"
+  ];
+  const fractionSelectors = [
+    "[class*='price-fraction' i]",
+    "[class*='fraction' i]",
+    "[class*='decimal' i]",
+    "[data-price-fraction]",
+    "[data-testid*='fraction' i]",
+    "sup"
+  ];
+  const currencySelectors = [
+    "[class*='currency' i]",
+    "[data-currency]",
+    "[data-testid*='currency' i]"
+  ];
+
+  const whole =
+    wholeSelectors
+      .map((selector) => firstText(root.find(selector).first().text()))
+      .find(Boolean) ||
+    firstText(readOwnText($, element));
+  const fraction =
+    fractionSelectors
+      .map((selector) => firstText(root.find(selector).first().text()))
+      .find(Boolean) || "";
+  const currency =
+    currencySelectors
+      .map((selector) => firstText(root.find(selector).first().text()))
+      .find(Boolean) || "";
+
+  const combined = buildCombinedPriceFromParts(whole, fraction, currency);
+
+  if (parseNumericPrice(combined) !== null) {
+    return combined;
+  }
+
+  return "";
+}
+
+function isPriceFragmentElement(element, $) {
+  const className = ($(element).attr("class") || "").toLowerCase();
+  const id = ($(element).attr("id") || "").toLowerCase();
+  const dataTestId = ($(element).attr("data-testid") || "").toLowerCase();
+  const text = readText($, element);
+  const context = `${className} ${id} ${dataTestId}`;
+
+  if (!/\b(?:fraction|decimal|cents|cent|whole)\b/i.test(context)) {
+    return false;
+  }
+
+  return text.length <= 6;
+}
+
 function scoreContext(text = "", startingScore = 0) {
   const normalized = String(text || "").toLowerCase();
   let score = startingScore;
@@ -524,6 +609,10 @@ function readAttributePrice(element, $) {
     "data-current-price",
     "data-final-price",
     "data-regular-price",
+    "data-sale-price-amount",
+    "data-current-price-amount",
+    "data-final-price-amount",
+    "data-price-value",
     "data-amount",
     "data-value",
     "data-qa",
@@ -553,6 +642,14 @@ function readAttributePrice(element, $) {
   }
 
   return "";
+}
+
+function readBestPriceText(element, $) {
+  return (
+    readAttributePrice(element, $) ||
+    readSplitPrice(element, $) ||
+    readText($, element)
+  );
 }
 
 function buildCandidatesFromText({
@@ -885,8 +982,12 @@ function collectSelectorCandidates($, candidates) {
 
   selectors.forEach(([selector, baseScore]) => {
     $(selector).slice(0, 20).each((_, element) => {
+      if (isPriceFragmentElement(element, $)) {
+        return;
+      }
+
       const text = readText($, element);
-      const attributePrice = readAttributePrice(element, $);
+      const bestPriceText = readBestPriceText(element, $);
       const className = ($(element).attr("class") || "").toLowerCase();
       const id = ($(element).attr("id") || "").toLowerCase();
       const dataTestId = ($(element).attr("data-testid") || "").toLowerCase();
@@ -926,7 +1027,7 @@ function collectSelectorCandidates($, candidates) {
         "";
 
       const candidateList = buildCandidatesFromText({
-        text: attributePrice || text,
+        text: bestPriceText,
         fallbackRaw: text,
         source: "page selector",
         baseScore: score,
@@ -967,14 +1068,18 @@ function collectTitleProximityCandidates($, candidates, productTitle) {
     }
 
     element.find("*").addBack().slice(0, 40).each((_, node) => {
+      if (isPriceFragmentElement(node, $)) {
+        return;
+      }
+
       const text = readText($, node);
-      const attributePrice = readAttributePrice(node, $);
+      const bestPriceText = readBestPriceText(node, $);
       const className = ($(node).attr("class") || "").toLowerCase();
       const id = ($(node).attr("id") || "").toLowerCase();
       const dataTestId = ($(node).attr("data-testid") || "").toLowerCase();
 
       const candidateList = buildCandidatesFromText({
-        text: attributePrice || text,
+        text: bestPriceText,
         fallbackRaw: text,
         source: "title proximity",
         baseScore: scoreContext(text, 90),
@@ -1005,7 +1110,12 @@ function collectVisibleTextCandidates($, candidates, productTitle) {
 
   commonProductAreaSelectors.forEach((selector, selectorIndex) => {
     $(selector).slice(0, 1).find("*").slice(0, 180).each((_, element) => {
+      if (isPriceFragmentElement(element, $)) {
+        return;
+      }
+
       const text = readText($, element);
+      const bestPriceText = readBestPriceText(element, $);
 
       if (!text || text.length > 120) {
         return;
@@ -1021,11 +1131,12 @@ function collectVisibleTextCandidates($, candidates, productTitle) {
       score = scoreContext(`${text} ${className}`, score);
 
       const candidateList = buildCandidatesFromText({
-        text,
+        text: bestPriceText,
         source: "visible text",
         baseScore: score,
         productTitle,
-        extraContext: className
+        extraContext: className,
+        fallbackRaw: text
       });
 
       if (candidateList.length) {
