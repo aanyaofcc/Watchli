@@ -66,7 +66,18 @@ const NEGATIVE_PRICE_CONTEXT = [
   "monthly",
   "installment",
   "afterpay",
-  "klarna"
+  "klarna",
+  "was",
+  "before",
+  "starting at",
+  "from",
+  "as low as",
+  "or 4 payments",
+  "pay in 4",
+  "interest free",
+  "save up to",
+  "off",
+  "discount"
 ];
 const POSITIVE_PRICE_CONTEXT = [
   "price",
@@ -80,7 +91,15 @@ const POSITIVE_PRICE_CONTEXT = [
   "member",
   "purchase",
   "buy",
-  "cart"
+  "cart",
+  "your price",
+  "sale price",
+  "now",
+  "today",
+  "checkout",
+  "bag",
+  "add to cart",
+  "add to bag"
 ];
 
 function safeJsonParse(value) {
@@ -458,6 +477,17 @@ function findPriceLikeMatch(text) {
   return text.match(PRICE_REGEX)?.[0] || "";
 }
 
+function findAllPriceLikeMatches(text) {
+  if (!text) {
+    return [];
+  }
+
+  return [...String(text).matchAll(PRICE_REGEX)].map((match) => ({
+    value: match[0],
+    index: match.index || 0
+  }));
+}
+
 function findCurrencySymbolPrice(text) {
   if (!text) {
     return "";
@@ -523,6 +553,72 @@ function readAttributePrice(element, $) {
   }
 
   return "";
+}
+
+function buildCandidatesFromText({
+  text,
+  source,
+  baseScore,
+  productTitle = "",
+  currency = "",
+  fallbackRaw = "",
+  extraContext = "",
+  maxMatches = 4
+}) {
+  const normalizedText = normalizeWhitespace(text || fallbackRaw || "");
+  const combinedContext = normalizeWhitespace(`${normalizedText} ${extraContext}`);
+  const matches = findAllPriceLikeMatches(normalizedText);
+
+  if (matches.length) {
+    return matches.slice(0, maxMatches).flatMap((match, index) => {
+      const windowStart = Math.max(0, match.index - 40);
+      const windowEnd = Math.min(normalizedText.length, match.index + match.value.length + 40);
+      const localContext = `${normalizedText.slice(windowStart, windowEnd)} ${extraContext}`;
+      let score = scoreContext(`${source} ${localContext}`, baseScore);
+
+      if (/\b(?:sale|current|now|today|member|final|your price|our price)\b/i.test(localContext)) {
+        score += 14;
+      }
+
+      if (/\b(?:regular|list|original|compare|old|was|before|from|starting at|as low as)\b/i.test(localContext)) {
+        score -= 18;
+      }
+
+      if (index > 0 && /\b(?:sale|current|now|today|member|final)\b/i.test(normalizedText)) {
+        score += 4;
+      }
+
+      const candidate = makePriceCandidate({
+        value: match.value,
+        currency,
+        raw: match.value,
+        source,
+        score,
+        productTitle
+      });
+
+      return candidate ? [candidate] : [];
+    });
+  }
+
+  const fallbackMatch =
+    findCurrencySymbolPrice(normalizedText) ||
+    (parseNumericPrice(normalizedText) !== null ? normalizedText : "");
+
+  if (!fallbackMatch) {
+    return [];
+  }
+
+  const candidate = makePriceCandidate({
+    value: fallbackMatch,
+    currency,
+    raw: fallbackMatch,
+    source,
+    score: scoreContext(`${source} ${combinedContext}`, baseScore),
+    productTitle
+  });
+
+  return candidate ? [candidate] : [];
 }
 
 function collectJsonLdCandidates(node, candidates, inheritedTitle = "") {
@@ -790,12 +886,7 @@ function collectSelectorCandidates($, candidates) {
   selectors.forEach(([selector, baseScore]) => {
     $(selector).slice(0, 20).each((_, element) => {
       const text = readText($, element);
-      const match =
-        findPriceLikeMatch(text) ||
-        findCurrencySymbolPrice(text) ||
-        readAttributePrice(element, $) ||
-        findNumericOnlyPrice(text) ||
-        "";
+      const attributePrice = readAttributePrice(element, $);
       const className = ($(element).attr("class") || "").toLowerCase();
       const id = ($(element).attr("id") || "").toLowerCase();
       const dataTestId = ($(element).attr("data-testid") || "").toLowerCase();
@@ -819,22 +910,33 @@ function collectSelectorCandidates($, candidates) {
         className.includes("current") ||
         className.includes("final") ||
         className.includes("member") ||
+        className.includes("promo") ||
         dataTestId.includes("sale") ||
         dataTestId.includes("price")
       ) {
-        score += 8;
+        score += 12;
       }
 
-      const candidate = makePriceCandidate({
-        value: match,
-        raw: match || text,
+      const selectorCurrency =
+        $(element).attr("currency") ||
+        $(element).attr("data-currency") ||
+        $(element).attr("data-price-currency") ||
+        $("meta[property='product:price:currency']").attr("content") ||
+        $("meta[itemprop='priceCurrency']").attr("content") ||
+        "";
+
+      const candidateList = buildCandidatesFromText({
+        text: attributePrice || text,
+        fallbackRaw: text,
         source: "page selector",
-        score,
-        productTitle: pageTitle
+        baseScore: score,
+        productTitle: pageTitle,
+        currency: selectorCurrency,
+        extraContext: `${className} ${id} ${dataTestId} ${dataQa}`
       });
 
-      if (candidate) {
-        candidates.push(candidate);
+      if (candidateList.length) {
+        candidates.push(...candidateList);
       }
     });
   });
@@ -866,28 +968,25 @@ function collectTitleProximityCandidates($, candidates, productTitle) {
 
     element.find("*").addBack().slice(0, 40).each((_, node) => {
       const text = readText($, node);
-      const match =
-        findPriceLikeMatch(text) ||
-        findCurrencySymbolPrice(text) ||
-        readAttributePrice(node, $) ||
-        findNumericOnlyPrice(text, { maxWordCount: 3 }) ||
-        "";
+      const attributePrice = readAttributePrice(node, $);
+      const className = ($(node).attr("class") || "").toLowerCase();
+      const id = ($(node).attr("id") || "").toLowerCase();
+      const dataTestId = ($(node).attr("data-testid") || "").toLowerCase();
 
-      if (!match) {
+      const candidateList = buildCandidatesFromText({
+        text: attributePrice || text,
+        fallbackRaw: text,
+        source: "title proximity",
+        baseScore: scoreContext(text, 90),
+        productTitle,
+        extraContext: `${className} ${id} ${dataTestId}`
+      });
+
+      if (!candidateList.length) {
         return;
       }
 
-      const candidate = makePriceCandidate({
-        value: match,
-        raw: match,
-        source: "title proximity",
-        score: scoreContext(text, 90),
-        productTitle
-      });
-
-      if (candidate) {
-        candidates.push(candidate);
-      }
+      candidates.push(...candidateList);
     });
   });
 }
@@ -912,15 +1011,6 @@ function collectVisibleTextCandidates($, candidates, productTitle) {
         return;
       }
 
-      const match =
-        findPriceLikeMatch(text) ||
-        findCurrencySymbolPrice(text) ||
-        findNumericOnlyPrice(text, { maxWordCount: 2 });
-
-      if (!match) {
-        return;
-      }
-
       const className = ($(element).attr("class") || "").toLowerCase();
       let score = selectorIndex === commonProductAreaSelectors.length - 1 ? 54 : 72;
 
@@ -930,16 +1020,16 @@ function collectVisibleTextCandidates($, candidates, productTitle) {
 
       score = scoreContext(`${text} ${className}`, score);
 
-      const candidate = makePriceCandidate({
-        value: match,
-        raw: match,
+      const candidateList = buildCandidatesFromText({
+        text,
         source: "visible text",
-        score,
-        productTitle
+        baseScore: score,
+        productTitle,
+        extraContext: className
       });
 
-      if (candidate) {
-        candidates.push(candidate);
+      if (candidateList.length) {
+        candidates.push(...candidateList);
       }
     });
   });
