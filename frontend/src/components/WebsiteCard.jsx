@@ -146,6 +146,60 @@ function formatConfidence(confidence) {
   return "Low";
 }
 
+function getSourceLabel(source = "") {
+  const normalized = String(source || "").toLowerCase();
+
+  if (!normalized) {
+    return "Not identified";
+  }
+
+  if (normalized.includes("structured")) {
+    return "Structured product data";
+  }
+
+  if (normalized.includes("selector")) {
+    return "Visible product price block";
+  }
+
+  if (normalized.includes("title proximity")) {
+    return "Near the product title";
+  }
+
+  if (normalized.includes("embedded")) {
+    return "Embedded store data";
+  }
+
+  if (normalized.includes("script")) {
+    return "Store page data";
+  }
+
+  if (normalized.includes("meta")) {
+    return "Page metadata";
+  }
+
+  return source;
+}
+
+function getConfidenceNote(confidence) {
+  if (!confidence || confidence <= 0) {
+    return "Watchli has not found a strong enough price signal yet.";
+  }
+
+  if (confidence >= 90) {
+    return "This price came from a strong product-specific signal.";
+  }
+
+  if (confidence >= 75) {
+    return "This price looks reliable, but Watchli is still comparing nearby values.";
+  }
+
+  if (confidence >= 55) {
+    return "This price is usable, but the page may contain competing price signals.";
+  }
+
+  return "This page likely contains multiple competing prices, so double-check the result.";
+}
+
 export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy }) {
   const statusClasses = {
     Watching: "bg-white/[0.04] text-slate-200 border-white/10",
@@ -173,6 +227,15 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
   const productImage = website.latestProductImage || "";
   const fallbackLabel = getFallbackLabel(website);
   const domainLabel = getDomainLabel(website.url);
+  const sourceLabel = getSourceLabel(website.latestPrimaryPriceSource);
+  const previousTrackedPrice =
+    website.lastDiffSummary?.priceChange?.previousPrice ||
+    website.previousPrimaryPrice ||
+    "";
+  const currentTrackedPrice =
+    website.lastDiffSummary?.priceChange?.currentPrice ||
+    website.latestPrimaryPrice ||
+    "";
 
   return (
     <article className="glass-panel rounded-[26px] p-4 sm:p-5">
@@ -277,12 +340,46 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
             </p>
           </div>
 
+          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+            <div className="rounded-3xl border border-[#c9a37f]/18 bg-[#8d5b40]/14 p-4">
+              <p className="text-xs uppercase tracking-[0.14em] text-amber-100/80">Tracked price now</p>
+              <p className="mt-2 break-words text-2xl font-semibold text-white">
+                {currentTrackedPrice || "Not detected yet"}
+              </p>
+              <p className="mt-2 text-sm leading-6 text-slate-300">
+                {currentTrackedPrice
+                  ? "This is the price Watchli is currently monitoring for alerts."
+                  : "Run another check if the product page should already show a price."}
+              </p>
+            </div>
+
+            <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-4">
+              <p className="text-xs uppercase tracking-[0.14em] text-slate-400">Previous tracked price</p>
+              <p className="mt-2 break-words text-2xl font-semibold text-white">
+                {previousTrackedPrice || "No earlier price yet"}
+              </p>
+              <p className="mt-2 text-sm leading-6 text-slate-300">
+                {previousTrackedPrice
+                  ? "Useful for seeing what changed before the latest check."
+                  : "Watchli will show the prior tracked price once this page changes."}
+              </p>
+            </div>
+
+            <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-4 sm:col-span-2 xl:col-span-1">
+              <p className="text-xs uppercase tracking-[0.14em] text-slate-400">Why this price</p>
+              <p className="mt-2 text-sm font-medium text-white">{sourceLabel}</p>
+              <p className="mt-2 text-sm leading-6 text-slate-300">
+                {getConfidenceNote(website.latestPrimaryPriceConfidence)}
+              </p>
+            </div>
+          </div>
+
           {hasPriceMeta ? (
             <div className="grid gap-3 sm:grid-cols-3">
               <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-3.5">
                 <p className="text-xs uppercase tracking-[0.14em] text-slate-400">Price source</p>
                 <p className="mt-2 text-sm font-medium text-white">
-                  {website.latestPrimaryPriceSource || "Not identified"}
+                  {sourceLabel}
                 </p>
               </div>
               <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-3.5">
@@ -347,7 +444,7 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
               <div className="mt-4 flex flex-wrap gap-2 text-xs text-stone-200">
                 {website.latestPrimaryPriceSource ? (
                   <span className="rounded-full border border-[#d3b697]/12 bg-white/[0.06] px-3 py-1.5">
-                    Source: {website.latestPrimaryPriceSource}
+                    Source: {sourceLabel}
                   </span>
                 ) : null}
                 {website.latestPrimaryPriceConfidence ? (

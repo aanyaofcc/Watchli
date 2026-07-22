@@ -93,6 +93,60 @@ function PrimaryPriceBlock({ snapshot }) {
   );
 }
 
+function formatConfidence(confidence) {
+  if (!confidence || confidence <= 0) {
+    return "Unknown";
+  }
+
+  if (confidence >= 90) {
+    return "High";
+  }
+
+  if (confidence >= 75) {
+    return "Strong";
+  }
+
+  if (confidence >= 55) {
+    return "Medium";
+  }
+
+  return "Low";
+}
+
+function getSourceLabel(source = "") {
+  const normalized = String(source || "").toLowerCase();
+
+  if (!normalized) {
+    return "Not identified";
+  }
+
+  if (normalized.includes("structured")) {
+    return "Structured product data";
+  }
+
+  if (normalized.includes("selector")) {
+    return "Visible product price block";
+  }
+
+  if (normalized.includes("title proximity")) {
+    return "Near the product title";
+  }
+
+  if (normalized.includes("embedded")) {
+    return "Embedded store data";
+  }
+
+  if (normalized.includes("script")) {
+    return "Store page data";
+  }
+
+  if (normalized.includes("meta")) {
+    return "Page metadata";
+  }
+
+  return source;
+}
+
 function getPriceSummary(priceChange) {
   if (!priceChange?.changed) {
     return "";
@@ -215,12 +269,24 @@ export function HistoryModal({
               </p>
             </div>
             <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+              <p className="text-xs uppercase tracking-[0.14em] text-slate-400">Price source</p>
+              <p className="mt-2 text-lg font-semibold text-white">
+                {getSourceLabel(website.latestPrimaryPriceSource)}
+              </p>
+            </div>
+            <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
               <p className="text-xs uppercase tracking-[0.14em] text-slate-400">Availability</p>
               <p className="mt-2 text-lg font-semibold text-white">
                 {website.latestAvailabilityLabel || "Unknown"}
               </p>
             </div>
             <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+              <p className="text-xs uppercase tracking-[0.14em] text-slate-400">Confidence</p>
+              <p className="mt-2 text-lg font-semibold text-white">
+                {formatConfidence(website.latestPrimaryPriceConfidence)}
+              </p>
+            </div>
+            <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4 md:col-span-2">
               <p className="text-xs uppercase tracking-[0.14em] text-slate-400">Last check</p>
               <p className="mt-2 text-lg font-semibold text-white">
                 {formatDate(website.lastChecked)}
@@ -339,6 +405,18 @@ export function HistoryModal({
                         {snapshot.snapshotText}
                       </p>
                       <PrimaryPriceBlock snapshot={snapshot} />
+                      <div className="mt-4 flex flex-wrap gap-2 text-xs text-stone-200">
+                        {snapshot.primaryPriceSource ? (
+                          <span className="rounded-full border border-[#d3b697]/12 bg-white/[0.06] px-3 py-1">
+                            Source: {getSourceLabel(snapshot.primaryPriceSource)}
+                          </span>
+                        ) : null}
+                        {snapshot.primaryPriceConfidence ? (
+                          <span className="rounded-full border border-[#d3b697]/12 bg-white/[0.06] px-3 py-1">
+                            Confidence: {formatConfidence(snapshot.primaryPriceConfidence)}
+                          </span>
+                        ) : null}
+                      </div>
                       <PricePills prices={snapshot.detectedPrices || snapshot.diffSummary?.currentPrices} />
                     </div>
                   ) : (
