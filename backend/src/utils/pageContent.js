@@ -640,6 +640,21 @@ function looksLikeConcatenatedPrices(text) {
   return decimalMatches.length > 1;
 }
 
+function candidateValueLooksLikeDiscount(value, context = "") {
+  const numericValue = parseNumericPrice(value);
+  const normalizedContext = String(context || "").toLowerCase();
+
+  if (!Number.isFinite(numericValue)) {
+    return false;
+  }
+
+  if (numericValue > 60) {
+    return false;
+  }
+
+  return /\bsave\b|\boff\b|\bdiscount\b/.test(normalizedContext);
+}
+
 function readAttributePrice(element, $) {
   const attributeKeys = [
     "data-price",
@@ -716,6 +731,7 @@ function buildCandidatesFromText({
       const followingContext = normalizedText
         .slice(match.index + match.value.length, Math.min(normalizedText.length, match.index + match.value.length + 24))
         .toLowerCase();
+      const normalizedContext = `${precedingContext} ${match.value.toLowerCase()} ${followingContext}`;
       let score = scoreContext(`${source} ${localContext}`, baseScore);
 
       if (/\b(?:sale|current|now|today|member|final|your price|our price)\b/i.test(localContext)) {
@@ -760,6 +776,26 @@ function buildCandidatesFromText({
 
       if (/^\s*(?:sale|when purchased online|new lower price)\b/.test(followingContext)) {
         score += 8;
+      }
+
+      if (/\bsave\s*$/.test(precedingContext) || /\bsave up to\s*$/.test(precedingContext)) {
+        score -= 70;
+      }
+
+      if (/\b(?:off|discount)\b/.test(followingContext) && /\(\s*\d+%/.test(followingContext)) {
+        score -= 50;
+      }
+
+      if (/\bsave\b/.test(normalizedContext) && candidateValueLooksLikeDiscount(match.value, normalizedContext)) {
+        score -= 60;
+      }
+
+      if (
+        index === 0 &&
+        /\breg\.?\b|\borig\.?\b|\bwas\b|\bcompare\b/.test(normalizedText) &&
+        /\b(?:sale|when purchased online|new lower price)\b/.test(normalizedText)
+      ) {
+        score += 18;
       }
 
       if (index > 0 && /\b(?:sale|current|now|today|member|final)\b/i.test(normalizedText)) {
