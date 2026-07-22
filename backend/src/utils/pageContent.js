@@ -77,7 +77,13 @@ const NEGATIVE_PRICE_CONTEXT = [
   "interest free",
   "save up to",
   "off",
-  "discount"
+  "discount",
+  "reg",
+  "orig",
+  "original price",
+  "price reduced from",
+  "was price",
+  "msrp"
 ];
 const POSITIVE_PRICE_CONTEXT = [
   "price",
@@ -102,9 +108,13 @@ const POSITIVE_PRICE_CONTEXT = [
   "add to bag"
 ];
 const HARD_NEGATIVE_PRICE_CONTEXT_REGEX =
-  /\b(?:save|saving|discount|coupon|promo code|with code|or 4 payments|or 3 payments|pay in 4|pay in 3|per month|monthly|installment|afterpay|klarna|affirm|zip|interest free|reward|rewards|points|cashback)\b/i;
+  /\b(?:save|saving|discount|coupon|promo code|with code|or 4 payments|or 3 payments|pay in 4|pay in 3|per month|monthly|installment|afterpay|klarna|affirm|zip|interest free|reward|rewards|points|cashback|msrp|reg\.?|orig\.?|price reduced from)\b/i;
 const RANGE_PRICE_CONTEXT_REGEX =
   /\b(?:from|starting at|as low as|low price|lowprice|min price|minimum price|lowest price|entry price|base price)\b/i;
+const UNIT_PRICE_CONTEXT_REGEX =
+  /(?:\/|\bper\b)\s*(?:oz|ounce|ounces|fl oz|fluid ounce|fluid ounces|lb|pound|pounds|kg|g|gram|grams|ct|count|ea|each|ft|inch|inches|yard|yards|sq ft|square foot|ml|l|liter|liters)\b/i;
+const TARGET_POSITIVE_PRICE_CONTEXT_REGEX =
+  /\b(?:when purchased online|new lower price|sale|lower price on select items)\b/i;
 
 function safeJsonParse(value) {
   try {
@@ -702,6 +712,10 @@ function buildCandidatesFromText({
       const windowStart = Math.max(0, match.index - 40);
       const windowEnd = Math.min(normalizedText.length, match.index + match.value.length + 40);
       const localContext = `${normalizedText.slice(windowStart, windowEnd)} ${extraContext}`;
+      const precedingContext = normalizedText.slice(Math.max(0, match.index - 24), match.index).toLowerCase();
+      const followingContext = normalizedText
+        .slice(match.index + match.value.length, Math.min(normalizedText.length, match.index + match.value.length + 24))
+        .toLowerCase();
       let score = scoreContext(`${source} ${localContext}`, baseScore);
 
       if (/\b(?:sale|current|now|today|member|final|your price|our price)\b/i.test(localContext)) {
@@ -718,6 +732,34 @@ function buildCandidatesFromText({
 
       if (RANGE_PRICE_CONTEXT_REGEX.test(localContext)) {
         score -= 26;
+      }
+
+      if (UNIT_PRICE_CONTEXT_REGEX.test(localContext)) {
+        score -= 40;
+      }
+
+      if (/\breg\.?\b/i.test(localContext)) {
+        score -= 18;
+      }
+
+      if (/\borig\.?\b/i.test(localContext)) {
+        score -= 18;
+      }
+
+      if (TARGET_POSITIVE_PRICE_CONTEXT_REGEX.test(localContext)) {
+        score += 10;
+      }
+
+      if (/\b(?:to|now|sale|current|today|final|member)\s*$/.test(precedingContext)) {
+        score += 18;
+      }
+
+      if (/\b(?:reg|orig|was|from|compare|msrp)\s*$/.test(precedingContext)) {
+        score -= 24;
+      }
+
+      if (/^\s*(?:sale|when purchased online|new lower price)\b/.test(followingContext)) {
+        score += 8;
       }
 
       if (index > 0 && /\b(?:sale|current|now|today|member|final)\b/i.test(normalizedText)) {
@@ -1305,6 +1347,41 @@ function pruneRangeFloorCandidates(candidates) {
   });
 }
 
+function pruneUnitPriceCandidates(candidates) {
+  return candidates.filter((candidate, _, list) => {
+    const raw = String(candidate.raw || "").toLowerCase();
+    const source = String(candidate.source || "").toLowerCase();
+    const looksLikeUnitPrice =
+      UNIT_PRICE_CONTEXT_REGEX.test(raw) ||
+      raw.includes("/ounce") ||
+      raw.includes("/oz") ||
+      raw.includes("/count") ||
+      raw.includes("/lb") ||
+      raw.includes("/fl") ||
+      source.includes("unit");
+
+    if (!looksLikeUnitPrice) {
+      return true;
+    }
+
+    const candidateValue = Number(candidate.value || 0);
+
+    return !list.some((otherCandidate) => {
+      if (otherCandidate === candidate) {
+        return false;
+      }
+
+      const otherValue = Number(otherCandidate.value || 0);
+
+      if (!Number.isFinite(candidateValue) || !Number.isFinite(otherValue)) {
+        return false;
+      }
+
+      return otherValue >= candidateValue + 2 && (otherCandidate.score || 0) >= (candidate.score || 0) - 8;
+    });
+  });
+}
+
 function collectAvailabilityFromMarkup($) {
   const statusSignals = [];
   const selectors = [
@@ -1486,7 +1563,9 @@ export function extractProductSignals(html, pageUrl = "") {
 
   const uniqueCandidates = dedupeCandidates(
     pruneRangeFloorCandidates(
-      pruneSuspiciousLowOutliers(pruneRelatedFragmentCandidates(candidates))
+      pruneUnitPriceCandidates(
+        pruneSuspiciousLowOutliers(pruneRelatedFragmentCandidates(candidates))
+      )
     )
   );
   const primaryCandidate = uniqueCandidates[0] || null;
