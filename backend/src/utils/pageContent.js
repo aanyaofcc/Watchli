@@ -103,6 +103,8 @@ const POSITIVE_PRICE_CONTEXT = [
 ];
 const HARD_NEGATIVE_PRICE_CONTEXT_REGEX =
   /\b(?:save|saving|discount|coupon|promo code|with code|or 4 payments|or 3 payments|pay in 4|pay in 3|per month|monthly|installment|afterpay|klarna|affirm|zip|interest free|reward|rewards|points|cashback)\b/i;
+const RANGE_PRICE_CONTEXT_REGEX =
+  /\b(?:from|starting at|as low as|low price|lowprice|min price|minimum price|lowest price|entry price|base price)\b/i;
 
 function safeJsonParse(value) {
   try {
@@ -613,6 +615,21 @@ function findNumericOnlyPrice(text, { maxWordCount = 4 } = {}) {
   return parseNumericPrice(normalized) !== null ? normalized : "";
 }
 
+function looksLikeConcatenatedPrices(text) {
+  const normalized = normalizeWhitespace(text || "");
+
+  if (!normalized) {
+    return false;
+  }
+
+  if (/(?:\d+[.,]\d{2}){2,}/.test(normalized.replace(/\s+/g, ""))) {
+    return true;
+  }
+
+  const decimalMatches = normalized.match(/\d+[.,]\d{2}/g) || [];
+  return decimalMatches.length > 1;
+}
+
 function readAttributePrice(element, $) {
   const attributeKeys = [
     "data-price",
@@ -699,6 +716,10 @@ function buildCandidatesFromText({
         score -= 30;
       }
 
+      if (RANGE_PRICE_CONTEXT_REGEX.test(localContext)) {
+        score -= 26;
+      }
+
       if (index > 0 && /\b(?:sale|current|now|today|member|final)\b/i.test(normalizedText)) {
         score += 4;
       }
@@ -718,7 +739,9 @@ function buildCandidatesFromText({
 
   const fallbackMatch =
     findCurrencySymbolPrice(normalizedText) ||
-    (parseNumericPrice(normalizedText) !== null ? normalizedText : "");
+    (!looksLikeConcatenatedPrices(normalizedText) && parseNumericPrice(normalizedText) !== null
+      ? normalizedText
+      : "");
 
   if (!fallbackMatch) {
     return [];
@@ -756,8 +779,8 @@ function collectJsonLdCandidates(node, candidates, inheritedTitle = "") {
     value: node.price ?? node.lowPrice,
     currency: node.priceCurrency,
     raw: node.price ?? node.lowPrice ?? "",
-    source: "structured data",
-    score: node.price ? 100 : 94,
+    source: node.price ? "structured data" : "structured low price",
+    score: node.price ? 100 : 58,
     productTitle
   });
 
@@ -777,8 +800,8 @@ function collectJsonLdCandidates(node, candidates, inheritedTitle = "") {
       value: offer?.price ?? offer?.lowPrice,
       currency: offer?.priceCurrency ?? node.priceCurrency,
       raw: offer?.price ?? offer?.lowPrice ?? "",
-      source: "structured data",
-      score: (offer?.price ? 100 : 92) + availabilityAdjustment,
+      source: offer?.price ? "structured data" : "structured low price",
+      score: (offer?.price ? 100 : 54) + availabilityAdjustment,
       productTitle: firstText(offer?.name || productTitle)
     });
 
@@ -942,14 +965,18 @@ function collectEmbeddedStoreDataCandidates($, candidates, productTitle) {
         }
 
         if (key.includes("list") || key.includes("full") || key.includes("max")) {
-          score -= 8;
+          score -= 14;
+        }
+
+        if (key.includes("min") || key.includes("low")) {
+          score -= 28;
         }
 
         const candidate = makePriceCandidate({
           value: rawPrice,
           currency,
           raw: rawPrice,
-          source: "embedded store data",
+          source: key.includes("min") || key.includes("low") ? "embedded low price" : "embedded store data",
           score,
           productTitle
         });
@@ -988,7 +1015,7 @@ function collectSelectorCandidates($, candidates) {
     ["[data-selenium*='price' i]", 82],
     ["[itemprop='offers']", 76],
     ["[itemprop='price']", 94],
-    ["[itemprop='lowPrice']", 92],
+    ["[itemprop='lowPrice']", 48],
     ["[aria-label*='price' i]", 74],
     ["[aria-label*='$']", 76],
     ["[class*='price']", 68],
@@ -1227,7 +1254,7 @@ function pruneSuspiciousLowOutliers(candidates) {
         return false;
       }
 
-      if (candidateValue >= 40) {
+      if (candidateValue >= 60) {
         return false;
       }
 
@@ -1235,6 +1262,45 @@ function pruneSuspiciousLowOutliers(candidates) {
       const similarOrBetterScore = (otherCandidate.score || 0) >= (candidate.score || 0) - 4;
 
       return muchHigherValue && similarOrBetterScore;
+    });
+  });
+}
+
+function pruneRangeFloorCandidates(candidates) {
+  return candidates.filter((candidate, _, list) => {
+    const source = String(candidate.source || "").toLowerCase();
+    const raw = String(candidate.raw || "").toLowerCase();
+    const isRangeFloor =
+      source.includes("low price") ||
+      raw.includes("lowprice") ||
+      raw.includes("low price") ||
+      raw.includes("from") ||
+      raw.includes("starting at") ||
+      raw.includes("as low as");
+
+    if (!isRangeFloor) {
+      return true;
+    }
+
+    const candidateValue = Number(candidate.value || 0);
+
+    return !list.some((otherCandidate) => {
+      if (otherCandidate === candidate) {
+        return false;
+      }
+
+      const otherValue = Number(otherCandidate.value || 0);
+
+      if (!Number.isFinite(candidateValue) || !Number.isFinite(otherValue)) {
+        return false;
+      }
+
+      const otherSource = String(otherCandidate.source || "").toLowerCase();
+      const strongerSource = !otherSource.includes("low price");
+      const clearlyHigher = otherValue >= candidateValue + 10 || otherValue >= candidateValue * 1.2;
+      const similarOrBetterScore = (otherCandidate.score || 0) >= (candidate.score || 0) - 6;
+
+      return strongerSource && clearlyHigher && similarOrBetterScore;
     });
   });
 }
@@ -1419,7 +1485,9 @@ export function extractProductSignals(html, pageUrl = "") {
   collectDomImageCandidates($, imageCandidates, pageUrl, productTitle);
 
   const uniqueCandidates = dedupeCandidates(
-    pruneSuspiciousLowOutliers(pruneRelatedFragmentCandidates(candidates))
+    pruneRangeFloorCandidates(
+      pruneSuspiciousLowOutliers(pruneRelatedFragmentCandidates(candidates))
+    )
   );
   const primaryCandidate = uniqueCandidates[0] || null;
   const primaryImage = selectPrimaryImage(imageCandidates, productTitle);
