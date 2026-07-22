@@ -101,6 +101,8 @@ const POSITIVE_PRICE_CONTEXT = [
   "add to cart",
   "add to bag"
 ];
+const HARD_NEGATIVE_PRICE_CONTEXT_REGEX =
+  /\b(?:save|saving|discount|coupon|promo code|with code|or 4 payments|or 3 payments|pay in 4|pay in 3|per month|monthly|installment|afterpay|klarna|affirm|zip|interest free|reward|rewards|points|cashback)\b/i;
 
 function safeJsonParse(value) {
   try {
@@ -497,6 +499,13 @@ function readSplitPrice(element, $) {
     "[data-currency]",
     "[data-testid*='currency' i]"
   ];
+  const hasWholeSelector = wholeSelectors.some((selector) => root.find(selector).length > 0);
+  const hasFractionSelector = fractionSelectors.some((selector) => root.find(selector).length > 0);
+  const hasSplitStructure = hasWholeSelector || hasFractionSelector;
+
+  if (!hasSplitStructure) {
+    return "";
+  }
 
   const whole =
     wholeSelectors
@@ -522,11 +531,16 @@ function readSplitPrice(element, $) {
 }
 
 function isPriceFragmentElement(element, $) {
+  const tagName = String(element?.tagName || element?.name || "").toLowerCase();
   const className = ($(element).attr("class") || "").toLowerCase();
   const id = ($(element).attr("id") || "").toLowerCase();
   const dataTestId = ($(element).attr("data-testid") || "").toLowerCase();
   const text = readText($, element);
   const context = `${className} ${id} ${dataTestId}`;
+
+  if (tagName === "sup" && /^\d{1,2}$/.test(text)) {
+    return true;
+  }
 
   if (!/\b(?:fraction|decimal|cents|cent|whole)\b/i.test(context)) {
     return false;
@@ -679,6 +693,10 @@ function buildCandidatesFromText({
 
       if (/\b(?:regular|list|original|compare|old|was|before|from|starting at|as low as)\b/i.test(localContext)) {
         score -= 18;
+      }
+
+      if (HARD_NEGATIVE_PRICE_CONTEXT_REGEX.test(localContext)) {
+        score -= 30;
       }
 
       if (index > 0 && /\b(?:sale|current|now|today|member|final)\b/i.test(normalizedText)) {
@@ -1161,6 +1179,66 @@ function dedupeCandidates(candidates) {
   return [...byKey.values()].sort((left, right) => right.score - left.score);
 }
 
+function pruneRelatedFragmentCandidates(candidates) {
+  return candidates.filter((candidate, _, list) => {
+    return !list.some((otherCandidate) => {
+      if (otherCandidate === candidate) {
+        return false;
+      }
+
+      if ((otherCandidate.score || 0) < (candidate.score || 0) + 8) {
+        return false;
+      }
+
+      const otherValue = Number(otherCandidate.value || 0);
+      const candidateValue = Number(candidate.value || 0);
+
+      if (!Number.isFinite(otherValue) || !Number.isFinite(candidateValue)) {
+        return false;
+      }
+
+      const otherHasCents = Math.round((otherValue % 1) * 100) > 0;
+
+      if (!otherHasCents) {
+        return false;
+      }
+
+      const wholeMatches = candidateValue === Math.floor(otherValue);
+      const centsMatches =
+        candidateValue < 100 &&
+        candidateValue === Math.round((otherValue % 1) * 100);
+
+      return wholeMatches || centsMatches;
+    });
+  });
+}
+
+function pruneSuspiciousLowOutliers(candidates) {
+  return candidates.filter((candidate, _, list) => {
+    return !list.some((otherCandidate) => {
+      if (otherCandidate === candidate) {
+        return false;
+      }
+
+      const candidateValue = Number(candidate.value || 0);
+      const otherValue = Number(otherCandidate.value || 0);
+
+      if (!Number.isFinite(candidateValue) || !Number.isFinite(otherValue)) {
+        return false;
+      }
+
+      if (candidateValue >= 40) {
+        return false;
+      }
+
+      const muchHigherValue = otherValue >= Math.max(candidateValue * 2.5, candidateValue + 25);
+      const similarOrBetterScore = (otherCandidate.score || 0) >= (candidate.score || 0) - 4;
+
+      return muchHigherValue && similarOrBetterScore;
+    });
+  });
+}
+
 function collectAvailabilityFromMarkup($) {
   const statusSignals = [];
   const selectors = [
@@ -1340,7 +1418,9 @@ export function extractProductSignals(html, pageUrl = "") {
   collectMetaImageCandidates($, imageCandidates, pageUrl);
   collectDomImageCandidates($, imageCandidates, pageUrl, productTitle);
 
-  const uniqueCandidates = dedupeCandidates(candidates);
+  const uniqueCandidates = dedupeCandidates(
+    pruneSuspiciousLowOutliers(pruneRelatedFragmentCandidates(candidates))
+  );
   const primaryCandidate = uniqueCandidates[0] || null;
   const primaryImage = selectPrimaryImage(imageCandidates, productTitle);
 
