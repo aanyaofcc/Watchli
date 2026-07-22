@@ -15,5 +15,14 @@ export function normalizeWebsiteUrl(input) {
     parsed.pathname = parsed.pathname.replace(/\/+$/, "");
   }
 
+  if (parsed.hostname.endsWith("target.com")) {
+    const preselect = parsed.searchParams.get("preselect");
+
+    if (/^\d+$/.test(preselect || "")) {
+      parsed.pathname = `/p/-/A-${preselect}`;
+      parsed.search = "";
+    }
+  }
+
   return parsed.toString();
 }
