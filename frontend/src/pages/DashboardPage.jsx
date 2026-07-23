@@ -67,6 +67,7 @@ export function DashboardPage() {
   });
   const [scheduler, setScheduler] = useState(null);
   const [url, setUrl] = useState("");
+  const [watchType, setWatchType] = useState("product");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -92,6 +93,8 @@ export function DashboardPage() {
     (website) => (website.latestAvailabilityStatus || "unknown") === "available"
   );
   const priceAwareWebsites = websites.filter((website) => website.latestPrimaryPrice);
+  const productWatchCount = websites.filter((website) => (website.watchType || "product") === "product").length;
+  const pageWatchCount = websites.filter((website) => (website.watchType || "product") === "page").length;
   const mostRecentWebsite = [...websites].sort((left, right) => {
     const leftDate = new Date(left.lastChanged || left.lastChecked || left.createdAt || 0).getTime();
     const rightDate = new Date(right.lastChanged || right.lastChecked || right.createdAt || 0).getTime();
@@ -221,7 +224,7 @@ export function DashboardPage() {
     setSubmitting(true);
 
     try {
-      const payload = await createWebsite(normalizedUrl);
+      const payload = await createWebsite(normalizedUrl, watchType);
       trackEvent("add_website", {
         source: "dashboard",
         hostname: (() => {
@@ -239,6 +242,7 @@ export function DashboardPage() {
       await loadWebsites({ showRefreshing: true });
       setSuccess("Website added to your dashboard.");
       setUrl("");
+      setWatchType("product");
     } catch (submitError) {
       setError(submitError.message);
     } finally {
@@ -456,14 +460,38 @@ export function DashboardPage() {
 
           <form className="mt-6 space-y-4" onSubmit={handleAddWebsite}>
             <label className="block">
-              <span className="mb-2 block text-sm text-slate-200">Add Product Page</span>
+              <span className="mb-2 block text-sm text-slate-200">Add Website</span>
+              <div className="mb-3 flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={() => setWatchType("product")}
+                  className={`rounded-full border px-3 py-1.5 text-sm transition ${
+                    watchType === "product"
+                      ? "border-[#c9a37f]/18 bg-[#8d5b40]/20 text-amber-50"
+                      : "border-white/10 bg-white/5 text-slate-200"
+                  }`}
+                >
+                  Product price watch
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setWatchType("page")}
+                  className={`rounded-full border px-3 py-1.5 text-sm transition ${
+                    watchType === "page"
+                      ? "border-[#c9a37f]/18 bg-[#8d5b40]/20 text-amber-50"
+                      : "border-white/10 bg-white/5 text-slate-200"
+                  }`}
+                >
+                  Website content watch
+                </button>
+              </div>
               <div className="flex flex-col gap-3 sm:flex-row">
                 <input
                   ref={urlInputRef}
                   type="url"
                   value={url}
                   onChange={(event) => setUrl(event.target.value)}
-                  placeholder="https://store.com/product/example"
+                  placeholder={watchType === "page" ? "https://example.com/announcements" : "https://store.com/product/example"}
                   className="w-full rounded-2xl border border-[#d3b697]/18 bg-[#f6eee5] px-4 py-3 text-[#2f2722] outline-none transition placeholder:text-[#8b7765] focus:border-[#b5835a]"
                 />
                 <button
@@ -474,6 +502,11 @@ export function DashboardPage() {
                   {submitting ? "Adding..." : "Add Website"}
                 </button>
               </div>
+              <p className="mt-3 text-sm leading-6 text-slate-300">
+                {watchType === "page"
+                  ? "Use content watch for blogs, updates pages, docs, or any website where you want to know when the readable text changes."
+                  : "Use product price watch for shopping pages where Watchli should focus on price and availability changes."}
+              </p>
             </label>
           </form>
 
@@ -487,10 +520,13 @@ export function DashboardPage() {
             <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5">
               {priceAwareWebsites.length} prices found
             </span>
+            <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5">
+              {pageWatchCount} content watches
+            </span>
           </div>
 
           <div className="mt-4 rounded-2xl border border-white/12 bg-white/[0.08] px-4 py-3 text-sm leading-6 text-slate-100/90">
-            Watchli emails alerts only when a tracked product price goes up, goes down, or the item becomes sold out or unavailable.
+            Watchli sends product alerts for price increases, price drops, and sold-out changes. Website content watches send alerts when the page text changes.
           </div>
 
           <div className="mt-5 grid gap-3 sm:grid-cols-3">
@@ -499,8 +535,8 @@ export function DashboardPage() {
               <p className="display-font mt-2 text-2xl font-semibold text-white">{websites.length}</p>
             </div>
             <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
-              <p className="text-sm text-slate-200">Price found</p>
-              <p className="display-font mt-2 text-2xl font-semibold text-white">{priceAwareWebsites.length}</p>
+              <p className="text-sm text-slate-200">Product watches</p>
+              <p className="display-font mt-2 text-2xl font-semibold text-white">{productWatchCount}</p>
             </div>
             <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
               <p className="text-sm text-slate-200">Need attention</p>

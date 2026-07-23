@@ -201,6 +201,8 @@ function getConfidenceNote(confidence) {
 }
 
 export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy }) {
+  const watchType = website.watchType || "product";
+  const isPageWatch = watchType === "page";
   const statusClasses = {
     Watching: "bg-white/[0.04] text-slate-200 border-white/10",
     Changed: "bg-[#8d5b40]/18 text-amber-50 border-[#c9a37f]/18",
@@ -236,6 +238,10 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
     website.lastDiffSummary?.priceChange?.currentPrice ||
     website.latestPrimaryPrice ||
     "";
+  const hasContentChange =
+    isPageWatch &&
+    website.status === "Changed" &&
+    Boolean(website.lastDiffSummary?.contentChanged);
 
   return (
     <article className="glass-panel rounded-[26px] p-4 sm:p-5">
@@ -262,15 +268,22 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
 
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center gap-2">
-                <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Watched page</p>
+                <p className="text-xs uppercase tracking-[0.18em] text-slate-500">
+                  {isPageWatch ? "Watched website" : "Watched page"}
+                </p>
+                <div className="inline-flex rounded-full border border-white/10 bg-white/[0.05] px-3 py-1 text-xs font-medium text-slate-300">
+                  {isPageWatch ? "Content watch" : "Price watch"}
+                </div>
                 <div
                   className={`inline-flex rounded-full border px-3 py-1 text-xs font-medium ${statusClasses[website.status] || statusClasses.Watching}`}
                 >
                   {website.statusLabel || website.status}
                 </div>
-                <div className={`inline-flex rounded-full border px-3 py-1 text-xs font-medium ${availabilityClasses}`}>
-                  {availabilityLabel}
-                </div>
+                {!isPageWatch ? (
+                  <div className={`inline-flex rounded-full border px-3 py-1 text-xs font-medium ${availabilityClasses}`}>
+                    {availabilityLabel}
+                  </div>
+                ) : null}
                 {website.latestProductImageSource ? (
                   <div className="inline-flex rounded-full border border-white/10 bg-white/[0.05] px-3 py-1 text-xs font-medium text-slate-300">
                     Image: {website.latestProductImageSource}
@@ -278,7 +291,7 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
                 ) : null}
               </div>
               <h3 className="display-font mt-3 break-words text-xl font-semibold text-white sm:text-2xl">
-                {website.latestProductTitle || "Tracked product page"}
+                {website.latestProductTitle || (isPageWatch ? "Tracked website" : "Tracked product page")}
               </h3>
               <div className="mt-2 flex items-start gap-2 text-sm text-slate-400">
                 <ExternalLink className="mt-0.5 h-4 w-4 shrink-0 text-slate-500" />
@@ -300,15 +313,20 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
       <div className="mt-5 grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(280px,340px)]">
         <div className="space-y-3">
           <div className="flex flex-wrap gap-2.5">
-            {website.latestPrimaryPrice ? (
+            {!isPageWatch && website.latestPrimaryPrice ? (
               <div className="inline-flex items-center gap-2 rounded-full border border-[#c9a37f]/18 bg-[#8d5b40]/20 px-3 py-1.5 text-sm text-amber-50">
                 <DollarSign className="h-4 w-4" />
                 {website.latestPrimaryPrice}
               </div>
-            ) : (
+            ) : !isPageWatch ? (
               <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-slate-300">
                 <DollarSign className="h-4 w-4" />
                 No price yet
+              </div>
+            ) : (
+              <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-slate-300">
+                <TextSearch className="h-4 w-4" />
+                Watching page content
               </div>
             )}
 
@@ -317,10 +335,15 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
                 <PackageSearch className="h-4 w-4" />
                 Check failed
               </div>
-            ) : website.lastDiffSummary?.priceChange?.changed ? (
+            ) : !isPageWatch && website.lastDiffSummary?.priceChange?.changed ? (
               <div className="inline-flex items-center gap-2 rounded-full border border-[#c9a37f]/18 bg-[#8d5b40]/20 px-3 py-1.5 text-sm text-amber-50">
                 <DollarSign className="h-4 w-4" />
                 {getPriceSummary(website.lastDiffSummary.priceChange)}
+              </div>
+            ) : hasContentChange ? (
+              <div className="inline-flex items-center gap-2 rounded-full border border-[#c9a37f]/18 bg-[#8d5b40]/20 px-3 py-1.5 text-sm text-amber-50">
+                <TextSearch className="h-4 w-4" />
+                Content changed
               </div>
             ) : (
               <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-slate-300">
@@ -334,12 +357,43 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
             <p className="text-sm leading-6 text-slate-300">
               {website.status === "Error"
                 ? website.lastErrorMessage || "The website could not be checked successfully."
-                : website.lastDiffSummary?.priceChange?.changed
+                : hasContentChange
+                  ? "Watchli detected a readable content change on this website."
+                  : website.lastDiffSummary?.priceChange?.changed
                   ? website.lastDiffSummary.priceChange.label
-                  : "Watchli is standing by for price, availability, or content changes on this page."}
+                  : isPageWatch
+                    ? "Watchli is standing by for content changes on this website."
+                    : "Watchli is standing by for price, availability, or content changes on this page."}
             </p>
           </div>
 
+          {isPageWatch ? (
+            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+              <div className="rounded-3xl border border-[#c9a37f]/18 bg-[#8d5b40]/14 p-4">
+                <p className="text-xs uppercase tracking-[0.14em] text-amber-100/80">Latest preview</p>
+                <p className="mt-2 text-sm leading-6 text-white">
+                  {website.lastDiffSummary?.currentPreview || website.latestSnapshotText?.slice(0, 160) || "No preview yet"}
+                </p>
+              </div>
+
+              <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-4">
+                <p className="text-xs uppercase tracking-[0.14em] text-slate-400">Previous preview</p>
+                <p className="mt-2 text-sm leading-6 text-white">
+                  {website.lastDiffSummary?.previousPreview || "No earlier snapshot yet"}
+                </p>
+              </div>
+
+              <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-4">
+                <p className="text-xs uppercase tracking-[0.14em] text-slate-400">Changed words</p>
+                <p className="mt-2 break-words text-2xl font-semibold text-white">
+                  {website.lastDiffSummary?.changedWordCount || 0}
+                </p>
+                <p className="mt-2 text-sm leading-6 text-slate-300">
+                  Watchli compares the readable page text between checks for this watch.
+                </p>
+              </div>
+            </div>
+          ) : (
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
             <div className="rounded-3xl border border-[#c9a37f]/18 bg-[#8d5b40]/14 p-4">
               <p className="text-xs uppercase tracking-[0.14em] text-amber-100/80">Tracked price now</p>
@@ -373,8 +427,9 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
               </p>
             </div>
           </div>
+          )}
 
-          {hasPriceMeta ? (
+          {!isPageWatch && hasPriceMeta ? (
             <div className="grid gap-3 sm:grid-cols-3">
               <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-3.5">
                 <p className="text-xs uppercase tracking-[0.14em] text-slate-400">Price source</p>
@@ -404,7 +459,7 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
           ) : null}
         </div>
 
-        {website.lastDiffSummary?.priceChange?.changed ? (
+        {!isPageWatch && website.lastDiffSummary?.priceChange?.changed ? (
           <div className="rounded-3xl border border-[#c9a37f]/18 bg-[#8d5b40]/20 p-4">
             <p className="text-xs uppercase tracking-[0.16em] text-amber-50">Latest price change</p>
             <p className="mt-2 text-base font-semibold text-white">{getPriceDirectionLabel(website.lastDiffSummary.priceChange)}</p>
@@ -423,16 +478,28 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
               </div>
             </div>
           </div>
+        ) : isPageWatch && hasContentChange ? (
+          <div className="rounded-3xl border border-[#c9a37f]/18 bg-[#8d5b40]/20 p-4">
+            <p className="text-xs uppercase tracking-[0.16em] text-amber-50">Latest website change</p>
+            <p className="mt-2 text-base font-semibold text-white">Content changed on the watched page</p>
+            <p className="mt-2 text-sm leading-6 text-slate-200">
+              {website.lastDiffSummary?.currentPreview || "Open history to compare the latest saved snapshots."}
+            </p>
+          </div>
         ) : (
           <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-4">
             <p className="text-xs uppercase tracking-[0.16em] text-slate-400">Current watch state</p>
             <p className="mt-2 text-base font-semibold text-white">
-              {website.latestPrimaryPrice
+              {!isPageWatch && website.latestPrimaryPrice
                 ? `Tracking around ${website.latestPrimaryPrice}`
-                : "Waiting for a stronger price signal"}
+                : isPageWatch
+                  ? "Watching for content updates"
+                  : "Waiting for a stronger price signal"}
             </p>
             <p className="mt-2 text-sm leading-6 text-slate-300">
-              {availability === "available"
+              {isPageWatch
+                ? "Run another check or open history if you want to compare the latest readable page content."
+                : availability === "available"
                 ? "The latest check suggests the product is currently available."
                 : availability === "sold_out"
                   ? "The latest check suggests the item is sold out."
@@ -440,7 +507,7 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
                     ? "The latest check suggests the page is no longer available."
                     : "Run another check or open history for more detail."}
             </p>
-            {website.latestPrimaryPriceSource || website.latestPrimaryPriceConfidence ? (
+            {!isPageWatch && (website.latestPrimaryPriceSource || website.latestPrimaryPriceConfidence) ? (
               <div className="mt-4 flex flex-wrap gap-2 text-xs text-stone-200">
                 {website.latestPrimaryPriceSource ? (
                   <span className="rounded-full border border-[#d3b697]/12 bg-white/[0.06] px-3 py-1.5">

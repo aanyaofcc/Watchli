@@ -13,6 +13,10 @@ const SNAPSHOTS_COLLECTION = "snapshots";
 const SYSTEM_COLLECTION = "system";
 const STATUS_DOC = "status";
 
+function normalizeWatchType(value) {
+  return value === "page" ? "page" : "product";
+}
+
 function serializeTimestamp(value) {
   if (!value) {
     return null;
@@ -354,10 +358,11 @@ export async function inspectWebsiteUrl({ url }) {
   }
 }
 
-export async function createWebsiteForUser({ userId, url }) {
+export async function createWebsiteForUser({ userId, url, watchType = "product" }) {
   const db = getDb();
   const adminDb = getAdmin();
   const normalizedUrl = normalizeWebsiteUrl(url);
+  const normalizedWatchType = normalizeWatchType(watchType);
   const existingWebsitesSnapshot = await db
     .collection(WEBSITES_COLLECTION)
     .where("userId", "==", userId)
@@ -388,6 +393,7 @@ export async function createWebsiteForUser({ userId, url }) {
     userId,
     url: normalizedUrl,
     normalizedUrl,
+    watchType: normalizedWatchType,
     status: "Watching",
     lastChecked: null,
     lastChanged: null,
@@ -470,6 +476,7 @@ export async function checkWebsite({ websiteId, userId }) {
 
   const website = websiteSnap.data();
   const normalizedUrl = normalizeWebsiteUrl(website.normalizedUrl || website.url);
+  const watchType = normalizeWatchType(website.watchType);
 
   if (website.userId !== userId) {
     throw new Error("You do not have access to this website.");
@@ -507,6 +514,7 @@ export async function checkWebsite({ websiteId, userId }) {
         data: {
           url: normalizedUrl,
           normalizedUrl,
+          watchType,
           status: "Watching",
           lastChecked: now,
           latestSnapshotHash: snapshotHash,
@@ -536,9 +544,12 @@ export async function checkWebsite({ websiteId, userId }) {
 
       return {
         changed: false,
-        message: priceData.primaryPrice
-          ? `Initial price snapshot saved at ${priceData.primaryPrice}.`
-          : "Initial snapshot saved."
+        message:
+          watchType === "page"
+            ? "Initial website snapshot saved."
+            : priceData.primaryPrice
+              ? `Initial price snapshot saved at ${priceData.primaryPrice}.`
+              : "Initial snapshot saved."
       };
     }
 
@@ -566,11 +577,19 @@ export async function checkWebsite({ websiteId, userId }) {
       (previousPriceData.primaryPriceConfidence || 0) >= 75 ||
       (priceData.primaryPriceConfidence || 0) >= 75;
     const priceChanged = Boolean(diffSummary.priceChange?.changed);
-    const shouldAlert = hasReliablePrice ? priceChanged : contentChanged;
-    const shouldSendEmail = shouldSendEmailForPriceChange(
-      diffSummary.priceChange,
-      notificationPreferences
-    );
+    const shouldAlert =
+      watchType === "page"
+        ? contentChanged
+        : hasReliablePrice
+          ? priceChanged
+          : contentChanged;
+    const shouldSendEmail =
+      watchType === "page"
+        ? !notificationPreferences?.paused && contentChanged
+        : shouldSendEmailForPriceChange(
+            diffSummary.priceChange,
+            notificationPreferences
+          );
 
     if (shouldAlert) {
       await saveSnapshotRecord({
@@ -592,6 +611,7 @@ export async function checkWebsite({ websiteId, userId }) {
         data: {
           url: normalizedUrl,
           normalizedUrl,
+          watchType,
           status: "Changed",
           lastChecked: now,
           lastChanged: now,
@@ -631,13 +651,18 @@ export async function checkWebsite({ websiteId, userId }) {
 
       return {
         changed: true,
-        message: priceChanged && diffSummary.priceChange?.label
-          ? shouldSendEmail
-            ? `${diffSummary.priceChange.label}. Notification sent.`
-            : `${diffSummary.priceChange.label}.`
-          : shouldSendEmail
-            ? "Change detected and notification sent."
-            : "Change detected."
+        message:
+          watchType === "page"
+            ? shouldSendEmail
+              ? "Website change detected. Notification sent."
+              : "Website change detected."
+            : priceChanged && diffSummary.priceChange?.label
+              ? shouldSendEmail
+                ? `${diffSummary.priceChange.label}. Notification sent.`
+                : `${diffSummary.priceChange.label}.`
+              : shouldSendEmail
+                ? "Change detected and notification sent."
+                : "Change detected."
       };
     }
 
@@ -660,6 +685,7 @@ export async function checkWebsite({ websiteId, userId }) {
       data: {
         url: normalizedUrl,
         normalizedUrl,
+        watchType,
         status: "Watching",
         lastChecked: now,
         latestSnapshotHash: snapshotHash,
@@ -681,9 +707,12 @@ export async function checkWebsite({ websiteId, userId }) {
 
     return {
       changed: false,
-      message: hasReliablePrice && priceData.primaryPrice
-        ? `Price unchanged at ${priceData.primaryPrice}.`
-        : "No change detected."
+      message:
+        watchType === "page"
+          ? "No content change detected."
+          : hasReliablePrice && priceData.primaryPrice
+            ? `Price unchanged at ${priceData.primaryPrice}.`
+            : "No change detected."
     };
   } catch (error) {
     const errorMessage = describeCheckFailure(error);
