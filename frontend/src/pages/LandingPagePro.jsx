@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import {
   ArrowRight,
@@ -5,12 +6,14 @@ import {
   Crown,
   Globe,
   LayoutDashboard,
+  MessageSquare,
   ShieldCheck,
   Sparkles,
   Zap
 } from "lucide-react";
 import { BrandLogoLink } from "../components/BrandLogo";
 import { SiteFooterDense } from "../components/SiteFooterDense";
+import { sendFeedback } from "../lib/api";
 
 const steps = [
   {
@@ -73,6 +76,46 @@ const heroMetrics = [
 ];
 
 export function LandingPagePro() {
+  const [feedbackForm, setFeedbackForm] = useState({
+    name: "",
+    email: "",
+    message: "",
+    website: ""
+  });
+  const [feedbackStatus, setFeedbackStatus] = useState({
+    type: "",
+    message: ""
+  });
+  const [isSendingFeedback, setIsSendingFeedback] = useState(false);
+
+  async function handleFeedbackSubmit(event) {
+    event.preventDefault();
+
+    setFeedbackStatus({ type: "", message: "" });
+    setIsSendingFeedback(true);
+
+    try {
+      await sendFeedback(feedbackForm);
+      setFeedbackForm({
+        name: "",
+        email: "",
+        message: "",
+        website: ""
+      });
+      setFeedbackStatus({
+        type: "success",
+        message: "Thanks for the feedback. Your message was sent to Watchli."
+      });
+    } catch (error) {
+      setFeedbackStatus({
+        type: "error",
+        message: error.message || "Could not send feedback right now."
+      });
+    } finally {
+      setIsSendingFeedback(false);
+    }
+  }
+
   return (
     <div className="homepage-shell min-h-screen text-slate-900">
       <div className="aurora-orb left-[-80px] top-20 h-64 w-64 bg-[#d2b08e]/34" />
@@ -354,6 +397,117 @@ export function LandingPagePro() {
                 </div>
               </div>
             ))}
+          </div>
+        </section>
+
+        <section className="mx-auto max-w-7xl px-4 pb-20 sm:px-6">
+          <div className="grid gap-6 rounded-[32px] border border-[#d9c6b7] bg-white/82 p-6 shadow-[0_22px_60px_rgba(59,43,32,0.08)] backdrop-blur sm:p-8 lg:grid-cols-[0.9fr_1.1fr]">
+            <div>
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#ead7c7] ring-1 ring-[#dcc0a6]">
+                <MessageSquare className="h-5 w-5 text-[#7b4d36]" />
+              </div>
+              <p className="mt-5 text-sm uppercase tracking-[0.24em] text-[#8d5b40]">Send feedback</p>
+              <h2 className="display-font mt-3 text-3xl font-bold text-slate-900 sm:text-4xl">
+                Tell Watchli what you want improved
+              </h2>
+              <p className="mt-4 max-w-xl text-base leading-7 text-slate-700">
+                Found a bug, want a feature, or have an idea that would make Watchli better?
+                Send it here and it will go directly to the Watchli inbox.
+              </p>
+              <p className="mt-5 text-sm text-slate-600">
+                You can also email{" "}
+                <a className="font-semibold text-[#7b4d36] hover:text-slate-900" href="mailto:contactwatchli@gmail.com">
+                  contactwatchli@gmail.com
+                </a>
+                .
+              </p>
+            </div>
+
+            <form className="space-y-4" onSubmit={handleFeedbackSubmit}>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <label className="block">
+                  <span className="mb-2 block text-sm font-medium text-slate-700">Name</span>
+                  <input
+                    type="text"
+                    value={feedbackForm.name}
+                    onChange={(event) =>
+                      setFeedbackForm((current) => ({ ...current, name: event.target.value }))
+                    }
+                    className="w-full rounded-2xl border border-[#dbc8ba] bg-[#fffdfb] px-4 py-3 text-[#6b4430] outline-none transition placeholder:text-[#b59681] focus:border-[#c98d64] focus:ring-4 focus:ring-[#ead7c7]"
+                    placeholder="Your name"
+                    maxLength={80}
+                  />
+                </label>
+
+                <label className="block">
+                  <span className="mb-2 block text-sm font-medium text-slate-700">Email</span>
+                  <input
+                    type="email"
+                    required
+                    value={feedbackForm.email}
+                    onChange={(event) =>
+                      setFeedbackForm((current) => ({ ...current, email: event.target.value }))
+                    }
+                    className="w-full rounded-2xl border border-[#dbc8ba] bg-[#fffdfb] px-4 py-3 text-[#6b4430] outline-none transition placeholder:text-[#b59681] focus:border-[#c98d64] focus:ring-4 focus:ring-[#ead7c7]"
+                    placeholder="you@example.com"
+                    maxLength={180}
+                  />
+                </label>
+              </div>
+
+              <label className="hidden">
+                <span>Website</span>
+                <input
+                  type="text"
+                  tabIndex="-1"
+                  autoComplete="off"
+                  value={feedbackForm.website}
+                  onChange={(event) =>
+                    setFeedbackForm((current) => ({ ...current, website: event.target.value }))
+                  }
+                />
+              </label>
+
+              <label className="block">
+                <span className="mb-2 block text-sm font-medium text-slate-700">Message</span>
+                <textarea
+                  required
+                  rows={6}
+                  value={feedbackForm.message}
+                  onChange={(event) =>
+                    setFeedbackForm((current) => ({ ...current, message: event.target.value }))
+                  }
+                  className="w-full rounded-3xl border border-[#dbc8ba] bg-[#fffdfb] px-4 py-3 text-[#6b4430] outline-none transition placeholder:text-[#b59681] focus:border-[#c98d64] focus:ring-4 focus:ring-[#ead7c7]"
+                  placeholder="Share feedback, report a bug, or suggest a feature."
+                  maxLength={2500}
+                />
+              </label>
+
+              {feedbackStatus.message ? (
+                <div
+                  className={`rounded-2xl border px-4 py-3 text-sm ${
+                    feedbackStatus.type === "success"
+                      ? "border-emerald-200 bg-emerald-50 text-emerald-800"
+                      : "border-rose-200 bg-rose-50 text-rose-700"
+                  }`}
+                >
+                  {feedbackStatus.message}
+                </div>
+              ) : null}
+
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <p className="text-sm text-slate-500">
+                  Messages from this form go to `contactwatchli@gmail.com`.
+                </p>
+                <button
+                  type="submit"
+                  disabled={isSendingFeedback}
+                  className="glow-button inline-flex items-center justify-center rounded-full bg-gradient-to-r from-[#7b4d36] via-[#8d5b40] to-[#a06b49] px-6 py-3 font-semibold text-white transition hover:scale-[1.01] hover:from-[#6e4531] hover:via-[#7f543d] hover:to-[#936345] disabled:cursor-not-allowed disabled:opacity-70"
+                >
+                  {isSendingFeedback ? "Sending..." : "Send feedback"}
+                </button>
+              </div>
+            </form>
           </div>
         </section>
       </main>
