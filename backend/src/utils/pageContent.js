@@ -456,6 +456,7 @@ function makePriceCandidate({
     raw: normalizeWhitespace(String(raw || value || "")),
     source,
     score,
+    hasDollarSign: /\$|US\$/i.test(String(raw || value || "")),
     productTitle: firstText(productTitle)
   };
 }
@@ -597,6 +598,10 @@ function findAllPriceLikeMatches(text) {
     value: match[0],
     index: match.index || 0
   }));
+}
+
+function hasExplicitDollarPrice(text) {
+  return /\$\s?\d/.test(String(text || ""));
 }
 
 function findCurrencySymbolPrice(text) {
@@ -831,9 +836,23 @@ function buildCandidatesFromText({
         .toLowerCase();
       const normalizedContext = `${precedingContext} ${match.value.toLowerCase()} ${followingContext}`;
       let score = scoreContext(`${source} ${localContext}`, baseScore);
+      const matchHasDollarSign = hasExplicitDollarPrice(match.value);
+      const localContextHasDollarSign = hasExplicitDollarPrice(localContext);
 
       if (/\b(?:sale|current|now|today|member|final|your price|our price)\b/i.test(localContext)) {
         score += 14;
+      }
+
+      if (matchHasDollarSign) {
+        score += 18;
+      } else if (currency === "USD" || /\busd\b/i.test(localContext)) {
+        score += 8;
+      } else {
+        score -= 10;
+      }
+
+      if (localContextHasDollarSign && !matchHasDollarSign) {
+        score -= 8;
       }
 
       if (/\b(?:regular|list|original|compare|old|was|before|from|starting at|as low as)\b/i.test(localContext)) {
@@ -1239,6 +1258,10 @@ function collectSelectorCandidates($, candidates) {
         score += 12;
       }
 
+      if (hasExplicitDollarPrice(bestPriceText) || hasExplicitDollarPrice(text)) {
+        score += 14;
+      }
+
       const selectorCurrency =
         $(element).attr("currency") ||
         $(element).attr("data-currency") ||
@@ -1379,7 +1402,17 @@ function dedupeCandidates(candidates) {
     }
   });
 
-  return [...byKey.values()].sort((left, right) => right.score - left.score);
+  return [...byKey.values()].sort((left, right) => {
+    if ((right.score || 0) !== (left.score || 0)) {
+      return (right.score || 0) - (left.score || 0);
+    }
+
+    if (Boolean(right.hasDollarSign) !== Boolean(left.hasDollarSign)) {
+      return Number(Boolean(right.hasDollarSign)) - Number(Boolean(left.hasDollarSign));
+    }
+
+    return (right.value || 0) - (left.value || 0);
+  });
 }
 
 function pruneRelatedFragmentCandidates(candidates) {
