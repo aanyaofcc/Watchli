@@ -708,6 +708,104 @@ function readBestPriceText(element, $) {
   );
 }
 
+function collectPatternPriceCandidates($, candidates, productTitle = "", pageUrl = "") {
+  const hostname = (() => {
+    try {
+      return new URL(pageUrl).hostname.toLowerCase();
+    } catch (_error) {
+      return "";
+    }
+  })();
+
+  const areaSelectors = [
+    "main",
+    "[role='main']",
+    ".product-detail",
+    ".product-details",
+    ".pdp",
+    ".product",
+    "body"
+  ];
+
+  const snippets = [];
+
+  areaSelectors.forEach((selector) => {
+    $(selector)
+      .slice(0, 1)
+      .find("*")
+      .slice(0, 120)
+      .each((_, element) => {
+        const text = readText($, element);
+
+        if (text && text.length <= 220) {
+          snippets.push(text);
+        }
+      });
+  });
+
+  const uniqueSnippets = [...new Set(snippets)];
+  const patterns = [
+    {
+      pattern:
+        /(?:price reduced from|reduced from|was)\s*(?<previous>\$\d+(?:\.\d{2})?)\s*(?:to|now)\s*(?<current>\$\d+(?:\.\d{2})?)/i,
+      score: 150,
+      source: "price change pattern"
+    },
+    {
+      pattern:
+        /(?<current>\$\d+(?:\.\d{2})?)\s*(?:reg\.?|orig\.?|original|was|regular)\s*(?<previous>\$\d+(?:\.\d{2})?)/i,
+      score: 144,
+      source: "sale pattern"
+    },
+    {
+      pattern:
+        /(?:now|sale|current|your price|our price|when purchased online)[^\d$]{0,18}(?<current>\$\d+(?:\.\d{2})?)/i,
+      score: 138,
+      source: "current price pattern"
+    },
+    {
+      pattern:
+        /(?<current>\$\d+(?:\.\d{2})?)\s*\(\s*\$\d+(?:\.\d{2})?\s*\/\s*(?:oz|ounce|lb|pound|each|ea|count|ct|fl oz)/i,
+      score: 142,
+      source: "unit price pattern"
+    }
+  ];
+
+  uniqueSnippets.forEach((snippet) => {
+    patterns.forEach(({ pattern, score, source }) => {
+      const match = snippet.match(pattern);
+      const current = match?.groups?.current || "";
+
+      if (!current) {
+        return;
+      }
+
+      let adjustedScore = scoreContext(snippet, score);
+
+      if (hostname.includes("target.com")) {
+        adjustedScore += 8;
+      }
+
+      if (hostname.includes("gap.com")) {
+        adjustedScore += 8;
+      }
+
+      const candidate = makePriceCandidate({
+        value: current,
+        raw: current,
+        currency: normalizeCurrency("", current),
+        source,
+        score: adjustedScore,
+        productTitle
+      });
+
+      if (candidate) {
+        candidates.push(candidate);
+      }
+    });
+  });
+}
+
 function buildCandidatesFromText({
   text,
   source,
@@ -1588,6 +1686,7 @@ export function extractProductSignals(html, pageUrl = "") {
     collectJsonLdImageCandidates(parsed, imageCandidates, pageUrl);
   });
 
+  collectPatternPriceCandidates($, candidates, productTitle, pageUrl);
   collectScriptJsonCandidates($, candidates, productTitle);
   collectEmbeddedStoreDataCandidates($, candidates, productTitle);
   collectMetaCandidates($, candidates);
