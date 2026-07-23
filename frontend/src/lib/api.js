@@ -86,6 +86,10 @@ export function sendTestEmail(email) {
   return post("/api/send-test-email", { email });
 }
 
+export function sendFeedback({ name, email, message, website = "" }) {
+  return post("/api/send-feedback", { name, email, message, website });
+}
+
 export function createCheckoutSession() {
   return post("/api/billing/checkout-session", {});
 }

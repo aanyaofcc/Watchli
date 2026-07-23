@@ -11,7 +11,7 @@ import {
   listUserWebsites,
   syncUserWebsites
 } from "./services/websiteService.js";
-import { sendTestEmail } from "./services/emailService.js";
+import { sendFeedbackEmail, sendTestEmail } from "./services/emailService.js";
 import {
   createBillingPortalSession,
   createCheckoutSession,
@@ -69,6 +69,12 @@ const sendEmailRateLimit = createRateLimiter({
   keyPrefix: "send-test-email",
   windowMs: 15 * 60 * 1000,
   maxRequests: 3
+});
+
+const sendFeedbackRateLimit = createRateLimiter({
+  keyPrefix: "send-feedback",
+  windowMs: 60 * 60 * 1000,
+  maxRequests: 4
 });
 
 const createWebsiteRateLimit = createRateLimiter({
@@ -255,6 +261,43 @@ router.post("/api/send-test-email", requireAuth, sendEmailRateLimit, async (requ
     return response.json({ message: "Test email sent successfully." });
   } catch (error) {
     return response.status(500).json({ error: error.message });
+  }
+});
+
+router.post("/api/send-feedback", sendFeedbackRateLimit, async (request, response) => {
+  try {
+    const { name, email, message, website = "" } = request.body || {};
+
+    if (website) {
+      return response.status(400).json({ error: "Invalid submission." });
+    }
+
+    if (!email || !message) {
+      return response.status(400).json({ error: "Email and message are required." });
+    }
+
+    const trimmedName = String(name || "").trim().slice(0, 80);
+    const trimmedEmail = String(email || "").trim().slice(0, 180);
+    const trimmedMessage = String(message || "").trim().slice(0, 2500);
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailPattern.test(trimmedEmail)) {
+      return response.status(400).json({ error: "Enter a valid email address." });
+    }
+
+    if (trimmedMessage.length < 8) {
+      return response.status(400).json({ error: "Please add a little more detail to your message." });
+    }
+
+    await sendFeedbackEmail({
+      name: trimmedName,
+      email: trimmedEmail,
+      message: trimmedMessage
+    });
+
+    return response.json({ message: "Feedback sent successfully." });
+  } catch (error) {
+    return response.status(500).json({ error: error.message || "Could not send feedback." });
   }
 });
 

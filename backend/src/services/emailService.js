@@ -214,3 +214,50 @@ ${dashboardUrl}`
 
   return result;
 }
+
+export async function sendFeedbackEmail({ name, email, message }) {
+  if (!resend || !config.emailFrom) {
+    throw new Error("Email service is not configured.");
+  }
+
+  const safeName = escapeHtml(name || "Anonymous");
+  const safeEmail = escapeHtml(email);
+  const safeMessage = escapeHtml(message).replace(/\n/g, "<br />");
+  const subject = `New Watchli feedback from ${name || email}`;
+
+  const html = buildEmailShell({
+    eyebrow: "Homepage feedback",
+    title: "A new Watchli feedback message came in",
+    intro: "Someone used the homepage feedback form and sent a note to the Watchli team.",
+    bodyHtml: `
+      <div style="display:grid;gap:14px;">
+        <div style="border-radius:22px;border:1px solid rgba(190,224,255,0.12);background:rgba(255,255,255,0.04);padding:18px 20px;">
+          <p style="margin:0 0 8px;font-size:12px;letter-spacing:0.14em;text-transform:uppercase;color:#8ed9ff;">Name</p>
+          <p style="margin:0;font-size:16px;line-height:1.7;color:#ffffff;">${safeName}</p>
+        </div>
+        <div style="border-radius:22px;border:1px solid rgba(190,224,255,0.12);background:rgba(255,255,255,0.04);padding:18px 20px;">
+          <p style="margin:0 0 8px;font-size:12px;letter-spacing:0.14em;text-transform:uppercase;color:#8ed9ff;">Email</p>
+          <p style="margin:0;font-size:16px;line-height:1.7;color:#ffffff;">${safeEmail}</p>
+        </div>
+        <div style="border-radius:22px;border:1px solid rgba(190,224,255,0.12);background:rgba(255,255,255,0.04);padding:18px 20px;">
+          <p style="margin:0 0 8px;font-size:12px;letter-spacing:0.14em;text-transform:uppercase;color:#8ed9ff;">Message</p>
+          <p style="margin:0;font-size:16px;line-height:1.8;color:#ffffff;">${safeMessage}</p>
+        </div>
+      </div>
+    `,
+    buttonLabel: "Open Watchli",
+    buttonHref: config.appUrl,
+    footer: "This message was sent from the public Watchli homepage feedback form."
+  });
+
+  const result = await resend.emails.send({
+    from: buildFromAddress(),
+    to: "contactwatchli@gmail.com",
+    subject,
+    html,
+    text: `New Watchli feedback\n\nName: ${name || "Anonymous"}\nEmail: ${email}\n\nMessage:\n${message}`,
+    replyTo: email
+  });
+
+  return result;
+}
