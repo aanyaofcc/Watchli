@@ -495,10 +495,7 @@ export function LandingPagePro() {
                 </div>
               ) : null}
 
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <p className="text-sm text-slate-500">
-                  Messages from this form go to `contactwatchli@gmail.com`.
-                </p>
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
                 <button
                   type="submit"
                   disabled={isSendingFeedback}
