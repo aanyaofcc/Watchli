@@ -50,6 +50,7 @@ export async function getUserPlanSummary(userId, websiteCount = null) {
   return {
     plan: plan.id,
     planLabel: `${plan.label} plan`,
+    displayName: userData.displayName || "",
     websiteLimit: plan.websiteLimit,
     websiteCount: resolvedWebsiteCount,
     websiteSlotsRemaining: Math.max(plan.websiteLimit - resolvedWebsiteCount, 0),

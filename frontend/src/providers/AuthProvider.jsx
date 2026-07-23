@@ -7,6 +7,7 @@ import {
 import {
   createUserWithEmailAndPassword,
   onAuthStateChanged,
+  reload,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
   signOut
@@ -26,6 +27,21 @@ const DEFAULT_NOTIFICATION_PREFERENCES = {
 };
 
 const AuthContext = createContext(null);
+
+function normalizeAuthUser(user) {
+  if (!user) {
+    return null;
+  }
+
+  return {
+    uid: user.uid,
+    email: user.email || "",
+    displayName: user.displayName || "",
+    photoURL: user.photoURL || "",
+    emailVerified: Boolean(user.emailVerified),
+    metadata: user.metadata || null
+  };
+}
 
 function getAuthErrorCode(error) {
   if (!error) {
@@ -90,7 +106,7 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (nextUser) => {
-      setUser(nextUser);
+      setUser(normalizeAuthUser(nextUser));
       setLoading(false);
     });
 
@@ -134,8 +150,20 @@ export function AuthProvider({ children }) {
 
   const logout = () => signOut(auth);
 
+  const refreshUser = async () => {
+    if (!auth.currentUser) {
+      setUser(null);
+      return null;
+    }
+
+    await reload(auth.currentUser);
+    const refreshedUser = normalizeAuthUser(auth.currentUser);
+    setUser(refreshedUser);
+    return refreshedUser;
+  };
+
   return (
-    <AuthContext.Provider value={{ user, loading, signup, login, resetPassword, logout }}>
+    <AuthContext.Provider value={{ user, loading, signup, login, resetPassword, logout, refreshUser }}>
       {children}
     </AuthContext.Provider>
   );

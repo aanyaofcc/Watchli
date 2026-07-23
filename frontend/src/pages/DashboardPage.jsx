@@ -129,6 +129,7 @@ export function DashboardPage() {
   ];
   const completedOnboardingSteps = onboardingSteps.filter((step) => step.done).length;
   const showOnboarding = !onboardingDismissed && websites.length < 3;
+  const greetingName = account?.displayName || user?.displayName || user?.email || "";
 
   useEffect(() => {
     try {
@@ -442,7 +443,7 @@ export function DashboardPage() {
             <div>
               <p className="text-sm uppercase tracking-[0.16em] text-amber-200">Dashboard</p>
               <h1 className="display-font mt-3 break-words text-2xl font-semibold text-white sm:text-3xl">
-                Welcome back{user?.email ? `, ${user.email}` : ""}
+                Welcome back{greetingName ? `, ${greetingName}` : ""}
               </h1>
               <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-100 sm:text-base">
                 Track product pages, capture likely price signals, and review changes without digging through noisy page updates.

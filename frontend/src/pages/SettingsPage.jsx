@@ -13,7 +13,8 @@ import {
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { updateProfile } from "firebase/auth";
-import { auth } from "../lib/firebase";
+import { doc, serverTimestamp, setDoc } from "firebase/firestore";
+import { auth, db } from "../lib/firebase";
 import {
   createBillingPortalSession,
   createCheckoutSession,
@@ -48,7 +49,7 @@ function formatDate(value) {
 
 export function SettingsPage() {
   const navigate = useNavigate();
-  const { user, resetPassword, logout } = useAuth();
+  const { user, resetPassword, logout, refreshUser } = useAuth();
   const [account, setAccount] = useState(null);
   const [displayName, setDisplayName] = useState(user?.displayName || "");
   const [deleteConfirmation, setDeleteConfirmation] = useState("");
@@ -117,9 +118,32 @@ export function SettingsPage() {
     setSavingProfile(true);
 
     try {
+      const trimmedDisplayName = displayName.trim();
+
       await updateProfile(auth.currentUser, {
-        displayName: displayName.trim()
+        displayName: trimmedDisplayName
       });
+
+      if (auth.currentUser?.uid) {
+        await setDoc(
+          doc(db, "users", auth.currentUser.uid),
+          {
+            displayName: trimmedDisplayName,
+            updatedAt: serverTimestamp()
+          },
+          { merge: true }
+        );
+      }
+
+      await refreshUser();
+      setAccount((current) =>
+        current
+          ? {
+              ...current,
+              displayName: trimmedDisplayName
+            }
+          : current
+      );
       setSuccess("Profile updated.");
     } catch (saveError) {
       setError(saveError.message || "Could not update your profile.");
@@ -347,7 +371,7 @@ export function SettingsPage() {
                   value={displayName}
                   onChange={(event) => setDisplayName(event.target.value)}
                   placeholder="Your name"
-                  className="w-full rounded-2xl border border-[#d3b697]/12 bg-[#171311]/76 px-4 py-3 text-white outline-none transition placeholder:text-stone-500 focus:border-[#d6b091]"
+                  className="w-full rounded-2xl border border-[#d3b697]/18 bg-[#f7efe7] px-4 py-3 text-[#7b4d36] outline-none transition placeholder:text-[#b08a73] focus:border-[#c98d64]"
                 />
               </label>
 
