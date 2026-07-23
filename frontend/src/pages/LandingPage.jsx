@@ -50,7 +50,7 @@ const plans = [
     name: "Free",
     price: "$0",
     description: "For shoppers and small teams tracking a few important product pages.",
-    features: ["5 product pages", "Email alerts", "Daily checks"]
+    features: ["3 product pages", "Email alerts", "Daily checks"]
   },
   {
     name: "Pro",
@@ -163,7 +163,7 @@ export function LandingPage() {
 
             <div className="mt-10 grid gap-4 sm:grid-cols-3">
               {[
-                ["5 products free", "Start with the items you care about most"],
+                ["3 products free", "Start with the items you care about most"],
                 ["Price-aware alerts", "Get notified when a product page appears to change price"],
                 ["Cron-ready backend", "Prepared for automatic checks later"]
               ].map(([title, body]) => (

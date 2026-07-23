@@ -58,9 +58,9 @@ export function DashboardPage() {
   const [account, setAccount] = useState({
     plan: "free",
     planLabel: "Free plan",
-    websiteLimit: 5,
+    websiteLimit: 3,
     websiteCount: 0,
-    websiteSlotsRemaining: 5,
+    websiteSlotsRemaining: 3,
     checkFrequency: "Daily checks",
     premium: false,
     upgradeAvailable: true

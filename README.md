@@ -180,7 +180,7 @@ curl -X POST http://localhost:8787/api/send-test-email \
 ## Notes
 
 - Free/Pro plan structure is now wired in with backend-enforced website limits.
-- Free users can watch up to 5 websites. Pro is a placeholder tier with higher limits, UI locks, and an upgrade CTA ready for Stripe.
+- Free users can watch up to 3 websites. Pro is a placeholder tier with higher limits, UI locks, and an upgrade CTA ready for Stripe.
 - A first Stripe-backed Pro upgrade flow is included with checkout session creation, billing portal session creation, and webhook-driven plan updates.
 - Website creation and deletion now flow through the backend so plan limits are enforced server-side.
 - Publish the updated `firestore.rules` file so users cannot promote themselves from `free` to `pro` or bypass limits with direct Firestore writes.

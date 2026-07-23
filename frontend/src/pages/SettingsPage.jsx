@@ -302,7 +302,7 @@ export function SettingsPage() {
               </div>
               <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
                 <p className="text-sm text-slate-200">Available slots</p>
-                <p className="display-font mt-2 text-2xl font-semibold text-white">{account?.websiteSlotsRemaining ?? 5}</p>
+                <p className="display-font mt-2 text-2xl font-semibold text-white">{account?.websiteSlotsRemaining ?? 3}</p>
                 <p className="mt-2 text-sm text-slate-300">Remaining before you hit your limit</p>
               </div>
               <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
@@ -316,7 +316,7 @@ export function SettingsPage() {
               <div className="flex items-center justify-between gap-3 text-sm">
                 <span className="text-slate-300">Plan usage</span>
                 <span className="text-slate-200">
-                  {account?.websiteCount || 0} / {account?.websiteLimit || 5}
+                  {account?.websiteCount || 0} / {account?.websiteLimit || 3}
                 </span>
               </div>
               <div className="mt-3 h-2.5 overflow-hidden rounded-full bg-white/8">
@@ -505,7 +505,7 @@ export function SettingsPage() {
                   <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-4">
                 <p className="text-sm text-slate-200">Plan limit</p>
                     <p className="display-font mt-2 text-2xl font-semibold text-white">
-                      {account?.websiteLimit || 5}
+                      {account?.websiteLimit || 3}
                     </p>
                     <p className="mt-2 text-sm text-slate-300">Watched products allowed</p>
                   </div>

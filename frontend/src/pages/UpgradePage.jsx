@@ -269,7 +269,7 @@ export function UpgradePage() {
                 <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-5">
                   <p className="text-sm text-slate-400">Watched products</p>
                   <p className="display-font mt-2 text-2xl font-semibold text-white">
-                    {account?.websiteCount || 0} / {account?.websiteLimit || 5}
+                    {account?.websiteCount || 0} / {account?.websiteLimit || 3}
                   </p>
                 </div>
 

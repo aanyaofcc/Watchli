@@ -8,7 +8,7 @@ export const PLAN_DEFINITIONS = {
   free: {
     id: "free",
     label: "Free",
-    websiteLimit: 5,
+    websiteLimit: 3,
     checkFrequency: "Daily checks",
     premium: false,
     priceMonthly: 0

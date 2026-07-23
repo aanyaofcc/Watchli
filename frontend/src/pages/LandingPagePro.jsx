@@ -50,7 +50,7 @@ const plans = [
     name: "Free",
     price: "$0",
     description: "A simple starting point for shoppers tracking a handful of product pages.",
-    features: ["5 watched product pages", "Email alerts", "Daily checks"]
+    features: ["3 watched product pages", "Email alerts", "Daily checks"]
   },
   {
     name: "Pro",
@@ -67,7 +67,7 @@ const dashboardPreview = [
 ];
 
 const heroMetrics = [
-  { label: "Free plan", value: "5 pages" },
+  { label: "Free plan", value: "3 pages" },
   { label: "Core signal", value: "Price alerts" },
   { label: "Check style", value: "Daily by default" }
 ];
