@@ -1,5 +1,5 @@
-import { Link, useNavigate } from "react-router-dom";
-import { Crown, LogOut, Settings } from "lucide-react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Crown, LayoutDashboard, LogOut, Settings } from "lucide-react";
 import { useAuth } from "../providers/AuthProvider";
 import { BrandLogoLink } from "./BrandLogo";
 import { SiteFooterDense } from "./SiteFooterDense";
@@ -7,6 +7,25 @@ import { SiteFooterDense } from "./SiteFooterDense";
 export function AppLayoutPro({ children }) {
   const { logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const navItems = [
+    {
+      to: "/dashboard",
+      label: "Dashboard",
+      icon: LayoutDashboard
+    },
+    {
+      to: "/settings",
+      label: "Settings",
+      icon: Settings
+    },
+    {
+      to: "/upgrade",
+      label: "Upgrade",
+      icon: Crown
+    }
+  ];
 
   const handleLogout = async () => {
     await logout();
@@ -15,30 +34,40 @@ export function AppLayoutPro({ children }) {
 
   return (
     <div className="tech-shell min-h-screen text-slate-100">
-      <div className="aurora-orb left-[-80px] top-20 h-64 w-64 bg-[#b98d63]/24" />
-      <div className="aurora-orb right-[-80px] top-32 h-72 w-72 bg-[#8f6a4c]/22" />
-      <header className="relative z-10 border-b border-[#d3b697]/12 bg-[#221d19]/76 backdrop-blur-xl">
-        <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-3 px-4 py-3.5 sm:px-6 md:flex-row md:items-center md:justify-between">
-          <BrandLogoLink to="/" size="dashboard" />
-          <div className="flex w-full flex-col gap-3 sm:flex-row md:w-auto">
-            <Link
-              to="/settings"
-              className="inline-flex items-center justify-center gap-2 rounded-full border border-[#d3b697]/16 bg-white/[0.06] px-4 py-2 text-sm text-stone-100 transition hover:bg-white/[0.1]"
-            >
-              <Settings className="h-4 w-4" />
-              Settings
-            </Link>
-            <Link
-              to="/upgrade"
-              className="inline-flex items-center justify-center gap-2 rounded-full border border-[#c9a37f]/16 bg-[#8d5b40]/88 px-4 py-2 text-sm text-white transition hover:bg-[#7b4d36]"
-            >
-              <Crown className="h-4 w-4" />
-              Upgrade
-            </Link>
+      <div className="aurora-orb left-[-140px] top-16 h-72 w-72 bg-[#6f93b7]/14" />
+      <div className="aurora-orb right-[-120px] top-24 h-80 w-80 bg-[#9d7652]/12" />
+      <header className="app-topbar">
+        <div className="mx-auto flex w-full max-w-[1520px] flex-col gap-4 px-4 py-4 sm:px-6 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:gap-8">
+            <BrandLogoLink to="/" size="dashboard" subtitle="App workspace" />
+            <nav className="flex flex-wrap items-center gap-2">
+              {navItems.map((item) => {
+                const Icon = item.icon;
+                const active = location.pathname === item.to;
+
+                return (
+                  <Link
+                    key={item.to}
+                    to={item.to}
+                    className={`inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-sm transition ${
+                      active
+                        ? "border border-[#7f95b1]/24 bg-[#58759a]/30 text-white"
+                        : "border border-white/8 bg-white/[0.04] text-slate-200 hover:bg-white/[0.08]"
+                    }`}
+                  >
+                    <Icon className="h-4 w-4" />
+                    {item.label}
+                  </Link>
+                );
+              })}
+            </nav>
+          </div>
+
+          <div className="flex items-center gap-3">
             <button
               type="button"
               onClick={handleLogout}
-              className="inline-flex items-center justify-center gap-2 rounded-full border border-[#d3b697]/16 bg-white/[0.06] px-4 py-2 text-sm text-stone-100 transition hover:bg-white/[0.1]"
+              className="inline-flex items-center justify-center gap-2 rounded-full border border-white/8 bg-white/[0.04] px-4 py-2.5 text-sm text-slate-100 transition hover:bg-white/[0.08]"
             >
               <LogOut className="h-4 w-4" />
               Log Out
@@ -46,7 +75,7 @@ export function AppLayoutPro({ children }) {
           </div>
         </div>
       </header>
-      <main className="relative z-10 mx-auto w-full max-w-[1440px] px-4 py-6 sm:px-6 sm:py-8">{children}</main>
+      <main className="app-workspace relative z-10">{children}</main>
       <SiteFooterDense compact width="max-w-none" />
     </div>
   );

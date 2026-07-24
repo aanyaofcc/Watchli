@@ -52,47 +52,72 @@ h4,
   position: relative;
   overflow: hidden;
   background:
-    radial-gradient(circle at top left, rgba(181, 134, 96, 0.18), transparent 24%),
-    radial-gradient(circle at top right, rgba(109, 84, 62, 0.14), transparent 22%),
-    linear-gradient(180deg, rgba(54, 46, 40, 0.97), rgba(38, 33, 29, 0.98));
+    linear-gradient(180deg, rgba(51, 43, 37, 0.98), rgba(38, 32, 27, 0.99));
 }
 
 .glass-panel {
-  background: rgba(72, 59, 50, 0.92);
-  border: 1px solid rgba(210, 182, 153, 0.14);
+  background: rgba(59, 49, 42, 0.94);
+  border: 1px solid rgba(214, 195, 176, 0.12);
   box-shadow:
-    0 16px 32px rgba(18, 14, 11, 0.26),
-    inset 0 1px 0 rgba(255, 248, 238, 0.06);
-  backdrop-filter: blur(6px);
+    0 12px 30px rgba(22, 18, 15, 0.18),
+    inset 0 1px 0 rgba(255, 248, 238, 0.04);
+  backdrop-filter: blur(3px);
 }
 
 .glass-panel-soft {
-  background: rgba(92, 76, 65, 0.82);
-  border: 1px solid rgba(210, 182, 153, 0.12);
+  background: rgba(72, 61, 53, 0.84);
+  border: 1px solid rgba(214, 195, 176, 0.1);
   box-shadow:
-    0 12px 24px rgba(18, 14, 11, 0.18),
-    inset 0 1px 0 rgba(255, 248, 238, 0.05);
-  backdrop-filter: blur(4px);
+    0 10px 24px rgba(22, 18, 15, 0.14),
+    inset 0 1px 0 rgba(255, 248, 238, 0.035);
+  backdrop-filter: blur(2px);
 }
 
 .aurora-orb {
   position: absolute;
   border-radius: 9999px;
-  filter: blur(36px);
-  opacity: 0.12;
+  filter: blur(48px);
+  opacity: 0.07;
   pointer-events: none;
 }
 
 .glow-button {
   box-shadow:
-    0 12px 22px rgba(63, 38, 22, 0.22),
-    inset 0 1px 0 rgba(255, 244, 232, 0.2);
+    0 10px 18px rgba(34, 60, 94, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
 
 .data-chip {
-  background: rgba(110, 89, 74, 0.76);
-  border: 1px solid rgba(220, 196, 172, 0.16);
+  background: rgba(78, 93, 113, 0.38);
+  border: 1px solid rgba(203, 216, 229, 0.14);
   backdrop-filter: blur(4px);
+}
+
+.app-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  border-bottom: 1px solid rgba(214, 195, 176, 0.08);
+  background: rgba(44, 37, 32, 0.86);
+  backdrop-filter: blur(12px);
+}
+
+.app-workspace {
+  width: 100%;
+  max-width: 1520px;
+  margin: 0 auto;
+  padding: 28px 18px 40px;
+}
+
+.app-surface {
+  border: 1px solid rgba(214, 195, 176, 0.1);
+  background: rgba(67, 56, 49, 0.92);
+  box-shadow: 0 10px 26px rgba(18, 14, 11, 0.12);
+}
+
+.app-surface-muted {
+  border: 1px solid rgba(214, 195, 176, 0.08);
+  background: rgba(80, 67, 58, 0.72);
 }
 
 .homepage-shell {

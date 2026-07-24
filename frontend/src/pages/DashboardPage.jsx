@@ -446,35 +446,41 @@ export function DashboardPage() {
     schedulerAlertEmail === signedInUserEmail;
 
   return (
-    <div className="grid gap-5 xl:grid-cols-[minmax(0,1.55fr)_360px] xl:items-start">
-      <div className="space-y-5 sm:space-y-6">
-        <section className="glass-panel rounded-[30px] p-5 sm:p-7">
-          <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-start sm:justify-between">
+    <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_340px] xl:items-start">
+      <div className="space-y-6">
+        <section className="glass-panel rounded-[32px] p-5 sm:p-7">
+          <div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
             <div>
               <p className="text-sm uppercase tracking-[0.16em] text-amber-200">Dashboard</p>
-              <h1 className="display-font mt-3 break-words text-2xl font-semibold text-white sm:text-3xl">
+              <h1 className="display-font mt-3 break-words text-3xl font-semibold text-white sm:text-4xl">
                 Welcome back{greetingName ? `, ${greetingName}` : ""}
               </h1>
-              <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-100 sm:text-base">
-                Track product pages, capture likely price signals, and review changes without digging through noisy page updates.
+              <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-200 sm:text-base">
+                Add a watched page, run checks, and review the important signals without digging through a crowded dashboard.
               </p>
             </div>
-            <div className="data-chip w-fit rounded-full px-4 py-2 text-sm text-slate-100">
-              {account.planLabel}
+            <div className="flex flex-wrap items-center gap-2">
+              <div className="data-chip w-fit rounded-full px-4 py-2 text-sm text-slate-100">
+                {account.planLabel}
+              </div>
+              <div className="rounded-full border border-white/10 bg-white/[0.05] px-4 py-2 text-sm text-slate-200">
+                {account.websiteCount} of {account.websiteLimit} slots used
+              </div>
             </div>
           </div>
 
-          <form className="mt-6 space-y-4" onSubmit={handleAddWebsite}>
-            <label className="block">
-              <span className="mb-2 block text-sm text-slate-200">Add Website</span>
-              <div className="mb-3 flex flex-wrap gap-2">
+          <div className="mt-6 grid gap-4 xl:grid-cols-[minmax(0,1.3fr)_minmax(280px,0.7fr)]">
+            <form className="app-surface rounded-[28px] p-5 sm:p-6" onSubmit={handleAddWebsite}>
+              <label className="block">
+                <span className="mb-2 block text-sm font-medium text-white">Add a new watch</span>
+                <div className="mb-3 flex flex-wrap gap-2">
                 <button
                   type="button"
                   onClick={() => setWatchType("product")}
                   className={`rounded-full border px-3 py-1.5 text-sm transition ${
                     watchType === "product"
-                      ? "border-[#c9a37f]/18 bg-[#8d5b40]/20 text-amber-50"
-                      : "border-white/10 bg-white/5 text-slate-200"
+                      ? "border-[#7995bb]/24 bg-[#58759a]/26 text-white"
+                      : "border-white/10 bg-white/[0.04] text-slate-200"
                   }`}
                 >
                   Product price watch
@@ -484,8 +490,8 @@ export function DashboardPage() {
                   onClick={() => setWatchType("page")}
                   className={`rounded-full border px-3 py-1.5 text-sm transition ${
                     watchType === "page"
-                      ? "border-[#c9a37f]/18 bg-[#8d5b40]/20 text-amber-50"
-                      : "border-white/10 bg-white/5 text-slate-200"
+                      ? "border-[#7995bb]/24 bg-[#58759a]/26 text-white"
+                      : "border-white/10 bg-white/[0.04] text-slate-200"
                   }`}
                 >
                   Website content watch
@@ -503,50 +509,50 @@ export function DashboardPage() {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="glow-button w-full rounded-2xl bg-[#3d6283] px-5 py-3 font-semibold text-white transition hover:bg-[#345571] disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+                  className="glow-button w-full rounded-2xl bg-[#4c6b92] px-5 py-3 font-semibold text-white transition hover:bg-[#3f5d81] disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
                 >
                   {submitting ? "Adding..." : "Add Website"}
                 </button>
               </div>
               <p className="mt-3 text-sm leading-6 text-slate-300">
                 {watchType === "page"
-                  ? "Use content watch for blogs, updates pages, docs, or any website where you want to know when the readable text changes."
-                  : "Use product price watch for shopping pages where Watchli should focus on price and availability changes."}
+                  ? "Use content watch for blogs, docs, announcements, or any page where readable text changes matter."
+                  : "Use product price watch for store pages where price, stock, and listing changes matter most."}
               </p>
-            </label>
-          </form>
+              </label>
+            </form>
 
-          <div className="mt-4 flex flex-wrap items-center gap-2 text-sm text-slate-100">
-            <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5">
-              {account.websiteCount} of {account.websiteLimit} slots used
-            </span>
-            <span className="rounded-full border border-[#c9a37f]/18 bg-[#8d5b40]/20 px-3 py-1.5 text-amber-50">
-              {account.checkFrequency}
-            </span>
-            <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5">
-              {priceAwareWebsites.length} prices found
-            </span>
-            <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5">
-              {pageWatchCount} content watches
-            </span>
-          </div>
-
-          <div className="mt-4 rounded-2xl border border-white/12 bg-white/[0.08] px-4 py-3 text-sm leading-6 text-slate-100/90">
-            Watchli sends product alerts for price increases, price drops, and sold-out changes. Website content watches send alerts when the page text changes.
+            <div className="app-surface rounded-[28px] p-5 sm:p-6">
+              <p className="text-sm font-medium text-white">Account snapshot</p>
+              <div className="mt-4 flex flex-wrap gap-2 text-sm text-slate-100">
+                <span className="rounded-full border border-white/10 bg-white/[0.05] px-3 py-1.5">
+                  {account.checkFrequency}
+                </span>
+                <span className="rounded-full border border-white/10 bg-white/[0.05] px-3 py-1.5">
+                  {priceAwareWebsites.length} prices found
+                </span>
+                <span className="rounded-full border border-white/10 bg-white/[0.05] px-3 py-1.5">
+                  {pageWatchCount} content watches
+                </span>
+              </div>
+              <div className="mt-4 rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm leading-6 text-slate-200">
+                Watchli only emails for real product signals like price increases, price drops, and sold-out changes. Content watches alert when readable page text changes.
+              </div>
+            </div>
           </div>
 
           <div className="mt-5 grid gap-3 sm:grid-cols-3">
-            <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
-              <p className="text-sm text-slate-200">Tracked pages</p>
-              <p className="display-font mt-2 text-2xl font-semibold text-white">{websites.length}</p>
+            <div className="app-surface rounded-2xl p-4">
+              <p className="text-sm text-slate-300">Tracked pages</p>
+              <p className="display-font mt-2 text-3xl font-semibold text-white">{websites.length}</p>
             </div>
-            <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
-              <p className="text-sm text-slate-200">Product watches</p>
-              <p className="display-font mt-2 text-2xl font-semibold text-white">{productWatchCount}</p>
+            <div className="app-surface rounded-2xl p-4">
+              <p className="text-sm text-slate-300">Product watches</p>
+              <p className="display-font mt-2 text-3xl font-semibold text-white">{productWatchCount}</p>
             </div>
-            <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
-              <p className="text-sm text-slate-200">Need attention</p>
-              <p className="display-font mt-2 text-2xl font-semibold text-white">{changedWebsites.length + errorWebsites.length}</p>
+            <div className="app-surface rounded-2xl p-4">
+              <p className="text-sm text-slate-300">Need attention</p>
+              <p className="display-font mt-2 text-3xl font-semibold text-white">{changedWebsites.length + errorWebsites.length}</p>
             </div>
           </div>
 
@@ -631,19 +637,21 @@ export function DashboardPage() {
         </section>
 
         <section className="space-y-4">
-          <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-col gap-2.5 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <h2 className="display-font text-2xl font-semibold text-white">
-                Your watched product pages
+                Watched pages
               </h2>
               <p className="mt-1 text-sm text-slate-200">
                 {websites.length > 0
                   ? `Latest activity: ${mostRecentWebsite?.latestProductTitle || mostRecentWebsite?.url || "Tracked page"}`
-                  : "Start by adding a product page you want Watchli to monitor."}
+                  : "Add a product page or content page to start monitoring changes."}
               </p>
             </div>
             <p className="text-sm text-slate-200">
-              {availableWebsites.length} available now
+              {changedWebsites.length > 0
+                ? `${changedWebsites.length} changed recently`
+                : `${availableWebsites.length} available now`}
             </p>
           </div>
 
@@ -710,7 +718,7 @@ export function DashboardPage() {
         </section>
       </div>
 
-      <aside className="space-y-3">
+      <aside className="space-y-4">
           <div className="glass-panel-soft rounded-3xl p-5 sm:p-6">
             <div className="flex items-center gap-3">
               <Sparkles className="h-5 w-5 text-amber-200" />

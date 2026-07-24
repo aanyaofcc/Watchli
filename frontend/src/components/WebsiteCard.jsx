@@ -244,11 +244,11 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
     Boolean(website.lastDiffSummary?.contentChanged);
 
   return (
-    <article className="glass-panel rounded-[26px] p-4 sm:p-5">
+    <article className="glass-panel rounded-[28px] p-5 sm:p-6">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div className="min-w-0 flex-1">
           <div className="flex gap-4">
-            <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-3xl border border-white/10 bg-white/[0.05] shadow-[0_18px_35px_rgba(15,23,42,0.18)]">
+            <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-3xl border border-white/10 bg-white/[0.05] shadow-[0_14px_28px_rgba(15,23,42,0.16)]">
               {productImage ? (
                 <img
                   src={productImage}
@@ -284,11 +284,6 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
                     {availabilityLabel}
                   </div>
                 ) : null}
-                {website.latestProductImageSource ? (
-                  <div className="inline-flex rounded-full border border-white/10 bg-white/[0.05] px-3 py-1 text-xs font-medium text-slate-300">
-                    Image: {website.latestProductImageSource}
-                  </div>
-                ) : null}
               </div>
               <h3 className="display-font mt-3 break-words text-xl font-semibold text-white sm:text-2xl">
                 {website.latestProductTitle || (isPageWatch ? "Tracked website" : "Tracked product page")}
@@ -301,8 +296,8 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
           </div>
         </div>
 
-        <div className="grid gap-2 text-sm text-slate-400 md:min-w-[220px] md:text-right">
-          <p className="inline-flex items-center gap-2 md:justify-end">
+        <div className="grid gap-2 text-sm text-slate-400 md:min-w-[220px]">
+          <p className="inline-flex items-center gap-2">
             <Clock3 className="h-4 w-4 text-slate-500" />
             Last checked: {formatDate(website.lastChecked)}
           </p>
@@ -310,7 +305,7 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
         </div>
       </div>
 
-      <div className="mt-5 grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(280px,340px)]">
+      <div className="mt-5 space-y-4">
         <div className="space-y-3">
           <div className="flex flex-wrap gap-2.5">
             {!isPageWatch && website.latestPrimaryPrice ? (
@@ -368,7 +363,7 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
           </div>
 
           {isPageWatch ? (
-            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+            <div className="grid gap-3 sm:grid-cols-2">
               <div className="rounded-3xl border border-[#c9a37f]/18 bg-[#8d5b40]/14 p-4">
                 <p className="text-xs uppercase tracking-[0.14em] text-amber-100/80">Latest preview</p>
                 <p className="mt-2 text-sm leading-6 text-white">
@@ -394,7 +389,7 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
               </div>
             </div>
           ) : (
-          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-2">
             <div className="rounded-3xl border border-[#c9a37f]/18 bg-[#8d5b40]/14 p-4">
               <p className="text-xs uppercase tracking-[0.14em] text-amber-100/80">Tracked price now</p>
               <p className="mt-2 break-words text-2xl font-semibold text-white">
@@ -419,7 +414,7 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
               </p>
             </div>
 
-            <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-4 sm:col-span-2 xl:col-span-1">
+            <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-4 sm:col-span-2">
               <p className="text-xs uppercase tracking-[0.14em] text-slate-400">Why this price</p>
               <p className="mt-2 text-sm font-medium text-white">{sourceLabel}</p>
               <p className="mt-2 text-sm leading-6 text-slate-300">
@@ -460,7 +455,7 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
         </div>
 
         {!isPageWatch && website.lastDiffSummary?.priceChange?.changed ? (
-          <div className="rounded-3xl border border-[#c9a37f]/18 bg-[#8d5b40]/20 p-4">
+          <div className="rounded-3xl border border-[#7995bb]/24 bg-[#58759a]/22 p-4">
             <p className="text-xs uppercase tracking-[0.16em] text-amber-50">Latest price change</p>
             <p className="mt-2 text-base font-semibold text-white">{getPriceDirectionLabel(website.lastDiffSummary.priceChange)}</p>
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
@@ -470,7 +465,7 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
                   {website.lastDiffSummary.priceChange.previousPrice || "Not available"}
                 </p>
               </div>
-              <div className="rounded-2xl border border-[#c9a37f]/18 bg-[#8d5b40]/20 p-3">
+              <div className="rounded-2xl border border-[#7995bb]/24 bg-[#58759a]/26 p-3">
                 <p className="text-xs uppercase tracking-[0.14em] text-amber-50">Current price</p>
                 <p className="mt-1 break-words text-lg font-semibold text-white">
                   {website.lastDiffSummary.priceChange.currentPrice || "Not available"}
@@ -479,7 +474,7 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
             </div>
           </div>
         ) : isPageWatch && hasContentChange ? (
-          <div className="rounded-3xl border border-[#c9a37f]/18 bg-[#8d5b40]/20 p-4">
+          <div className="rounded-3xl border border-[#7995bb]/24 bg-[#58759a]/22 p-4">
             <p className="text-xs uppercase tracking-[0.16em] text-amber-50">Latest website change</p>
             <p className="mt-2 text-base font-semibold text-white">Content changed on the watched page</p>
             <p className="mt-2 text-sm leading-6 text-slate-200">
