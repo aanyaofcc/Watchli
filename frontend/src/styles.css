@@ -53,7 +53,7 @@ h4,
   position: relative;
   overflow: hidden;
   background:
-    linear-gradient(180deg, #181614 0%, #100f0e 100%);
+    linear-gradient(180deg, #6c5a4e 0%, #58483f 48%, #4b3e36 100%);
 }
 
 .glass-panel {
@@ -99,26 +99,26 @@ h4,
   top: 0;
   z-index: 20;
   border-bottom: 1px solid rgba(245, 238, 229, 0.08);
-  background: rgba(15, 14, 13, 0.9);
+  background: rgba(78, 64, 56, 0.82);
   backdrop-filter: blur(10px);
 }
 
 .app-workspace {
   width: 100%;
-  max-width: 1520px;
+  max-width: 1340px;
   margin: 0 auto;
-  padding: 28px 18px 40px;
+  padding: 24px 16px 34px;
 }
 
 .app-surface {
   border: 1px solid rgba(245, 238, 229, 0.08);
-  background: rgba(245, 238, 229, 0.03);
+  background: rgba(255, 248, 241, 0.05);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.02);
 }
 
 .app-surface-muted {
   border: 1px solid rgba(245, 238, 229, 0.06);
-  background: rgba(245, 238, 229, 0.025);
+  background: rgba(255, 248, 241, 0.04);
 }
 
 .editorial-kicker {
