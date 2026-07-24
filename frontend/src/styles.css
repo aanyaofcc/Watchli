@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;700&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -141,6 +141,20 @@ h4,
     radial-gradient(circle at top right, rgba(196, 151, 118, 0.24), transparent 24%),
     linear-gradient(180deg, #f6f1ea 0%, #eee6dc 46%, #f2ece4 100%);
   color: #2f2722;
+}
+
+.homepage-shell h1,
+.homepage-shell h2,
+.homepage-shell h3,
+.homepage-shell h4,
+.homepage-shell .display-font,
+.auth-shell h1,
+.auth-shell h2,
+.auth-shell h3,
+.auth-shell h4,
+.auth-shell .display-font {
+  font-family: "Space Grotesk", "Segoe UI", sans-serif;
+  letter-spacing: 0;
 }
 
 .homepage-panel {

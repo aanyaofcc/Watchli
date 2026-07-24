@@ -68,7 +68,7 @@ export function LoginPage() {
   };
 
   return (
-    <div className="tech-shell flex min-h-screen items-center justify-center px-6 py-10">
+    <div className="tech-shell auth-shell flex min-h-screen items-center justify-center px-6 py-10">
       <div className="aurora-orb left-[-90px] top-20 h-72 w-72 bg-[#b98d63]/20" />
       <div className="aurora-orb right-[-80px] bottom-24 h-72 w-72 bg-[#8f6a4c]/18" />
       <div className="relative z-10 w-full max-w-6xl">

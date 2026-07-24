@@ -37,7 +37,7 @@ export function SignupPage() {
   };
 
   return (
-    <div className="tech-shell flex min-h-screen items-center justify-center px-6 py-10">
+    <div className="tech-shell auth-shell flex min-h-screen items-center justify-center px-6 py-10">
       <div className="aurora-orb left-[-70px] top-16 h-72 w-72 bg-[#c79b74]/18" />
       <div className="aurora-orb right-[-60px] bottom-20 h-72 w-72 bg-[#8f6a4c]/18" />
       <div className="relative z-10 w-full max-w-6xl">
