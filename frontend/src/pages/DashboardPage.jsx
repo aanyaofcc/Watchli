@@ -438,6 +438,12 @@ export function DashboardPage() {
         : scheduler?.lastAlertType === "test_email"
           ? "Test email sent"
           : "Alert activity";
+  const schedulerAlertEmail = String(scheduler?.lastAlertEmail || "").trim().toLowerCase();
+  const signedInUserEmail = String(user?.email || "").trim().toLowerCase();
+  const showSchedulerAlertEmail =
+    Boolean(schedulerAlertEmail) &&
+    Boolean(signedInUserEmail) &&
+    schedulerAlertEmail === signedInUserEmail;
 
   return (
     <div className="grid gap-5 xl:grid-cols-[minmax(0,1.55fr)_360px] xl:items-start">
@@ -877,7 +883,7 @@ export function DashboardPage() {
                   <p className="text-sm text-stone-300">{lastAlertTypeLabel}</p>
                   <p className="mt-1 text-base font-semibold text-white">{lastAlertLabel}</p>
                 </div>
-                {scheduler?.lastAlertEmail ? (
+                {showSchedulerAlertEmail ? (
                   <span className="rounded-full border border-[#d3b697]/14 bg-white/[0.05] px-3 py-1.5 text-xs text-stone-200">
                     {scheduler.lastAlertEmail}
                   </span>
@@ -887,6 +893,9 @@ export function DashboardPage() {
                 {scheduler?.lastAlertSubject
                   ? `Latest subject: ${scheduler.lastAlertSubject}`
                   : "When Watchli sends a real product alert or a test email, the latest activity will show here."}
+                {!showSchedulerAlertEmail && scheduler?.lastAlertEmail
+                  ? " Recipient hidden because the latest scheduler alert was sent to a different account."
+                  : ""}
               </p>
             </div>
           </div>
