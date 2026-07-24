@@ -1,4 +1,4 @@
-import { getAdmin, getDb } from "../firebase.js";
+import { getAdmin, getAdminAuth, getDb } from "../firebase.js";
 import { getUserPlanSummary } from "./planService.js";
 import { createDiffSummary } from "../utils/diffSummary.js";
 import { extractPageText, extractProductSignals, hashText } from "../utils/pageContent.js";
@@ -204,6 +204,34 @@ async function updateWebsiteRecords({ db, websiteId, userId, data }) {
   const userWebsiteRef = getUserWebsiteRef(db, userId, websiteId);
 
   await Promise.all([websiteRef.set(data, { merge: true }), userWebsiteRef.set(data, { merge: true })]);
+}
+
+async function resolveUserAccountEmail({ db, userId, fallbackEmail = "" }) {
+  let authEmail = "";
+
+  try {
+    const authUser = await getAdminAuth().getUser(userId);
+    authEmail = String(authUser?.email || "").trim();
+  } catch (error) {
+    console.warn(
+      `[watchli-email] Could not load Firebase Auth email for user ${userId}:`,
+      error?.message || error
+    );
+  }
+
+  const normalizedFallbackEmail = String(fallbackEmail || "").trim();
+  const resolvedEmail = authEmail || normalizedFallbackEmail;
+
+  if (resolvedEmail && resolvedEmail !== normalizedFallbackEmail) {
+    await db.collection(USERS_COLLECTION).doc(userId).set(
+      {
+        email: resolvedEmail
+      },
+      { merge: true }
+    );
+  }
+
+  return resolvedEmail;
 }
 
 async function saveSnapshotRecord({
@@ -484,6 +512,11 @@ export async function checkWebsite({ websiteId, userId }) {
 
   const userSnap = await db.collection(USERS_COLLECTION).doc(userId).get();
   const user = userSnap.data();
+  const notificationEmail = await resolveUserAccountEmail({
+    db,
+    userId,
+    fallbackEmail: user?.email || ""
+  });
   const notificationPreferences = await getUserNotificationPreferences(userId);
 
   try {
@@ -640,9 +673,9 @@ export async function checkWebsite({ websiteId, userId }) {
         }
       });
 
-      if (user?.email && shouldSendEmail) {
+      if (notificationEmail && shouldSendEmail) {
         await sendChangeEmail({
-          email: user.email,
+          email: notificationEmail,
           url: normalizedUrl,
           checkedAt: currentIsoTime,
           diffSummary
