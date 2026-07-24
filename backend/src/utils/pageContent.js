@@ -115,6 +115,8 @@ const UNIT_PRICE_CONTEXT_REGEX =
   /(?:\/|\bper\b)\s*(?:oz|ounce|ounces|fl oz|fluid ounce|fluid ounces|lb|pound|pounds|kg|g|gram|grams|ct|count|ea|each|ft|inch|inches|yard|yards|sq ft|square foot|ml|l|liter|liters)\b/i;
 const TARGET_POSITIVE_PRICE_CONTEXT_REGEX =
   /\b(?:when purchased online|new lower price|sale|lower price on select items)\b/i;
+const RATING_CONTEXT_REGEX =
+  /\b(?:rating|ratings|review|reviews|stars?|star rating|customer reviews?|votes?|based on|out of 5|out of five)\b/i;
 
 function safeJsonParse(value) {
   try {
@@ -660,6 +662,29 @@ function candidateValueLooksLikeDiscount(value, context = "") {
   return /\bsave\b|\boff\b|\bdiscount\b/.test(normalizedContext);
 }
 
+function candidateLooksLikeRating(value, context = "") {
+  const numericValue = parseNumericPrice(value);
+  const normalizedContext = String(context || "").toLowerCase();
+
+  if (!Number.isFinite(numericValue)) {
+    return false;
+  }
+
+  if (!RATING_CONTEXT_REGEX.test(normalizedContext)) {
+    return false;
+  }
+
+  if (numericValue <= 5) {
+    return true;
+  }
+
+  if (Number.isInteger(numericValue) && numericValue <= 100000) {
+    return true;
+  }
+
+  return false;
+}
+
 function readAttributePrice(element, $) {
   const attributeKeys = [
     "data-price",
@@ -905,6 +930,10 @@ function buildCandidatesFromText({
 
       if (/\bsave\b/.test(normalizedContext) && candidateValueLooksLikeDiscount(match.value, normalizedContext)) {
         score -= 60;
+      }
+
+      if (candidateLooksLikeRating(match.value, localContext)) {
+        score -= 120;
       }
 
       if (
@@ -1549,6 +1578,16 @@ function pruneUnitPriceCandidates(candidates) {
   });
 }
 
+function pruneRatingCandidates(candidates) {
+  return candidates.filter((candidate) => {
+    const raw = String(candidate.raw || "");
+    const source = String(candidate.source || "");
+    const context = `${raw} ${source}`;
+
+    return !candidateLooksLikeRating(candidate.value, context);
+  });
+}
+
 function collectAvailabilityFromMarkup($) {
   const statusSignals = [];
   const selectors = [
@@ -1732,7 +1771,9 @@ export function extractProductSignals(html, pageUrl = "") {
   const uniqueCandidates = dedupeCandidates(
     pruneRangeFloorCandidates(
       pruneUnitPriceCandidates(
-        pruneSuspiciousLowOutliers(pruneRelatedFragmentCandidates(candidates))
+        pruneRatingCandidates(
+          pruneSuspiciousLowOutliers(pruneRelatedFragmentCandidates(candidates))
+        )
       )
     )
   );
