@@ -451,8 +451,8 @@ export function DashboardPage() {
         <section className="glass-panel rounded-[32px] p-5 sm:p-7">
           <div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
             <div>
-              <p className="text-sm uppercase tracking-[0.16em] text-amber-200">Dashboard</p>
-              <h1 className="display-font mt-3 break-words text-3xl font-semibold text-white sm:text-4xl">
+              <p className="editorial-kicker text-[#d5c0a8]">Dashboard</p>
+              <h1 className="display-font mt-3 break-words text-4xl font-semibold leading-[0.95] text-white sm:text-5xl">
                 Welcome back{greetingName ? `, ${greetingName}` : ""}
               </h1>
               <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-200 sm:text-base">
@@ -472,14 +472,14 @@ export function DashboardPage() {
           <div className="mt-6 grid gap-4 xl:grid-cols-[minmax(0,1.3fr)_minmax(280px,0.7fr)]">
             <form className="app-surface rounded-[28px] p-5 sm:p-6" onSubmit={handleAddWebsite}>
               <label className="block">
-                <span className="mb-2 block text-sm font-medium text-white">Add a new watch</span>
+                <span className="editorial-kicker mb-2 block text-[#d5c0a8]">Add a new watch</span>
                 <div className="mb-3 flex flex-wrap gap-2">
                 <button
                   type="button"
                   onClick={() => setWatchType("product")}
                   className={`rounded-full border px-3 py-1.5 text-sm transition ${
                     watchType === "product"
-                      ? "border-[#7995bb]/24 bg-[#58759a]/26 text-white"
+                      ? "border-[#f3e8db]/18 bg-[#f3e8db]/10 text-white"
                       : "border-white/10 bg-white/[0.04] text-slate-200"
                   }`}
                 >
@@ -490,7 +490,7 @@ export function DashboardPage() {
                   onClick={() => setWatchType("page")}
                   className={`rounded-full border px-3 py-1.5 text-sm transition ${
                     watchType === "page"
-                      ? "border-[#7995bb]/24 bg-[#58759a]/26 text-white"
+                      ? "border-[#f3e8db]/18 bg-[#f3e8db]/10 text-white"
                       : "border-white/10 bg-white/[0.04] text-slate-200"
                   }`}
                 >
@@ -509,7 +509,7 @@ export function DashboardPage() {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="glow-button w-full rounded-2xl bg-[#4c6b92] px-5 py-3 font-semibold text-white transition hover:bg-[#3f5d81] disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+                  className="glow-button w-full rounded-2xl border border-[#f3e8db]/16 bg-[#f3e8db]/10 px-5 py-3 font-semibold text-white transition hover:bg-[#f3e8db]/16 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
                 >
                   {submitting ? "Adding..." : "Add Website"}
                 </button>
@@ -523,7 +523,7 @@ export function DashboardPage() {
             </form>
 
             <div className="app-surface rounded-[28px] p-5 sm:p-6">
-              <p className="text-sm font-medium text-white">Account snapshot</p>
+              <p className="editorial-kicker text-[#d5c0a8]">Account snapshot</p>
               <div className="mt-4 flex flex-wrap gap-2 text-sm text-slate-100">
                 <span className="rounded-full border border-white/10 bg-white/[0.05] px-3 py-1.5">
                   {account.checkFrequency}
@@ -577,7 +577,7 @@ export function DashboardPage() {
                     Getting started
                   </div>
                   <h2 className="display-font mt-3 text-xl font-semibold text-white">
-                    Set up your first Watchli product watch
+                    Set up your first Watchli watch
                   </h2>
                   <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-200">
                     Add a product page, run one check, and open history once so you can see exactly
@@ -623,7 +623,7 @@ export function DashboardPage() {
                 <button
                   type="button"
                   onClick={() => void handleOnboardingAction()}
-                  className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[#c9a37f]/18 bg-[#8d5b40]/88 px-4 py-3 text-sm font-medium text-white transition hover:bg-[#7b4d36]"
+                  className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[#f3e8db]/16 bg-[#f3e8db]/10 px-4 py-3 text-sm font-medium text-white transition hover:bg-[#f3e8db]/16"
                 >
                   {websites.length === 0
                     ? "Focus add website"
@@ -639,7 +639,7 @@ export function DashboardPage() {
         <section className="space-y-4">
           <div className="flex flex-col gap-2.5 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <h2 className="display-font text-2xl font-semibold text-white">
+              <h2 className="display-font text-3xl font-semibold leading-none text-white">
                 Watched pages
               </h2>
               <p className="mt-1 text-sm text-slate-200">
@@ -964,7 +964,7 @@ export function DashboardPage() {
                 <button
                   type="button"
                   onClick={handleUpgradeFromDashboard}
-                  className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-[#c9a37f]/18 bg-[#8d5b40]/88 px-4 py-3 text-sm font-medium text-white transition hover:bg-[#7b4d36]"
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-[#f3e8db]/16 bg-[#f3e8db]/10 px-4 py-3 text-sm font-medium text-white transition hover:bg-[#f3e8db]/16"
                 >
                   <Zap className="h-4 w-4" />
                   {account.premium ? "View Pro plan" : "Upgrade to Pro"}

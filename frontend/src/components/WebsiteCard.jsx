@@ -205,7 +205,7 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
   const isPageWatch = watchType === "page";
   const statusClasses = {
     Watching: "bg-white/[0.04] text-slate-200 border-white/10",
-    Changed: "bg-[#8d5b40]/18 text-amber-50 border-[#c9a37f]/18",
+    Changed: "bg-[#f3e8db]/10 text-[#f6ead9] border-[#f3e8db]/16",
     Error: "bg-rose-500/15 text-rose-100 border-rose-400/20"
   };
   const availability = website.latestAvailabilityStatus || website.lastDiffSummary?.currentAvailabilityStatus || "unknown";
@@ -221,7 +221,7 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
     availability === "sold_out" || availability === "unavailable"
       ? "border-amber-300/18 bg-amber-300/10 text-amber-100"
       : availability === "available"
-        ? "border-[#c9a37f]/18 bg-[#8d5b40]/20 text-amber-50"
+        ? "border-[#f3e8db]/16 bg-[#f3e8db]/10 text-[#f7eee2]"
         : "border-white/10 bg-white/[0.04] text-slate-300";
   const confidenceLabel = formatConfidence(website.latestPrimaryPriceConfidence);
   const hasPriceMeta =
@@ -271,7 +271,7 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
                 <p className="text-xs uppercase tracking-[0.18em] text-slate-500">
                   {isPageWatch ? "Watched website" : "Watched page"}
                 </p>
-                <div className="inline-flex rounded-full border border-white/10 bg-white/[0.05] px-3 py-1 text-xs font-medium text-slate-300">
+                <div className="inline-flex rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-slate-300">
                   {isPageWatch ? "Content watch" : "Price watch"}
                 </div>
                 <div
@@ -285,7 +285,7 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
                   </div>
                 ) : null}
               </div>
-              <h3 className="display-font mt-3 break-words text-xl font-semibold text-white sm:text-2xl">
+              <h3 className="display-font mt-3 break-words text-3xl font-semibold leading-[0.98] text-white sm:text-[2.25rem]">
                 {website.latestProductTitle || (isPageWatch ? "Tracked website" : "Tracked product page")}
               </h3>
               <div className="mt-2 flex items-start gap-2 text-sm text-slate-400">
@@ -309,7 +309,7 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
         <div className="space-y-3">
           <div className="flex flex-wrap gap-2.5">
             {!isPageWatch && website.latestPrimaryPrice ? (
-              <div className="inline-flex items-center gap-2 rounded-full border border-[#c9a37f]/18 bg-[#8d5b40]/20 px-3 py-1.5 text-sm text-amber-50">
+              <div className="inline-flex items-center gap-2 rounded-full border border-[#f3e8db]/16 bg-[#f3e8db]/10 px-3 py-1.5 text-sm text-[#f7eee2]">
                 <DollarSign className="h-4 w-4" />
                 {website.latestPrimaryPrice}
               </div>
@@ -331,12 +331,12 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
                 Check failed
               </div>
             ) : !isPageWatch && website.lastDiffSummary?.priceChange?.changed ? (
-              <div className="inline-flex items-center gap-2 rounded-full border border-[#c9a37f]/18 bg-[#8d5b40]/20 px-3 py-1.5 text-sm text-amber-50">
+              <div className="inline-flex items-center gap-2 rounded-full border border-[#f3e8db]/16 bg-[#f3e8db]/10 px-3 py-1.5 text-sm text-[#f7eee2]">
                 <DollarSign className="h-4 w-4" />
                 {getPriceSummary(website.lastDiffSummary.priceChange)}
               </div>
             ) : hasContentChange ? (
-              <div className="inline-flex items-center gap-2 rounded-full border border-[#c9a37f]/18 bg-[#8d5b40]/20 px-3 py-1.5 text-sm text-amber-50">
+              <div className="inline-flex items-center gap-2 rounded-full border border-[#f3e8db]/16 bg-[#f3e8db]/10 px-3 py-1.5 text-sm text-[#f7eee2]">
                 <TextSearch className="h-4 w-4" />
                 Content changed
               </div>
@@ -364,7 +364,7 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
 
           {isPageWatch ? (
             <div className="grid gap-3 sm:grid-cols-2">
-              <div className="rounded-3xl border border-[#c9a37f]/18 bg-[#8d5b40]/14 p-4">
+              <div className="rounded-3xl border border-[#f3e8db]/12 bg-[#f3e8db]/06 p-4">
                 <p className="text-xs uppercase tracking-[0.14em] text-amber-100/80">Latest preview</p>
                 <p className="mt-2 text-sm leading-6 text-white">
                   {website.lastDiffSummary?.currentPreview || website.latestSnapshotText?.slice(0, 160) || "No preview yet"}
@@ -390,7 +390,7 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
             </div>
           ) : (
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-2">
-            <div className="rounded-3xl border border-[#c9a37f]/18 bg-[#8d5b40]/14 p-4">
+            <div className="rounded-3xl border border-[#f3e8db]/12 bg-[#f3e8db]/06 p-4">
               <p className="text-xs uppercase tracking-[0.14em] text-amber-100/80">Tracked price now</p>
               <p className="mt-2 break-words text-2xl font-semibold text-white">
                 {currentTrackedPrice || "Not detected yet"}
@@ -455,8 +455,8 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
         </div>
 
         {!isPageWatch && website.lastDiffSummary?.priceChange?.changed ? (
-          <div className="rounded-3xl border border-[#7995bb]/24 bg-[#58759a]/22 p-4">
-            <p className="text-xs uppercase tracking-[0.16em] text-amber-50">Latest price change</p>
+          <div className="rounded-3xl border border-[#f3e8db]/16 bg-[#f3e8db]/08 p-4">
+            <p className="text-xs uppercase tracking-[0.16em] text-[#e9d7c2]">Latest price change</p>
             <p className="mt-2 text-base font-semibold text-white">{getPriceDirectionLabel(website.lastDiffSummary.priceChange)}</p>
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
               <div className="rounded-2xl border border-white/10 bg-slate-950/30 p-3">
@@ -465,8 +465,8 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
                   {website.lastDiffSummary.priceChange.previousPrice || "Not available"}
                 </p>
               </div>
-              <div className="rounded-2xl border border-[#7995bb]/24 bg-[#58759a]/26 p-3">
-                <p className="text-xs uppercase tracking-[0.14em] text-amber-50">Current price</p>
+              <div className="rounded-2xl border border-[#f3e8db]/16 bg-[#f3e8db]/10 p-3">
+                <p className="text-xs uppercase tracking-[0.14em] text-[#f0dfcd]">Current price</p>
                 <p className="mt-1 break-words text-lg font-semibold text-white">
                   {website.lastDiffSummary.priceChange.currentPrice || "Not available"}
                 </p>
@@ -474,8 +474,8 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
             </div>
           </div>
         ) : isPageWatch && hasContentChange ? (
-          <div className="rounded-3xl border border-[#7995bb]/24 bg-[#58759a]/22 p-4">
-            <p className="text-xs uppercase tracking-[0.16em] text-amber-50">Latest website change</p>
+          <div className="rounded-3xl border border-[#f3e8db]/16 bg-[#f3e8db]/08 p-4">
+            <p className="text-xs uppercase tracking-[0.16em] text-[#e9d7c2]">Latest website change</p>
             <p className="mt-2 text-base font-semibold text-white">Content changed on the watched page</p>
             <p className="mt-2 text-sm leading-6 text-slate-200">
               {website.lastDiffSummary?.currentPreview || "Open history to compare the latest saved snapshots."}

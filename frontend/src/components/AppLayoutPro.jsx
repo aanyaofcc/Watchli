@@ -34,8 +34,8 @@ export function AppLayoutPro({ children }) {
 
   return (
     <div className="tech-shell min-h-screen text-slate-100">
-      <div className="aurora-orb left-[-140px] top-16 h-72 w-72 bg-[#6f93b7]/14" />
-      <div className="aurora-orb right-[-120px] top-24 h-80 w-80 bg-[#9d7652]/12" />
+      <div className="aurora-orb left-[-140px] top-16 h-72 w-72 bg-[#f2e8dc]/12" />
+      <div className="aurora-orb right-[-120px] top-24 h-80 w-80 bg-[#cfb89f]/10" />
       <header className="app-topbar">
         <div className="mx-auto flex w-full max-w-[1520px] flex-col gap-4 px-4 py-4 sm:px-6 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:gap-8">
@@ -51,12 +51,12 @@ export function AppLayoutPro({ children }) {
                     to={item.to}
                     className={`inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-sm transition ${
                       active
-                        ? "border border-[#7f95b1]/24 bg-[#58759a]/30 text-white"
-                        : "border border-white/8 bg-white/[0.04] text-slate-200 hover:bg-white/[0.08]"
+                        ? "border border-[#f3e8db]/16 bg-[#f3e8db]/10 text-white"
+                        : "border border-white/8 bg-white/[0.02] text-slate-300 hover:bg-white/[0.05]"
                     }`}
                   >
                     <Icon className="h-4 w-4" />
-                    {item.label}
+                    <span className="uppercase tracking-[0.18em]">{item.label}</span>
                   </Link>
                 );
               })}
@@ -67,10 +67,10 @@ export function AppLayoutPro({ children }) {
             <button
               type="button"
               onClick={handleLogout}
-              className="inline-flex items-center justify-center gap-2 rounded-full border border-white/8 bg-white/[0.04] px-4 py-2.5 text-sm text-slate-100 transition hover:bg-white/[0.08]"
+              className="inline-flex items-center justify-center gap-2 rounded-full border border-white/8 bg-white/[0.02] px-4 py-2.5 text-sm text-slate-100 transition hover:bg-white/[0.05]"
             >
               <LogOut className="h-4 w-4" />
-              Log Out
+              <span className="uppercase tracking-[0.18em]">Log Out</span>
             </button>
           </div>
         </div>
