@@ -117,6 +117,14 @@ const TARGET_POSITIVE_PRICE_CONTEXT_REGEX =
   /\b(?:when purchased online|new lower price|sale|lower price on select items)\b/i;
 const RATING_CONTEXT_REGEX =
   /\b(?:rating|ratings|review|reviews|stars?|star rating|customer reviews?|votes?|based on|out of 5|out of five)\b/i;
+const CENTS_PRICE_CONTEXT_REGEX =
+  /\b(?:cent|cents|price[_-]?cents|amount[_-]?cents|priceincents|amountincents|valueincents)\b/i;
+const STRONG_CURRENT_PRICE_CONTEXT_REGEX =
+  /\b(?:sale|current|final|member|offer|promo|purchase|your price|our price|now|today|online price)\b/i;
+const STRONG_OLD_PRICE_CONTEXT_REGEX =
+  /\b(?:list|regular|original|was|compare|old|crossed|strike|max|msrp|reg\.?|orig\.?)\b/i;
+const STRONG_RANGE_PRICE_CONTEXT_REGEX =
+  /\b(?:min|minimum|low|lowest|base|entry|starting|from)\b/i;
 
 function safeJsonParse(value) {
   try {
@@ -685,6 +693,36 @@ function candidateLooksLikeRating(value, context = "") {
   return false;
 }
 
+function embeddedPriceLooksLikeCents(rawPrice, key = "", context = "") {
+  const numericValue = parseNumericPrice(rawPrice);
+  const normalizedKey = String(key || "").toLowerCase();
+  const normalizedContext = String(context || "").toLowerCase();
+
+  if (!Number.isFinite(numericValue)) {
+    return false;
+  }
+
+  if (!Number.isInteger(numericValue) || numericValue < 100) {
+    return false;
+  }
+
+  return CENTS_PRICE_CONTEXT_REGEX.test(`${normalizedKey} ${normalizedContext}`);
+}
+
+function normalizeEmbeddedPriceValue(rawPrice, key = "", context = "") {
+  const numericValue = parseNumericPrice(rawPrice);
+
+  if (!Number.isFinite(numericValue)) {
+    return rawPrice;
+  }
+
+  if (embeddedPriceLooksLikeCents(rawPrice, key, context)) {
+    return Number((numericValue / 100).toFixed(2));
+  }
+
+  return rawPrice;
+}
+
 function readAttributePrice(element, $) {
   const attributeKeys = [
     "data-price",
@@ -1184,20 +1222,47 @@ function collectEmbeddedStoreDataCandidates($, candidates, productTitle) {
             ?.groups?.currency || "";
         let score = scoreContext(`${key} ${surroundingText}`, baseScore);
 
-        if (key.includes("sale") || key.includes("current") || key.includes("final") || key.includes("member")) {
-          score += 8;
+        if (
+          key.includes("sale") ||
+          key.includes("current") ||
+          key.includes("final") ||
+          key.includes("member") ||
+          key.includes("offer") ||
+          key.includes("promo")
+        ) {
+          score += 12;
+        }
+
+        if (STRONG_CURRENT_PRICE_CONTEXT_REGEX.test(`${key} ${surroundingText}`)) {
+          score += 10;
         }
 
         if (key.includes("list") || key.includes("full") || key.includes("max")) {
-          score -= 14;
+          score -= 18;
+        }
+
+        if (STRONG_OLD_PRICE_CONTEXT_REGEX.test(`${key} ${surroundingText}`)) {
+          score -= 16;
         }
 
         if (key.includes("min") || key.includes("low")) {
-          score -= 28;
+          score -= 32;
+        }
+
+        if (STRONG_RANGE_PRICE_CONTEXT_REGEX.test(key)) {
+          score -= 18;
+        }
+
+        if (RANGE_PRICE_CONTEXT_REGEX.test(surroundingText)) {
+          score -= 14;
+        }
+
+        if (embeddedPriceLooksLikeCents(rawPrice, key, surroundingText)) {
+          score += 6;
         }
 
         const candidate = makePriceCandidate({
-          value: rawPrice,
+          value: normalizeEmbeddedPriceValue(rawPrice, key, surroundingText),
           currency,
           raw: rawPrice,
           source: key.includes("min") || key.includes("low") ? "embedded low price" : "embedded store data",
@@ -1588,6 +1653,38 @@ function pruneRatingCandidates(candidates) {
   });
 }
 
+function pruneCentScaledCandidates(candidates) {
+  return candidates.filter((candidate, _, list) => {
+    const candidateValue = Number(candidate.value || 0);
+    const candidateRaw = String(candidate.raw || "");
+
+    if (!Number.isFinite(candidateValue) || candidateValue < 100) {
+      return true;
+    }
+
+    if (!Number.isInteger(candidateValue) || !/\d{3,}/.test(candidateRaw)) {
+      return true;
+    }
+
+    return !list.some((otherCandidate) => {
+      if (otherCandidate === candidate) {
+        return false;
+      }
+
+      const otherValue = Number(otherCandidate.value || 0);
+
+      if (!Number.isFinite(otherValue)) {
+        return false;
+      }
+
+      const looksLikeConvertedCents = Math.abs(candidateValue / 100 - otherValue) < 0.011;
+      const similarOrBetterScore = (otherCandidate.score || 0) >= (candidate.score || 0) - 12;
+
+      return looksLikeConvertedCents && similarOrBetterScore;
+    });
+  });
+}
+
 function collectAvailabilityFromMarkup($) {
   const statusSignals = [];
   const selectors = [
@@ -1772,7 +1869,9 @@ export function extractProductSignals(html, pageUrl = "") {
     pruneRangeFloorCandidates(
       pruneUnitPriceCandidates(
         pruneRatingCandidates(
-          pruneSuspiciousLowOutliers(pruneRelatedFragmentCandidates(candidates))
+          pruneCentScaledCandidates(
+            pruneSuspiciousLowOutliers(pruneRelatedFragmentCandidates(candidates))
+          )
         )
       )
     )
