@@ -31,6 +31,12 @@ const DEFAULT_NOTIFICATION_PREFERENCES = {
   outOfStock: true
 };
 
+function getChecklistState(done) {
+  return done
+    ? "border-emerald-400/25 bg-emerald-500/10 text-emerald-50"
+    : "border-white/10 bg-white/[0.04] text-slate-100";
+}
+
 function formatDate(value) {
   if (!value) {
     return "Not available";
@@ -76,6 +82,40 @@ export function SettingsPage() {
 
     return Math.min(100, Math.round(((account?.websiteCount || 0) / limit) * 100));
   }, [account?.websiteCount, account?.websiteLimit]);
+
+  const launchChecklist = useMemo(
+    () => [
+      {
+        label: "Profile looks ready",
+        description: "Add a display name so your account and alerts feel branded.",
+        done: Boolean((displayName || user?.displayName || "").trim())
+      },
+      {
+        label: "First product is being watched",
+        description: "Make sure at least one real page is in your dashboard before launch.",
+        done: Boolean(account?.websiteCount)
+      },
+      {
+        label: "Alerts are still enabled",
+        description: "Keep price-change emails on so Watchli can actually notify you.",
+        done: !notificationPreferences.paused
+      },
+      {
+        label: "Plan is reviewed",
+        description: "Confirm whether you want to stay on Free or test the Pro checkout flow.",
+        done: Boolean(account?.plan)
+      }
+    ],
+    [
+      account?.plan,
+      account?.websiteCount,
+      displayName,
+      notificationPreferences.paused,
+      user?.displayName
+    ]
+  );
+
+  const completedChecklistCount = launchChecklist.filter((item) => item.done).length;
 
   useEffect(() => {
     let active = true;
@@ -527,21 +567,21 @@ export function SettingsPage() {
 
                 <div className="mt-6 grid gap-3 md:grid-cols-3">
                   <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-4">
-                <p className="text-sm text-slate-200">Plan limit</p>
+                    <p className="text-sm text-slate-200">Plan limit</p>
                     <p className="display-font mt-2 text-2xl font-semibold text-white">
                       {account?.websiteLimit || 3}
                     </p>
                     <p className="mt-2 text-sm text-slate-300">Watched products allowed</p>
                   </div>
                   <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-4">
-                <p className="text-sm text-slate-200">Current usage</p>
+                    <p className="text-sm text-slate-200">Current usage</p>
                     <p className="display-font mt-2 text-2xl font-semibold text-white">
                       {account?.websiteCount || 0}
                     </p>
                     <p className="mt-2 text-sm text-slate-300">Products currently tracked</p>
                   </div>
                   <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-4">
-                <p className="text-sm text-slate-200">Check cadence</p>
+                    <p className="text-sm text-slate-200">Check cadence</p>
                     <p className="display-font mt-2 text-2xl font-semibold text-white">
                       {account?.checkFrequency || "Daily"}
                     </p>
@@ -567,20 +607,37 @@ export function SettingsPage() {
                 </div>
 
                 <div className="mt-6 rounded-3xl border border-white/10 bg-white/[0.04] p-5">
-                  <p className="text-sm text-slate-200">Recommended next steps</p>
-                  <div className="mt-3 grid gap-3 xl:grid-cols-2">
-                    <div className="rounded-2xl border border-white/10 bg-slate-950/30 p-4">
-                      <p className="text-sm font-medium text-white">Improve account trust</p>
-                      <p className="mt-2 text-sm leading-6 text-slate-300">
-                        Keep your display name updated and customize Firebase auth emails so support and branding match Watchli.
+                  <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+                    <div>
+                      <p className="text-sm text-slate-200">Launch readiness</p>
+                      <p className="mt-1 text-sm leading-6 text-slate-300">
+                        A quick way to see whether this account feels ready for real usage.
                       </p>
                     </div>
-                    <div className="rounded-2xl border border-white/10 bg-slate-950/30 p-4">
-                      <p className="text-sm font-medium text-white">Stay on top of billing</p>
-                      <p className="mt-2 text-sm leading-6 text-slate-300">
-                        If you move to Pro, use the billing portal here to manage payment details and subscriptions in one place.
-                      </p>
+                    <div className="inline-flex rounded-full border border-white/10 bg-slate-950/30 px-3 py-1 text-xs text-slate-200">
+                      {completedChecklistCount} / {launchChecklist.length} complete
                     </div>
+                  </div>
+
+                  <div className="mt-4 grid gap-3">
+                    {launchChecklist.map((item) => (
+                      <div
+                        key={item.label}
+                        className={`rounded-2xl border p-4 ${getChecklistState(item.done)}`}
+                      >
+                        <div className="flex items-start justify-between gap-4">
+                          <div>
+                            <p className="text-sm font-medium text-white">{item.label}</p>
+                            <p className="mt-1 text-sm leading-6 text-slate-300">
+                              {item.description}
+                            </p>
+                          </div>
+                          <span className="rounded-full border border-white/10 px-2.5 py-1 text-xs">
+                            {item.done ? "Done" : "Needs attention"}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
 

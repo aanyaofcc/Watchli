@@ -16,6 +16,12 @@ const perks = [
   "Future premium alerting features"
 ];
 
+function getStatusTone(done) {
+  return done
+    ? "border-emerald-400/20 bg-emerald-500/10 text-emerald-100"
+    : "border-white/10 bg-white/[0.04] text-slate-100";
+}
+
 export function UpgradePage() {
   const [searchParams] = useSearchParams();
   const [account, setAccount] = useState(null);
@@ -57,6 +63,24 @@ export function UpgradePage() {
   }, []);
 
   const checkoutState = searchParams.get("checkout");
+
+  const upgradeChecklist = [
+    {
+      label: "Stripe checkout is connected",
+      description: "The backend has the checkout keys it needs to open a real payment session.",
+      done: Boolean(billingStatus?.checkoutReady)
+    },
+    {
+      label: "Webhook is ready to update plans",
+      description: "After payment, Watchli can receive Stripe events and unlock Pro automatically.",
+      done: Boolean(billingStatus?.webhookReady)
+    },
+    {
+      label: "Your account can use Pro",
+      description: "Once checkout completes, this account can move into the higher watch limit.",
+      done: Boolean(account?.premium || billingStatus?.configured)
+    }
+  ];
 
   useEffect(() => {
     if (checkoutState === "success") {
@@ -173,7 +197,7 @@ export function UpgradePage() {
             <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-4">
               <p className="text-xs uppercase tracking-[0.16em] text-slate-400">What changes right away</p>
               <p className="mt-2 text-sm leading-6 text-slate-300">
-                Your watch limit jumps from 5 to 100 and the app starts treating your account as Pro across the dashboard.
+                Your watch limit jumps from 3 to 100 and the app starts treating your account as Pro across the dashboard.
               </p>
             </div>
             <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-4">
@@ -217,6 +241,27 @@ export function UpgradePage() {
               Manage Billing
             </button>
           </div>
+
+          <div className="mt-8 rounded-3xl border border-white/10 bg-white/[0.04] p-5">
+            <p className="text-sm text-slate-200">What the paid flow looks like</p>
+            <div className="mt-4 grid gap-3 sm:grid-cols-3">
+              {[
+                "Click Upgrade to Pro to open Stripe checkout.",
+                "Complete payment with your card or wallet if enabled in Stripe.",
+                "Watchli receives the webhook and updates your plan automatically."
+              ].map((step, index) => (
+                <div
+                  key={step}
+                  className="rounded-2xl border border-white/10 bg-slate-950/30 p-4"
+                >
+                  <p className="text-xs uppercase tracking-[0.14em] text-slate-400">
+                    Step {index + 1}
+                  </p>
+                  <p className="mt-2 text-sm leading-6 text-slate-200">{step}</p>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
 
         <div className="glass-panel-soft rounded-[32px] p-8">
@@ -237,15 +282,15 @@ export function UpgradePage() {
                   : "You are currently on the free plan with the starter limit."}
               </p>
 
-                <div className="mt-8 grid gap-4">
+              <div className="mt-8 grid gap-4">
                 <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-5">
-                  <p className="text-sm text-slate-400">Stripe setup status</p>
+                  <p className="text-sm text-slate-400">Billing connection</p>
                   <p className="display-font mt-2 text-2xl font-semibold text-white">
                     {billingStatus?.configured ? "Configured" : "Needs setup"}
                   </p>
                   <p className="mt-2 text-sm text-slate-300">
                     {billingStatus?.configured
-                      ? `Running in ${billingStatus.environment} mode with checkout and webhook secrets present.`
+                      ? `Running in ${billingStatus.environment} mode with the billing credentials in place.`
                       : "One or more Stripe environment variables are still missing on the backend."}
                   </p>
                   <div className="mt-4 flex flex-wrap gap-2 text-xs">
@@ -263,6 +308,35 @@ export function UpgradePage() {
                     }`}>
                       Webhook {billingStatus?.webhookReady ? "ready" : "not ready"}
                     </span>
+                  </div>
+                </div>
+
+                <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-5">
+                  <div className="flex items-center justify-between gap-3">
+                    <p className="text-sm text-slate-400">Upgrade readiness</p>
+                    <span className="rounded-full border border-white/10 bg-slate-950/30 px-3 py-1 text-xs text-slate-200">
+                      {upgradeChecklist.filter((item) => item.done).length} / {upgradeChecklist.length} ready
+                    </span>
+                  </div>
+                  <div className="mt-4 grid gap-3">
+                    {upgradeChecklist.map((item) => (
+                      <div
+                        key={item.label}
+                        className={`rounded-2xl border p-4 ${getStatusTone(item.done)}`}
+                      >
+                        <div className="flex items-start justify-between gap-4">
+                          <div>
+                            <p className="text-sm font-medium text-white">{item.label}</p>
+                            <p className="mt-1 text-sm leading-6 text-slate-300">
+                              {item.description}
+                            </p>
+                          </div>
+                          <span className="rounded-full border border-white/10 px-2.5 py-1 text-xs">
+                            {item.done ? "Ready" : "Pending"}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
 
@@ -293,7 +367,7 @@ export function UpgradePage() {
                 </div>
 
                 <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-5">
-                  <p className="text-sm text-slate-400">Stripe account link</p>
+                  <p className="text-sm text-slate-400">Stripe customer link</p>
                   <p className="display-font mt-2 text-2xl font-semibold text-white">
                     {billingStatus?.customerCreated ? "Customer created" : "No customer yet"}
                   </p>
