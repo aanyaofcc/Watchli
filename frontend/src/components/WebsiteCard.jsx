@@ -244,288 +244,117 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
     Boolean(website.lastDiffSummary?.contentChanged);
 
   return (
-    <article className="glass-panel rounded-[28px] p-5 sm:p-6">
+    <article className="rounded-[28px] border border-white/10 bg-white/[0.04] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.02)]">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div className="min-w-0 flex-1">
-          <div className="flex gap-4">
-            <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-3xl border border-white/10 bg-white/[0.05] shadow-[0_14px_28px_rgba(15,23,42,0.16)]">
-              {productImage ? (
-                <img
-                  src={productImage}
-                  alt={website.latestProductTitle || "Tracked product"}
-                  className="h-full w-full object-cover"
-                  loading="lazy"
-                />
-              ) : (
-                <div className="flex h-full w-full flex-col items-center justify-center bg-[linear-gradient(135deg,rgba(96,165,250,0.22),rgba(148,163,184,0.08))] text-center">
-                  <span className="display-font text-lg font-semibold text-white">{fallbackLabel || "WP"}</span>
-                  <span className="mt-1 px-3 text-[10px] uppercase tracking-[0.18em] text-slate-300">
-                    {domainLabel}
-                  </span>
-                </div>
-              )}
-            </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <span
+              className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${
+                website.status === "Changed"
+                  ? "bg-emerald-400/15 text-emerald-200"
+                  : website.status === "Error"
+                    ? "bg-rose-500/15 text-rose-100"
+                    : "bg-white/10 text-slate-200"
+              }`}
+            >
+              {website.status === "Changed"
+                ? isPageWatch
+                  ? "Content changed"
+                  : "Price changed"
+                : website.statusLabel || website.status}
+            </span>
+            {!isPageWatch ? (
+              <span className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${availabilityClasses}`}>
+                {availabilityLabel}
+              </span>
+            ) : null}
+          </div>
 
-            <div className="min-w-0 flex-1">
-              <div className="flex flex-wrap items-center gap-2">
-                <p className="text-xs uppercase tracking-[0.18em] text-slate-500">
-                  {isPageWatch ? "Watched website" : "Watched page"}
-                </p>
-                <div className="inline-flex rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-slate-300">
-                  {isPageWatch ? "Content watch" : "Price watch"}
-                </div>
-                <div
-                  className={`inline-flex rounded-full border px-3 py-1 text-xs font-medium ${statusClasses[website.status] || statusClasses.Watching}`}
-                >
-                  {website.statusLabel || website.status}
-                </div>
-                {!isPageWatch ? (
-                  <div className={`inline-flex rounded-full border px-3 py-1 text-xs font-medium ${availabilityClasses}`}>
-                    {availabilityLabel}
-                  </div>
-                ) : null}
-              </div>
-              <h3 className="display-font mt-3 break-words text-3xl font-semibold leading-[0.98] text-white sm:text-[2.25rem]">
-                {website.latestProductTitle || (isPageWatch ? "Tracked website" : "Tracked product page")}
-              </h3>
-              <div className="mt-2 flex items-start gap-2 text-sm text-slate-400">
-                <ExternalLink className="mt-0.5 h-4 w-4 shrink-0 text-slate-500" />
-                <p className="break-all">{website.url}</p>
-              </div>
-            </div>
+          <h3 className="mt-4 text-2xl font-semibold text-white">
+            {website.latestProductTitle || (isPageWatch ? "Tracked website" : "Tracked product page")}
+          </h3>
+          <div className="mt-1 flex items-start gap-2 text-sm text-slate-300">
+            <ExternalLink className="mt-0.5 h-4 w-4 shrink-0 text-slate-500" />
+            <p className="break-all">{website.url}</p>
           </div>
         </div>
 
-        <div className="grid gap-2 text-sm text-slate-400 md:min-w-[220px]">
-          <p className="inline-flex items-center gap-2">
-            <Clock3 className="h-4 w-4 text-slate-500" />
-            Last checked: {formatDate(website.lastChecked)}
+        <div className="min-w-[140px] text-right">
+          <p className="text-2xl font-semibold text-white">
+            {currentTrackedPrice || (isPageWatch ? "Watching" : "No price")}
           </p>
-          <p className="break-words">Last changed: {formatDate(website.lastChanged)}</p>
+          <p
+            className={`mt-1 text-sm ${
+              website.lastDiffSummary?.priceChange?.direction === "down"
+                ? "text-emerald-300"
+                : website.lastDiffSummary?.priceChange?.direction === "up"
+                  ? "text-amber-200"
+                  : "text-slate-300"
+            }`}
+          >
+            {website.lastDiffSummary?.priceChange?.changed
+              ? getPriceSummary(website.lastDiffSummary.priceChange)
+              : hasContentChange
+                ? "Readable change found"
+                : availability === "sold_out"
+                  ? "Sold out"
+                  : availability === "unavailable"
+                    ? "Unavailable"
+                    : "Stable"}
+          </p>
         </div>
       </div>
 
-      <div className="mt-5 space-y-4">
-        <div className="space-y-3">
-          <div className="flex flex-wrap gap-2.5">
-            {!isPageWatch && website.latestPrimaryPrice ? (
-              <div className="inline-flex items-center gap-2 rounded-full border border-[#f3e8db]/16 bg-[#f3e8db]/10 px-3 py-1.5 text-sm text-[#f7eee2]">
-                <DollarSign className="h-4 w-4" />
-                {website.latestPrimaryPrice}
-              </div>
-            ) : !isPageWatch ? (
-              <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-slate-300">
-                <DollarSign className="h-4 w-4" />
-                No price yet
-              </div>
-            ) : (
-              <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-slate-300">
-                <TextSearch className="h-4 w-4" />
-                Watching page content
-              </div>
-            )}
-
-            {website.status === "Error" ? (
-              <div className="inline-flex items-center gap-2 rounded-full border border-rose-400/20 bg-rose-500/10 px-3 py-1.5 text-sm text-rose-100">
-                <PackageSearch className="h-4 w-4" />
-                Check failed
-              </div>
-            ) : !isPageWatch && website.lastDiffSummary?.priceChange?.changed ? (
-              <div className="inline-flex items-center gap-2 rounded-full border border-[#f3e8db]/16 bg-[#f3e8db]/10 px-3 py-1.5 text-sm text-[#f7eee2]">
-                <DollarSign className="h-4 w-4" />
-                {getPriceSummary(website.lastDiffSummary.priceChange)}
-              </div>
-            ) : hasContentChange ? (
-              <div className="inline-flex items-center gap-2 rounded-full border border-[#f3e8db]/16 bg-[#f3e8db]/10 px-3 py-1.5 text-sm text-[#f7eee2]">
-                <TextSearch className="h-4 w-4" />
-                Content changed
-              </div>
-            ) : (
-              <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-slate-300">
-                <PackageSearch className="h-4 w-4" />
-                Watching
-              </div>
-            )}
-          </div>
-
-          <div>
-            <p className="text-sm leading-6 text-slate-300">
-              {website.status === "Error"
-                ? website.lastErrorMessage || "The website could not be checked successfully."
-                : hasContentChange
-                  ? "Watchli detected a readable content change on this website."
-                  : website.lastDiffSummary?.priceChange?.changed
+      <div className="mt-5 grid gap-3 xl:grid-cols-[minmax(0,1fr)_260px]">
+        <div className="rounded-[24px] border border-white/10 bg-white/[0.03] p-4">
+          <p className="text-sm leading-6 text-slate-200">
+            {website.status === "Error"
+              ? website.lastErrorMessage || "The website could not be checked successfully."
+              : hasContentChange
+                ? "Watchli detected a readable content change on this website."
+                : website.lastDiffSummary?.priceChange?.changed
                   ? website.lastDiffSummary.priceChange.label
                   : isPageWatch
                     ? "Watchli is standing by for content changes on this website."
                     : "Watchli is standing by for price, availability, or content changes on this page."}
-            </p>
-          </div>
-
-          {isPageWatch ? (
-            <div className="grid gap-3 sm:grid-cols-2">
-              <div className="rounded-3xl border border-[#f3e8db]/12 bg-[#f3e8db]/06 p-4">
-                <p className="text-xs uppercase tracking-[0.14em] text-amber-100/80">Latest preview</p>
-                <p className="mt-2 text-sm leading-6 text-white">
-                  {website.lastDiffSummary?.currentPreview || website.latestSnapshotText?.slice(0, 160) || "No preview yet"}
-                </p>
-              </div>
-
-              <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-4">
-                <p className="text-xs uppercase tracking-[0.14em] text-slate-400">Previous preview</p>
-                <p className="mt-2 text-sm leading-6 text-white">
-                  {website.lastDiffSummary?.previousPreview || "No earlier snapshot yet"}
-                </p>
-              </div>
-
-              <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-4">
-                <p className="text-xs uppercase tracking-[0.14em] text-slate-400">Changed words</p>
-                <p className="mt-2 break-words text-2xl font-semibold text-white">
-                  {website.lastDiffSummary?.changedWordCount || 0}
-                </p>
-                <p className="mt-2 text-sm leading-6 text-slate-300">
-                  Watchli compares the readable page text between checks for this watch.
-                </p>
-              </div>
-            </div>
-          ) : (
-          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-2">
-            <div className="rounded-3xl border border-[#f3e8db]/12 bg-[#f3e8db]/06 p-4">
-              <p className="text-xs uppercase tracking-[0.14em] text-amber-100/80">Tracked price now</p>
-              <p className="mt-2 break-words text-2xl font-semibold text-white">
-                {currentTrackedPrice || "Not detected yet"}
-              </p>
-              <p className="mt-2 text-sm leading-6 text-slate-300">
-                {currentTrackedPrice
-                  ? "This is the price Watchli is currently monitoring for alerts."
-                  : "Run another check if the product page should already show a price."}
-              </p>
-            </div>
-
-            <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-4">
-              <p className="text-xs uppercase tracking-[0.14em] text-slate-400">Previous tracked price</p>
-              <p className="mt-2 break-words text-2xl font-semibold text-white">
-                {previousTrackedPrice || "No earlier price yet"}
-              </p>
-              <p className="mt-2 text-sm leading-6 text-slate-300">
-                {previousTrackedPrice
-                  ? "Useful for seeing what changed before the latest check."
-                  : "Watchli will show the prior tracked price once this page changes."}
-              </p>
-            </div>
-
-            <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-4 sm:col-span-2">
-              <p className="text-xs uppercase tracking-[0.14em] text-slate-400">Why this price</p>
-              <p className="mt-2 text-sm font-medium text-white">{sourceLabel}</p>
-              <p className="mt-2 text-sm leading-6 text-slate-300">
-                {getConfidenceNote(website.latestPrimaryPriceConfidence)}
-              </p>
-            </div>
-          </div>
-          )}
+          </p>
 
           {!isPageWatch && hasPriceMeta ? (
-            <div className="grid gap-3 sm:grid-cols-3">
-              <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-3.5">
-                <p className="text-xs uppercase tracking-[0.14em] text-slate-400">Price source</p>
-                <p className="mt-2 text-sm font-medium text-white">
-                  {sourceLabel}
-                </p>
-              </div>
-              <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-3.5">
-                <p className="text-xs uppercase tracking-[0.14em] text-slate-400">Confidence</p>
-                <div className="mt-2 flex items-center gap-2 text-sm font-medium text-white">
-                  <Info className="h-4 w-4 text-amber-200" />
-                  {confidenceLabel}
-                </div>
-              </div>
-              <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-3.5">
-                <p className="text-xs uppercase tracking-[0.14em] text-slate-400">Availability</p>
-                <p className="mt-2 text-sm font-medium text-white">{availabilityLabel}</p>
-              </div>
-            </div>
-          ) : null}
-
-          {website.status === "Error" && website.lastErrorMessage ? (
-            <div className="rounded-3xl border border-rose-400/25 bg-rose-500/10 p-4">
-              <p className="text-xs uppercase tracking-[0.16em] text-rose-200">Failure reason</p>
-              <p className="mt-2 text-sm leading-6 text-rose-100">{website.lastErrorMessage}</p>
+            <div className="mt-4 flex flex-wrap gap-2 text-xs text-slate-300">
+              <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5">
+                {sourceLabel}
+              </span>
+              <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5">
+                Confidence {confidenceLabel}
+              </span>
             </div>
           ) : null}
         </div>
 
-        {!isPageWatch && website.lastDiffSummary?.priceChange?.changed ? (
-          <div className="rounded-3xl border border-[#f3e8db]/16 bg-[#f3e8db]/08 p-4">
-            <p className="text-xs uppercase tracking-[0.16em] text-[#e9d7c2]">Latest price change</p>
-            <p className="mt-2 text-base font-semibold text-white">{getPriceDirectionLabel(website.lastDiffSummary.priceChange)}</p>
-            <div className="mt-4 grid gap-3 sm:grid-cols-2">
-              <div className="rounded-2xl border border-white/10 bg-slate-950/30 p-3">
-                <p className="text-xs uppercase tracking-[0.14em] text-slate-400">Previous price</p>
-                <p className="mt-1 break-words text-lg font-semibold text-white">
-                  {website.lastDiffSummary.priceChange.previousPrice || "Not available"}
-                </p>
-              </div>
-              <div className="rounded-2xl border border-[#f3e8db]/16 bg-[#f3e8db]/10 p-3">
-                <p className="text-xs uppercase tracking-[0.14em] text-[#f0dfcd]">Current price</p>
-                <p className="mt-1 break-words text-lg font-semibold text-white">
-                  {website.lastDiffSummary.priceChange.currentPrice || "Not available"}
-                </p>
-              </div>
-            </div>
-          </div>
-        ) : isPageWatch && hasContentChange ? (
-          <div className="rounded-3xl border border-[#f3e8db]/16 bg-[#f3e8db]/08 p-4">
-            <p className="text-xs uppercase tracking-[0.16em] text-[#e9d7c2]">Latest website change</p>
-            <p className="mt-2 text-base font-semibold text-white">Content changed on the watched page</p>
-            <p className="mt-2 text-sm leading-6 text-slate-200">
-              {website.lastDiffSummary?.currentPreview || "Open history to compare the latest saved snapshots."}
-            </p>
-          </div>
-        ) : (
-          <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-4">
-            <p className="text-xs uppercase tracking-[0.16em] text-slate-400">Current watch state</p>
-            <p className="mt-2 text-base font-semibold text-white">
-              {!isPageWatch && website.latestPrimaryPrice
-                ? `Tracking around ${website.latestPrimaryPrice}`
-                : isPageWatch
-                  ? "Watching for content updates"
-                  : "Waiting for a stronger price signal"}
-            </p>
-            <p className="mt-2 text-sm leading-6 text-slate-300">
-              {isPageWatch
-                ? "Run another check or open history if you want to compare the latest readable page content."
-                : availability === "available"
-                ? "The latest check suggests the product is currently available."
-                : availability === "sold_out"
-                  ? "The latest check suggests the item is sold out."
-                  : availability === "unavailable"
-                    ? "The latest check suggests the page is no longer available."
-                    : "Run another check or open history for more detail."}
-            </p>
-            {!isPageWatch && (website.latestPrimaryPriceSource || website.latestPrimaryPriceConfidence) ? (
-              <div className="mt-4 flex flex-wrap gap-2 text-xs text-stone-200">
-                {website.latestPrimaryPriceSource ? (
-                  <span className="rounded-full border border-[#d3b697]/12 bg-white/[0.06] px-3 py-1.5">
-                    Source: {sourceLabel}
-                  </span>
-                ) : null}
-                {website.latestPrimaryPriceConfidence ? (
-                  <span className="rounded-full border border-[#d3b697]/12 bg-white/[0.06] px-3 py-1.5">
-                    Confidence: {confidenceLabel}
-                  </span>
-                ) : null}
-              </div>
-            ) : null}
-          </div>
-        )}
+        <div className="rounded-[24px] border border-white/10 bg-white/[0.03] p-4">
+          <p className="text-xs uppercase tracking-[0.16em] text-slate-400">Watch state</p>
+          <p className="mt-2 text-base font-semibold text-white">
+            {!isPageWatch && website.latestPrimaryPrice
+              ? `Tracking around ${website.latestPrimaryPrice}`
+              : isPageWatch
+                ? "Watching for content updates"
+                : "Waiting for a stronger price signal"}
+          </p>
+          <p className="mt-3 text-sm leading-6 text-slate-300">
+            Last checked: {formatDate(website.lastChecked)}
+          </p>
+          <p className="mt-1 text-sm leading-6 text-slate-300">
+            Last changed: {formatDate(website.lastChanged)}
+          </p>
+        </div>
       </div>
 
-      <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+      <div className="mt-5 flex flex-col gap-3 sm:flex-row">
         <button
           type="button"
           onClick={() => onCheck(website.id)}
           disabled={busy}
-          className="glow-button inline-flex items-center justify-center gap-2 rounded-2xl bg-[#3d6283] px-4 py-3 font-semibold text-white transition hover:bg-[#345571] disabled:cursor-not-allowed disabled:opacity-60"
+          className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[#356dcf] bg-[#2c2725] px-4 py-3 font-semibold text-white transition hover:bg-[#34302d] disabled:cursor-not-allowed disabled:opacity-60"
         >
           <RefreshCw className="h-4 w-4" />
           {busy ? "Checking..." : "Check Now"}
