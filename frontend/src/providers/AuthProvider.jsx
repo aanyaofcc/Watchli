@@ -18,6 +18,7 @@ import {
   setDoc
 } from "firebase/firestore";
 import { auth, db } from "../lib/firebase";
+import { DEFAULT_APP_THEME_ID } from "../lib/themes";
 
 const DEFAULT_NOTIFICATION_PREFERENCES = {
   paused: false,
@@ -122,7 +123,8 @@ export function AuthProvider({ children }) {
           email,
           plan: "free",
           createdAt: serverTimestamp(),
-          notificationPreferences: DEFAULT_NOTIFICATION_PREFERENCES
+          notificationPreferences: DEFAULT_NOTIFICATION_PREFERENCES,
+          appTheme: DEFAULT_APP_THEME_ID
         },
         { merge: true }
       );

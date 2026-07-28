@@ -5,6 +5,7 @@ import {
   CreditCard,
   LoaderCircle,
   MailCheck,
+  Palette,
   Settings,
   ShieldCheck,
   Sparkles,
@@ -23,6 +24,7 @@ import {
   updateNotificationPreferences
 } from "../lib/api";
 import { useAuth } from "../providers/AuthProvider";
+import { useTheme } from "../providers/ThemeProvider";
 
 const DEFAULT_NOTIFICATION_PREFERENCES = {
   paused: false,
@@ -56,6 +58,7 @@ function formatDate(value) {
 export function SettingsPage() {
   const navigate = useNavigate();
   const { user, resetPassword, logout, refreshUser } = useAuth();
+  const { themeId, themes, saveThemePreference } = useTheme();
   const [account, setAccount] = useState(null);
   const [displayName, setDisplayName] = useState(user?.displayName || "");
   const [deleteConfirmation, setDeleteConfirmation] = useState("");
@@ -66,6 +69,7 @@ export function SettingsPage() {
   const [sendingReset, setSendingReset] = useState(false);
   const [deletingAccount, setDeletingAccount] = useState(false);
   const [savingNotifications, setSavingNotifications] = useState(false);
+  const [savingTheme, setSavingTheme] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [notificationPreferences, setNotificationPreferences] = useState(
@@ -309,6 +313,25 @@ export function SettingsPage() {
     }
   };
 
+  const handleThemeChange = async (nextThemeId) => {
+    if (nextThemeId === themeId) {
+      return;
+    }
+
+    setError("");
+    setSuccess("");
+    setSavingTheme(true);
+
+    try {
+      await saveThemePreference(nextThemeId);
+      setSuccess("App color theme updated.");
+    } catch (saveError) {
+      setError(saveError.message || "Could not update your app theme.");
+    } finally {
+      setSavingTheme(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <section className="glass-panel rounded-[32px] p-6 sm:p-8">
@@ -496,6 +519,67 @@ export function SettingsPage() {
               {savingNotifications
                 ? "Saving your alert preferences..."
                 : "These preferences apply to Watchli product alerts across your account."}
+            </p>
+          </div>
+
+          <div className="glass-panel-soft rounded-3xl p-5 sm:p-6">
+            <div className="flex items-center gap-3">
+              <div className="rounded-2xl bg-white/10 p-3">
+                <Palette className="h-5 w-5 text-slate-100" />
+              </div>
+              <div>
+                <p className="text-sm text-slate-200">App appearance</p>
+                <h2 className="display-font text-xl font-semibold text-white">Choose your color theme</h2>
+              </div>
+            </div>
+            <p className="mt-4 text-sm leading-6 text-slate-100/90">
+              Pick the palette that feels best for your workspace. Each option is tuned so the app still stays readable and polished.
+            </p>
+            <div className="mt-5 grid gap-3 sm:grid-cols-2">
+              {themes.map((themeOption) => {
+                const active = themeOption.id === themeId;
+
+                return (
+                  <button
+                    key={themeOption.id}
+                    type="button"
+                    onClick={() => {
+                      void handleThemeChange(themeOption.id);
+                    }}
+                    disabled={savingTheme}
+                    className={`theme-swatch-card rounded-3xl p-4 text-left transition hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-70 ${
+                      active ? "theme-active-nav" : ""
+                    }`}
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <p className="text-sm font-medium text-white">{themeOption.name}</p>
+                        <p className="mt-1 text-sm leading-6 text-slate-300">
+                          {themeOption.description}
+                        </p>
+                      </div>
+                      <span className={`rounded-full px-2.5 py-1 text-xs ${active ? "theme-accent-chip" : "theme-outline-button"}`}>
+                        {active ? "Active" : "Preview"}
+                      </span>
+                    </div>
+
+                    <div className="mt-4 flex items-center gap-2">
+                      {themeOption.preview.map((color) => (
+                        <span
+                          key={color}
+                          className="h-9 w-9 rounded-full border border-white/15"
+                          style={{ backgroundColor: color }}
+                        />
+                      ))}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+            <p className="mt-3 text-xs leading-6 text-slate-200">
+              {savingTheme
+                ? "Saving your workspace colors..."
+                : "Your selected theme stays saved to your account and follows you when you sign back in."}
             </p>
           </div>
 

@@ -43,8 +43,8 @@ export function AppLayoutPro({ children }) {
 
   return (
     <div className="tech-shell min-h-screen text-slate-100">
-      <div className="aurora-orb left-[-140px] top-16 h-72 w-72 bg-[#f2e8dc]/12" />
-      <div className="aurora-orb right-[-120px] top-24 h-80 w-80 bg-[#cfb89f]/10" />
+      <div className="aurora-orb left-[-140px] top-16 h-72 w-72" style={{ background: "var(--app-orb-1)" }} />
+      <div className="aurora-orb right-[-120px] top-24 h-80 w-80" style={{ background: "var(--app-orb-2)" }} />
       <header className="app-topbar">
         <div className="mx-auto flex w-full max-w-[1760px] flex-col gap-4 px-4 py-4 sm:px-6 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:gap-8">
@@ -54,7 +54,7 @@ export function AppLayoutPro({ children }) {
                 <span className="h-3 w-3 rounded-full bg-[#f2c94c]" />
                 <span className="h-3 w-3 rounded-full bg-[#6fcf97]" />
               </div>
-              <div className="rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-sm text-slate-200">
+              <div className="rounded-full border px-4 py-2 text-sm text-slate-200 theme-outline-button">
                 watchliweb.com/{pathLabel}
               </div>
             </div>
@@ -72,8 +72,8 @@ export function AppLayoutPro({ children }) {
                     to={item.to}
                     className={`inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-sm transition ${
                       active
-                        ? "border border-[#356dcf] bg-[#2c2725] text-white"
-                        : "border border-white/10 bg-white/[0.03] text-slate-300 hover:bg-white/[0.06]"
+                        ? "theme-active-nav"
+                        : "theme-outline-button text-slate-300"
                     }`}
                   >
                     <Icon className="h-4 w-4" />
@@ -85,13 +85,13 @@ export function AppLayoutPro({ children }) {
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="rounded-full border border-white/80 px-4 py-2 text-sm font-medium text-white">
+            <div className="theme-accent-chip rounded-full px-4 py-2 text-sm font-medium">
               Live product monitoring
             </div>
             <button
               type="button"
               onClick={handleLogout}
-              className="inline-flex items-center justify-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-4 py-2.5 text-sm text-slate-100 transition hover:bg-white/[0.06]"
+              className="theme-outline-button inline-flex items-center justify-center gap-2 rounded-full px-4 py-2.5 text-sm transition"
             >
               <LogOut className="h-4 w-4" />
               <span>Log out</span>
@@ -102,7 +102,7 @@ export function AppLayoutPro({ children }) {
 
       <main className="app-workspace relative z-10">
         <div className="grid gap-6 xl:grid-cols-[260px_minmax(0,1fr)]">
-          <aside className="rounded-[30px] border border-white/10 bg-white/[0.03] p-5">
+          <aside className="app-surface rounded-[30px] p-5">
             <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Watchli</p>
             <h2 className="mt-3 text-2xl font-semibold text-white">Mission control</h2>
 
@@ -117,8 +117,8 @@ export function AppLayoutPro({ children }) {
                     to={item.to}
                     className={`flex items-center gap-3 rounded-[20px] px-4 py-3 text-lg transition ${
                       active
-                        ? "border border-[#356dcf] bg-[#2c2725] text-white shadow-[inset_0_0_0_1px_rgba(53,109,207,0.1)]"
-                        : "border border-transparent bg-white/[0.03] text-slate-300 hover:bg-white/[0.06]"
+                        ? "theme-active-nav"
+                        : "app-surface-muted border border-transparent text-slate-300 hover:bg-white/[0.06]"
                     }`}
                   >
                     <Icon className="h-5 w-5 shrink-0" />
