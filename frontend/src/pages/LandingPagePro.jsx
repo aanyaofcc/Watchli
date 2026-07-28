@@ -16,6 +16,7 @@ import {
   Zap
 } from "lucide-react";
 import { BrandLogoLink } from "../components/BrandLogo";
+import { SiteFooterDense } from "../components/SiteFooterDense";
 import { sendFeedback } from "../lib/api";
 
 const steps = [
@@ -674,7 +675,7 @@ export function LandingPagePro() {
           </div>
         </section>
 
-        <footer className="mx-auto max-w-7xl border-t border-slate-300/60 px-6 py-8 text-sm text-slate-600">
+        <footer className="hidden mx-auto max-w-7xl border-t border-slate-300/60 px-6 py-8 text-sm text-slate-600">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <p>
               © 2026 Watchli. Monitor product pages and get alerts when they change. Contact:{" "}
@@ -693,6 +694,7 @@ export function LandingPagePro() {
           </div>
         </footer>
       </main>
+      <SiteFooterDense width="max-w-7xl" />
     </div>
   );
 }
