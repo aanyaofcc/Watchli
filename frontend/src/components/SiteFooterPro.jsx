@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Mail } from "lucide-react";
+import { Instagram, Mail } from "lucide-react";
 import { BrandLogoLink } from "./BrandLogo";
 
 export function SiteFooterPro({ compact = false, width = "max-w-7xl" }) {
@@ -21,13 +21,24 @@ export function SiteFooterPro({ compact = false, width = "max-w-7xl" }) {
           <div>
             <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Support</p>
             <div className="mt-4 space-y-3">
-              <a
-                href="mailto:contactwatchli@gmail.com"
-                className="inline-flex items-center gap-2 rounded-full border border-cyan-300/20 bg-cyan-300/10 px-4 py-2 text-sm text-cyan-100 transition hover:bg-cyan-300/15"
-              >
-                <Mail className="h-4 w-4" />
-                contactwatchli@gmail.com
-              </a>
+              <div className="flex flex-wrap items-center gap-3">
+                <a
+                  href="mailto:contactwatchli@gmail.com"
+                  className="inline-flex items-center gap-2 rounded-full border border-cyan-300/20 bg-cyan-300/10 px-4 py-2 text-sm text-cyan-100 transition hover:bg-cyan-300/15"
+                >
+                  <Mail className="h-4 w-4" />
+                  contactwatchli@gmail.com
+                </a>
+                <a
+                  href="https://www.instagram.com/watchliweb/"
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label="Watchli Instagram"
+                  className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-cyan-300/20 bg-cyan-300/10 text-cyan-100 transition hover:bg-cyan-300/15"
+                >
+                  <Instagram className="h-4 w-4" />
+                </a>
+              </div>
               <p className="max-w-xs text-sm leading-6 text-slate-400">
                 Questions about alerts, billing, or setup? Reach out and we will help.
               </p>
