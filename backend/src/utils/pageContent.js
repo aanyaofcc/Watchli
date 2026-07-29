@@ -723,6 +723,56 @@ function normalizeEmbeddedPriceValue(rawPrice, key = "", context = "") {
   return rawPrice;
 }
 
+function extractVariantHints(pageUrl = "") {
+  if (!pageUrl) {
+    return [];
+  }
+
+  try {
+    const url = new URL(pageUrl);
+    const hints = new Set();
+
+    url.searchParams.forEach((value, key) => {
+      const normalizedKey = String(key || "").toLowerCase();
+      const normalizedValue = normalizeWhitespace(String(value || ""));
+
+      if (!normalizedValue) {
+        return;
+      }
+
+      if (
+        normalizedKey.includes("preselect") ||
+        normalizedKey.includes("variant") ||
+        normalizedKey.includes("sku") ||
+        normalizedKey.includes("style") ||
+        normalizedKey.includes("color") ||
+        normalizedKey.includes("size") ||
+        normalizedKey.includes("pid")
+      ) {
+        hints.add(normalizedValue.toLowerCase());
+      }
+    });
+
+    const pathHints = url.pathname.match(/[A-Z]-\d{5,}|\d{6,}/g) || [];
+    pathHints.forEach((hint) => {
+      hints.add(String(hint).toLowerCase());
+    });
+
+    return [...hints].filter((hint) => hint.length >= 3);
+  } catch (_error) {
+    return [];
+  }
+}
+
+function contextMatchesVariantHints(text = "", variantHints = []) {
+  if (!text || !variantHints.length) {
+    return false;
+  }
+
+  const normalizedText = String(text).toLowerCase();
+  return variantHints.some((hint) => normalizedText.includes(String(hint).toLowerCase()));
+}
+
 function readAttributePrice(element, $) {
   const attributeKeys = [
     "data-price",
@@ -1021,13 +1071,15 @@ function buildCandidatesFromText({
   return candidate ? [candidate] : [];
 }
 
-function collectJsonLdCandidates(node, candidates, inheritedTitle = "") {
+function collectJsonLdCandidates(node, candidates, inheritedTitle = "", pageUrl = "", variantHints = []) {
   if (!node) {
     return;
   }
 
   if (Array.isArray(node)) {
-    node.forEach((entry) => collectJsonLdCandidates(entry, candidates, inheritedTitle));
+    node.forEach((entry) =>
+      collectJsonLdCandidates(entry, candidates, inheritedTitle, pageUrl, variantHints)
+    );
     return;
   }
 
@@ -1037,12 +1089,30 @@ function collectJsonLdCandidates(node, candidates, inheritedTitle = "") {
 
   const productTitle = firstText(node.name || inheritedTitle);
   const offers = [...toArray(node.offers), ...toArray(node.priceSpecification)];
+  const nodeContext = normalizeWhitespace(
+    [
+      node.url,
+      node.sku,
+      node.productID,
+      node.productId,
+      node.mpn,
+      node.gtin,
+      node.itemOffered?.sku,
+      node.itemOffered?.productID
+    ]
+      .filter(Boolean)
+      .join(" ")
+  );
+  const variantMatchBoost = contextMatchesVariantHints(nodeContext, variantHints) ? 26 : 0;
   const directCandidate = makePriceCandidate({
     value: node.price ?? node.lowPrice,
     currency: node.priceCurrency,
     raw: node.price ?? node.lowPrice ?? "",
     source: node.price ? "structured data" : "structured low price",
-    score: node.price ? 100 : 58,
+    score:
+      (node.price ? 112 : variantHints.length ? 18 : 42) +
+      variantMatchBoost +
+      (node.highPrice && !node.price ? -10 : 0),
     productTitle
   });
 
@@ -1052,6 +1122,21 @@ function collectJsonLdCandidates(node, candidates, inheritedTitle = "") {
 
   offers.forEach((offer) => {
     const offerAvailability = String(offer?.availability || node.availability || "").toLowerCase();
+    const offerContext = normalizeWhitespace(
+      [
+        offer?.url,
+        offer?.sku,
+        offer?.productID,
+        offer?.productId,
+        offer?.mpn,
+        offer?.gtin,
+        offer?.itemOffered?.sku,
+        offer?.itemOffered?.productID
+      ]
+        .filter(Boolean)
+        .join(" ")
+    );
+    const variantBoost = contextMatchesVariantHints(offerContext, variantHints) ? 30 : 0;
     const availabilityAdjustment =
       offerAvailability.includes("outofstock") || offerAvailability.includes("soldout")
         ? -30
@@ -1063,7 +1148,11 @@ function collectJsonLdCandidates(node, candidates, inheritedTitle = "") {
       currency: offer?.priceCurrency ?? node.priceCurrency,
       raw: offer?.price ?? offer?.lowPrice ?? "",
       source: offer?.price ? "structured data" : "structured low price",
-      score: (offer?.price ? 100 : 54) + availabilityAdjustment,
+      score:
+        (offer?.price ? 114 : variantHints.length ? 12 : 38) +
+        availabilityAdjustment +
+        variantBoost +
+        (offer?.highPrice && !offer?.price ? -12 : 0),
       productTitle: firstText(offer?.name || productTitle)
     });
 
@@ -1074,7 +1163,7 @@ function collectJsonLdCandidates(node, candidates, inheritedTitle = "") {
 
   Object.values(node).forEach((value) => {
     if (typeof value === "object") {
-      collectJsonLdCandidates(value, candidates, productTitle);
+      collectJsonLdCandidates(value, candidates, productTitle, pageUrl, variantHints);
     }
   });
 }
@@ -1116,7 +1205,8 @@ function collectMetaCandidates($, candidates) {
   });
 }
 
-function collectScriptJsonCandidates($, candidates, productTitle) {
+function collectScriptJsonCandidates($, candidates, productTitle, pageUrl = "") {
+  const variantHints = extractVariantHints(pageUrl);
   $("script").each((_, element) => {
     const scriptType = ($(element).attr("type") || "").toLowerCase();
 
@@ -1132,15 +1222,15 @@ function collectScriptJsonCandidates($, candidates, productTitle) {
 
     const compact = scriptText.replace(/\s+/g, " ");
     const patterns = [
-      /"sale[_-]?price"\s*:\s*"?(?<price>\d+(?:\.\d{2})?)"?/gi,
-      /"current[_-]?price"\s*:\s*"?(?<price>\d+(?:\.\d{2})?)"?/gi,
-      /"final[_-]?price"\s*:\s*"?(?<price>\d+(?:\.\d{2})?)"?/gi,
-      /"list[_-]?price"\s*:\s*"?(?<price>\d+(?:\.\d{2})?)"?/gi,
-      /"price"\s*:\s*"?(?<price>\d+(?:\.\d{2})?)"?/gi,
-      /"amount"\s*:\s*"?(?<price>\d+(?:\.\d{2})?)"?/gi
+      { pattern: /"sale[_-]?price"\s*:\s*"?(?<price>\d+(?:\.\d{2})?)"?/gi, source: "script sale price", baseScore: 102 },
+      { pattern: /"current[_-]?price"\s*:\s*"?(?<price>\d+(?:\.\d{2})?)"?/gi, source: "script current price", baseScore: 104 },
+      { pattern: /"final[_-]?price"\s*:\s*"?(?<price>\d+(?:\.\d{2})?)"?/gi, source: "script final price", baseScore: 103 },
+      { pattern: /"list[_-]?price"\s*:\s*"?(?<price>\d+(?:\.\d{2})?)"?/gi, source: "script list price", baseScore: 38 },
+      { pattern: /"price"\s*:\s*"?(?<price>\d+(?:\.\d{2})?)"?/gi, source: "script price", baseScore: 78 },
+      { pattern: /"amount"\s*:\s*"?(?<price>\d+(?:\.\d{2})?)"?/gi, source: "script amount", baseScore: 28 }
     ];
 
-    patterns.forEach((pattern, patternIndex) => {
+    patterns.forEach(({ pattern, source, baseScore }) => {
       const matches = [...compact.matchAll(pattern)];
 
       matches.slice(0, 6).forEach((match) => {
@@ -1154,12 +1244,34 @@ function collectScriptJsonCandidates($, candidates, productTitle) {
           compact.match(/"priceCurrency"\s*:\s*"(?<currency>[A-Z]{3})"/i)?.groups?.currency ||
           compact.match(/"currency"\s*:\s*"(?<currency>[A-Z]{3})"/i)?.groups?.currency ||
           "";
+        const surroundingText = compact.slice(
+          Math.max(0, (match.index || 0) - 180),
+          Math.min(compact.length, (match.index || 0) + 220)
+        );
+        let score = scoreContext(match[0], baseScore);
+
+        if (contextMatchesVariantHints(surroundingText, variantHints)) {
+          score += 20;
+        }
+
+        if (embeddedPriceLooksLikeCents(priceValue, source, surroundingText)) {
+          score += 8;
+        }
+
+        if (!String(priceValue).includes(".") && Number(priceValue) >= 1000) {
+          score -= 18;
+        }
+
+        if (source.includes("list")) {
+          score -= 18;
+        }
+
         const candidate = makePriceCandidate({
-          value: priceValue,
+          value: normalizeEmbeddedPriceValue(priceValue, source, surroundingText),
           currency,
           raw: priceValue,
-          source: "script json",
-          score: scoreContext(match[0], 88 + Math.max(0, 4 - patternIndex)),
+          source,
+          score,
           productTitle
         });
 
@@ -1171,7 +1283,8 @@ function collectScriptJsonCandidates($, candidates, productTitle) {
   });
 }
 
-function collectEmbeddedStoreDataCandidates($, candidates, productTitle) {
+function collectEmbeddedStoreDataCandidates($, candidates, productTitle, pageUrl = "") {
+  const variantHints = extractVariantHints(pageUrl);
   const valuePatterns = [
     {
       pattern:
@@ -1259,6 +1372,18 @@ function collectEmbeddedStoreDataCandidates($, candidates, productTitle) {
 
         if (embeddedPriceLooksLikeCents(rawPrice, key, surroundingText)) {
           score += 6;
+        }
+
+        if (contextMatchesVariantHints(surroundingText, variantHints)) {
+          score += 22;
+        }
+
+        if (variantHints.length && (key.includes("min") || key.includes("low"))) {
+          score -= 28;
+        }
+
+        if (!rawPrice.includes(".") && Number(rawPrice) >= 1000 && !embeddedPriceLooksLikeCents(rawPrice, key, surroundingText)) {
+          score -= 16;
         }
 
         const candidate = makePriceCandidate({
@@ -1838,6 +1963,7 @@ export function extractProductSignals(html, pageUrl = "") {
   const $ = cheerio.load(html);
   const candidates = [];
   const imageCandidates = [];
+  const variantHints = extractVariantHints(pageUrl);
   const productTitle =
     firstText($("meta[property='og:title']").attr("content")) ||
     firstText($("title").text()) ||
@@ -1851,13 +1977,13 @@ export function extractProductSignals(html, pageUrl = "") {
 
   $("script[type='application/ld+json']").each((_, element) => {
     const parsed = safeJsonParse($(element).contents().text());
-    collectJsonLdCandidates(parsed, candidates, productTitle);
+    collectJsonLdCandidates(parsed, candidates, productTitle, pageUrl, variantHints);
     collectJsonLdImageCandidates(parsed, imageCandidates, pageUrl);
   });
 
   collectPatternPriceCandidates($, candidates, productTitle, pageUrl);
-  collectScriptJsonCandidates($, candidates, productTitle);
-  collectEmbeddedStoreDataCandidates($, candidates, productTitle);
+  collectScriptJsonCandidates($, candidates, productTitle, pageUrl);
+  collectEmbeddedStoreDataCandidates($, candidates, productTitle, pageUrl);
   collectMetaCandidates($, candidates);
   collectSelectorCandidates($, candidates);
   collectTitleProximityCandidates($, candidates, productTitle);
