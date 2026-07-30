@@ -343,6 +343,25 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
         </div>
       </div>
 
+      {productImage ? (
+        <div className="mt-5 overflow-hidden rounded-[24px] border border-white/10 bg-white/[0.03]">
+          <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
+            <p className="text-xs uppercase tracking-[0.16em] text-slate-400">Detected image</p>
+            {website.latestProductImageSource ? (
+              <span className="text-xs text-slate-400">{website.latestProductImageSource}</span>
+            ) : null}
+          </div>
+          <div className="bg-white/[0.02] p-4">
+            <img
+              src={productImage}
+              alt={website.latestProductTitle || domainLabel}
+              className="h-52 w-full rounded-[20px] object-contain bg-white/95"
+              loading="lazy"
+            />
+          </div>
+        </div>
+      ) : null}
+
       <div className="mt-5 grid gap-3 xl:grid-cols-[minmax(0,1fr)_260px]">
         <div className="rounded-[24px] border border-white/10 bg-white/[0.03] p-4">
           <p className="text-sm leading-6 text-slate-200">

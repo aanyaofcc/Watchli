@@ -261,6 +261,24 @@ export function HistoryModal({
           <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-300">
             Review the current watch status, tracked price, and recent check history for this product page.
           </p>
+          {website.latestProductImage ? (
+            <div className="mt-5 overflow-hidden rounded-3xl border border-white/10 bg-white/[0.04]">
+              <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
+                <p className="text-xs uppercase tracking-[0.14em] text-slate-400">Latest detected image</p>
+                {website.latestProductImageSource ? (
+                  <span className="text-xs text-slate-400">{website.latestProductImageSource}</span>
+                ) : null}
+              </div>
+              <div className="p-4">
+                <img
+                  src={website.latestProductImage}
+                  alt={website.latestProductTitle || website.url}
+                  className="h-56 w-full rounded-[22px] object-contain bg-white/95"
+                  loading="lazy"
+                />
+              </div>
+            </div>
+          ) : null}
           <div className="mt-5 grid gap-3 md:grid-cols-3">
             <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
               <p className="text-xs uppercase tracking-[0.14em] text-slate-400">Current price</p>
