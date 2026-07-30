@@ -50,6 +50,26 @@ function formatStatusLabel(status) {
 }
 
 const ONBOARDING_STORAGE_KEY = "watchli-dashboard-onboarding-dismissed";
+const DETECTION_MODES = {
+  product_price: {
+    label: "Product price watch",
+    helper:
+      "Use product price watch for store pages where price, stock, and listing changes matter most.",
+    placeholder: "https://store.com/product/example"
+  },
+  job_updates: {
+    label: "Job updates watch",
+    helper:
+      "Use job updates watch for careers pages, job listings, and hiring pages where posting changes matter.",
+    placeholder: "https://company.com/careers/software-engineer"
+  },
+  page_content: {
+    label: "Website content watch",
+    helper:
+      "Use content watch for blogs, docs, announcements, or any page where readable text changes matter.",
+    placeholder: "https://example.com/announcements"
+  }
+};
 
 export function DashboardPage() {
   const { user } = useAuth();
@@ -67,7 +87,7 @@ export function DashboardPage() {
   });
   const [scheduler, setScheduler] = useState(null);
   const [url, setUrl] = useState("");
-  const [watchType, setWatchType] = useState("product");
+  const [detectionMode, setDetectionMode] = useState("product_price");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -93,8 +113,13 @@ export function DashboardPage() {
     (website) => (website.latestAvailabilityStatus || "unknown") === "available"
   );
   const priceAwareWebsites = websites.filter((website) => website.latestPrimaryPrice);
-  const productWatchCount = websites.filter((website) => (website.watchType || "product") === "product").length;
-  const pageWatchCount = websites.filter((website) => (website.watchType || "product") === "page").length;
+  const productWatchCount = websites.filter(
+    (website) => (website.detectionMode || "product_price") === "product_price"
+  ).length;
+  const jobWatchCount = websites.filter((website) => website.detectionMode === "job_updates").length;
+  const pageWatchCount = websites.filter(
+    (website) => (website.detectionMode || "") === "page_content"
+  ).length;
   const mostRecentWebsite = [...websites].sort((left, right) => {
     const leftDate = new Date(left.lastChanged || left.lastChecked || left.createdAt || 0).getTime();
     const rightDate = new Date(right.lastChanged || right.lastChecked || right.createdAt || 0).getTime();
@@ -224,7 +249,7 @@ export function DashboardPage() {
     setSubmitting(true);
 
     try {
-      const payload = await createWebsite(normalizedUrl, watchType);
+      const payload = await createWebsite(normalizedUrl, detectionMode);
       trackEvent("add_website", {
         source: "dashboard",
         hostname: (() => {
@@ -242,7 +267,7 @@ export function DashboardPage() {
       await loadWebsites({ showRefreshing: true });
       setSuccess("Website added to your dashboard.");
       setUrl("");
-      setWatchType("product");
+      setDetectionMode("product_price");
     } catch (submitError) {
       setError(submitError.message);
     } finally {
@@ -489,28 +514,20 @@ export function DashboardPage() {
                 <label className="block">
                   <span className="editorial-kicker mb-2 block text-[#d5c0a8]">Add a new watch</span>
                 <div className="mb-3 flex flex-wrap gap-2">
-                <button
-                  type="button"
-                  onClick={() => setWatchType("product")}
-                  className={`rounded-full border px-3 py-1.5 text-sm transition ${
-                    watchType === "product"
-                      ? "border-[#f3e8db]/18 bg-[#f3e8db]/10 text-white"
-                      : "border-white/10 bg-white/[0.04] text-slate-200"
-                  }`}
-                >
-                  Product price watch
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setWatchType("page")}
-                  className={`rounded-full border px-3 py-1.5 text-sm transition ${
-                    watchType === "page"
-                      ? "border-[#f3e8db]/18 bg-[#f3e8db]/10 text-white"
-                      : "border-white/10 bg-white/[0.04] text-slate-200"
-                  }`}
-                >
-                  Website content watch
-                </button>
+                {Object.entries(DETECTION_MODES).map(([mode, details]) => (
+                  <button
+                    key={mode}
+                    type="button"
+                    onClick={() => setDetectionMode(mode)}
+                    className={`rounded-full border px-3 py-1.5 text-sm transition ${
+                      detectionMode === mode
+                        ? "border-[#f3e8db]/18 bg-[#f3e8db]/10 text-white"
+                        : "border-white/10 bg-white/[0.04] text-slate-200"
+                    }`}
+                  >
+                    {details.label}
+                  </button>
+                ))}
               </div>
               <div className="flex flex-col gap-3 sm:flex-row">
                 <input
@@ -518,7 +535,7 @@ export function DashboardPage() {
                   type="url"
                   value={url}
                   onChange={(event) => setUrl(event.target.value)}
-                  placeholder={watchType === "page" ? "https://example.com/announcements" : "https://store.com/product/example"}
+                  placeholder={DETECTION_MODES[detectionMode].placeholder}
                   className="w-full rounded-2xl border border-[#d3b697]/18 bg-[#f6eee5] px-4 py-3 text-[#2f2722] outline-none transition placeholder:text-[#8b7765] focus:border-[#b5835a]"
                 />
                 <button
@@ -530,9 +547,7 @@ export function DashboardPage() {
                 </button>
               </div>
               <p className="mt-3 text-sm leading-6 text-slate-300">
-                {watchType === "page"
-                  ? "Use content watch for blogs, docs, announcements, or any page where readable text changes matter."
-                  : "Use product price watch for store pages where price, stock, and listing changes matter most."}
+                {DETECTION_MODES[detectionMode].helper}
               </p>
                 </label>
               </form>
@@ -549,7 +564,7 @@ export function DashboardPage() {
                 <p className="mt-3 text-sm leading-6 text-slate-300">
                   {changedWebsites.length > 0
                     ? "Watchli detected a real movement and queued an email with the latest change details."
-                    : "Run a manual check or wait for scheduled checks to surface the latest product movement."}
+                    : "Run a manual check or wait for scheduled checks to surface the latest tracked movement."}
                 </p>
               </div>
 
@@ -558,7 +573,7 @@ export function DashboardPage() {
                   <Zap className="mt-1 h-5 w-5 text-slate-100" />
                   <div>
                     <p className="text-sm text-slate-300">Signal quality</p>
-                    <p className="mt-1 text-2xl font-semibold text-white">Price + stock + change confidence</p>
+                    <p className="mt-1 text-2xl font-semibold text-white">Price, jobs, and page-change tracking</p>
                   </div>
                 </div>
               </div>
@@ -664,7 +679,7 @@ export function DashboardPage() {
               <p className="mt-1 text-sm text-slate-200">
                 {websites.length > 0
                   ? `Latest activity: ${mostRecentWebsite?.latestProductTitle || mostRecentWebsite?.url || "Tracked page"}`
-                  : "Add a product page or content page to start monitoring changes."}
+                  : "Add a product page, job page, or content page to start monitoring changes."}
               </p>
             </div>
             <p className="text-sm text-slate-200">
@@ -685,12 +700,12 @@ export function DashboardPage() {
             <div className="glass-panel-soft rounded-3xl border border-dashed p-8 text-center">
               <p className="display-font text-2xl font-semibold text-white">No watched pages yet</p>
               <p className="mx-auto mt-3 max-w-xl text-sm leading-7 text-slate-100/90">
-                Paste in a product page above and Watchli will save the first snapshot, detect likely prices,
-                and keep checking for changes you care about.
+                Paste in a product page, job listing page, or content page above and Watchli will save the first snapshot
+                and keep checking for the changes you care about.
               </p>
               <div className="mt-5 flex flex-wrap justify-center gap-2 text-sm text-slate-100">
                 <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5">
-                  Add a public product URL
+                  Add a public webpage URL
                 </span>
                 <span className="rounded-full border border-[#c9a37f]/18 bg-[#8d5b40]/20 px-3 py-1.5 text-amber-50">
                   Run manual checks anytime
@@ -698,15 +713,15 @@ export function DashboardPage() {
               </div>
               <div className="mt-5 grid gap-3 text-left sm:grid-cols-3">
                 <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
-                  <p className="text-sm font-medium text-white">1. Add a product page</p>
+                  <p className="text-sm font-medium text-white">1. Add a page to watch</p>
                   <p className="mt-2 text-sm leading-6 text-slate-300">
-                    Paste in a public shopping or product URL into the field above.
+                    Paste in a public product, careers, or content URL into the field above.
                   </p>
                 </div>
                 <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
                   <p className="text-sm font-medium text-white">2. Run your first check</p>
                   <p className="mt-2 text-sm leading-6 text-slate-300">
-                    Watchli saves a first snapshot and tries to detect the current price.
+                    Watchli saves a first snapshot and looks for the type of update you chose.
                   </p>
                 </div>
                 <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">

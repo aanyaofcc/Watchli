@@ -182,7 +182,7 @@ router.get("/api/billing/status", requireAuth, async (request, response) => {
 
 router.post("/api/websites", requireAuth, createWebsiteRateLimit, async (request, response) => {
   try {
-    const { url, watchType } = request.body;
+    const { url, watchType, detectionMode } = request.body;
 
     if (!url) {
       return response.status(400).json({ error: "url is required." });
@@ -191,7 +191,8 @@ router.post("/api/websites", requireAuth, createWebsiteRateLimit, async (request
     const result = await createWebsiteForUser({
       userId: request.authUser.uid,
       url,
-      watchType
+      watchType,
+      detectionMode
     });
 
     return response.status(201).json(result);

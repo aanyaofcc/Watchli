@@ -75,20 +75,41 @@ async function recordAlertActivity({ type, email, subject }) {
   }
 }
 
-export async function sendChangeEmail({ email, url, checkedAt, diffSummary }) {
+export async function sendChangeEmail({
+  email,
+  url,
+  checkedAt,
+  diffSummary,
+  detectionMode = "product_price",
+  watchType = "product",
+  productTitle = ""
+}) {
   if (!resend || !config.emailFrom) {
     throw new Error("Email service is not configured.");
   }
 
   const priceChange = diffSummary?.priceChange;
   const isPriceAlert = Boolean(priceChange?.changed);
+  const isJobWatch = detectionMode === "job_updates";
+  const isPageWatch = watchType === "page";
   const safeUrl = escapeHtml(url);
   const safeCheckedAt = escapeHtml(checkedAt);
-  const emailTitle = isPriceAlert ? "A watched product update was detected" : "A watched page just changed";
-  const emailEyebrow = isPriceAlert ? "Product update detected" : "Change detected";
+  const safeProductTitle = escapeHtml(productTitle || "Tracked page");
+  const emailTitle = isPriceAlert
+    ? "A watched product update was detected"
+    : isJobWatch
+      ? "A watched job page just changed"
+      : "A watched page just changed";
+  const emailEyebrow = isPriceAlert
+    ? "Product update detected"
+    : isJobWatch
+      ? "Job update detected"
+      : "Change detected";
   const emailIntro = isPriceAlert
     ? "Watchli spotted a meaningful product update on one of the pages you're tracking."
-    : "Watchli detected a content update on one of the pages you're monitoring.";
+    : isJobWatch
+      ? "Watchli detected a change on a job or hiring page you're monitoring."
+      : "Watchli detected a content update on one of the pages you're monitoring.";
   const priceCard = priceChange?.changed
     ? `
       <div style="margin-bottom:16px;border-radius:22px;border:1px solid rgba(126,231,255,0.18);background:rgba(126,231,255,0.06);padding:18px 20px;">
@@ -121,6 +142,12 @@ export async function sendChangeEmail({ email, url, checkedAt, diffSummary }) {
     bodyHtml: `
       ${priceCard}
       <div style="border-radius:22px;border:1px solid rgba(190,224,255,0.12);background:rgba(255,255,255,0.04);padding:18px 20px;">
+        ${
+          isPageWatch
+            ? `<p style="margin:0 0 10px;font-size:12px;letter-spacing:0.14em;text-transform:uppercase;color:#8ed9ff;">Tracked page</p>
+               <p style="margin:0 0 18px;font-size:16px;line-height:1.7;color:#ffffff;">${safeProductTitle}</p>`
+            : ""
+        }
         <p style="margin:0 0 10px;font-size:12px;letter-spacing:0.14em;text-transform:uppercase;color:#8ed9ff;">Website</p>
         <p style="margin:0 0 18px;font-size:16px;line-height:1.7;color:#ffffff;word-break:break-word;">${safeUrl}</p>
         <p style="margin:0 0 10px;font-size:12px;letter-spacing:0.14em;text-transform:uppercase;color:#8ed9ff;">Checked at</p>
@@ -138,16 +165,18 @@ export async function sendChangeEmail({ email, url, checkedAt, diffSummary }) {
 
   const subject = isPriceAlert
     ? `Watchli alert: ${priceChange.label || "Product update detected"}`
-    : "Watchli detected a page change";
+    : isJobWatch
+      ? "Watchli detected a job page update"
+      : "Watchli detected a page change";
 
   const result = await resend.emails.send({
     from: buildFromAddress(),
     to: email,
     subject,
     html,
-    text: `${isPriceAlert ? "Watchli detected a product price change." : "Watchli detected a page change."}
+    text: `${isPriceAlert ? "Watchli detected a product price change." : isJobWatch ? "Watchli detected a job page change." : "Watchli detected a page change."}
 
-${priceChange?.changed ? `Price signal:\n${priceChange.label}\n\n` : ""}Website:
+${isPageWatch && productTitle ? `Tracked page:\n${productTitle}\n\n` : ""}${priceChange?.changed ? `Price signal:\n${priceChange.label}\n\n` : ""}Website:
 ${url}
 
 Checked at:

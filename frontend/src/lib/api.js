@@ -54,8 +54,8 @@ export function checkSite(websiteId, userId) {
   return post("/api/check-site", { websiteId, userId });
 }
 
-export function createWebsite(url, watchType = "product") {
-  return post("/api/websites", { url, watchType });
+export function createWebsite(url, detectionMode = "product_price") {
+  return post("/api/websites", { url, detectionMode });
 }
 
 export function inspectWebsite(url) {

@@ -200,9 +200,47 @@ function getConfidenceNote(confidence) {
   return "This page likely contains multiple competing prices, so double-check the result.";
 }
 
+function getDetectionMode(website) {
+  return website.detectionMode || ((website.watchType || "product") === "page" ? "page_content" : "product_price");
+}
+
+function getDetectionCopy(website) {
+  const detectionMode = getDetectionMode(website);
+
+  if (detectionMode === "job_updates") {
+    return {
+      changedLabel: "Job page changed",
+      titleFallback: "Tracked job page",
+      watchState: "Watching for job updates",
+      idleMessage:
+        "Watchli is standing by for new job postings, hiring status changes, or readable edits on this page.",
+      changedMessage: "Watchli detected a readable change on this job or hiring page."
+    };
+  }
+
+  if (detectionMode === "page_content") {
+    return {
+      changedLabel: "Content changed",
+      titleFallback: "Tracked website",
+      watchState: "Watching for content updates",
+      idleMessage: "Watchli is standing by for content changes on this website.",
+      changedMessage: "Watchli detected a readable content change on this website."
+    };
+  }
+
+  return {
+    changedLabel: "Price changed",
+    titleFallback: "Tracked product page",
+    watchState: "Waiting for a stronger price signal",
+    idleMessage: "Watchli is standing by for price, availability, or content changes on this page.",
+    changedMessage: ""
+  };
+}
+
 export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy }) {
   const watchType = website.watchType || "product";
   const isPageWatch = watchType === "page";
+  const detectionCopy = getDetectionCopy(website);
   const statusClasses = {
     Watching: "bg-white/[0.04] text-slate-200 border-white/10",
     Changed: "bg-[#f3e8db]/10 text-[#f6ead9] border-[#f3e8db]/16",
@@ -259,7 +297,7 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
             >
               {website.status === "Changed"
                 ? isPageWatch
-                  ? "Content changed"
+                  ? detectionCopy.changedLabel
                   : "Price changed"
                 : website.statusLabel || website.status}
             </span>
@@ -271,7 +309,7 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
           </div>
 
           <h3 className="mt-4 text-2xl font-semibold text-white">
-            {website.latestProductTitle || (isPageWatch ? "Tracked website" : "Tracked product page")}
+            {website.latestProductTitle || detectionCopy.titleFallback}
           </h3>
           <div className="mt-1 flex items-start gap-2 text-sm text-slate-300">
             <ExternalLink className="mt-0.5 h-4 w-4 shrink-0 text-slate-500" />
@@ -311,12 +349,10 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
             {website.status === "Error"
               ? website.lastErrorMessage || "The website could not be checked successfully."
               : hasContentChange
-                ? "Watchli detected a readable content change on this website."
+                ? detectionCopy.changedMessage
                 : website.lastDiffSummary?.priceChange?.changed
                   ? website.lastDiffSummary.priceChange.label
-                  : isPageWatch
-                    ? "Watchli is standing by for content changes on this website."
-                    : "Watchli is standing by for price, availability, or content changes on this page."}
+                  : detectionCopy.idleMessage}
           </p>
 
           {!isPageWatch && hasPriceMeta ? (
@@ -336,9 +372,7 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
           <p className="mt-2 text-base font-semibold text-white">
             {!isPageWatch && website.latestPrimaryPrice
               ? `Tracking around ${website.latestPrimaryPrice}`
-              : isPageWatch
-                ? "Watching for content updates"
-                : "Waiting for a stronger price signal"}
+              : detectionCopy.watchState}
           </p>
           <p className="mt-3 text-sm leading-6 text-slate-300">
             Last checked: {formatDate(website.lastChecked)}

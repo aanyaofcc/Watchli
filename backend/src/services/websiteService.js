@@ -17,6 +17,43 @@ function normalizeWatchType(value) {
   return value === "page" ? "page" : "product";
 }
 
+function normalizeDetectionMode(value, fallbackWatchType = "product") {
+  const normalized = String(value || "").toLowerCase();
+
+  if (normalized === "job_updates" || normalized === "jobs" || normalized === "job") {
+    return "job_updates";
+  }
+
+  if (
+    normalized === "page_content" ||
+    normalized === "content" ||
+    normalized === "page" ||
+    normalized === "website_content"
+  ) {
+    return "page_content";
+  }
+
+  if (
+    normalized === "product_price" ||
+    normalized === "product" ||
+    normalized === "price"
+  ) {
+    return "product_price";
+  }
+
+  return fallbackWatchType === "page" ? "page_content" : "product_price";
+}
+
+function getWatchConfiguration({ watchType = "product", detectionMode = "" }) {
+  const normalizedWatchType = normalizeWatchType(watchType);
+  const normalizedDetectionMode = normalizeDetectionMode(detectionMode, normalizedWatchType);
+
+  return {
+    watchType: normalizedDetectionMode === "product_price" ? "product" : "page",
+    detectionMode: normalizedDetectionMode
+  };
+}
+
 function serializeTimestamp(value) {
   if (!value) {
     return null;
@@ -386,11 +423,18 @@ export async function inspectWebsiteUrl({ url }) {
   }
 }
 
-export async function createWebsiteForUser({ userId, url, watchType = "product" }) {
+export async function createWebsiteForUser({
+  userId,
+  url,
+  watchType = "product",
+  detectionMode = ""
+}) {
   const db = getDb();
   const adminDb = getAdmin();
   const normalizedUrl = normalizeWebsiteUrl(url);
-  const normalizedWatchType = normalizeWatchType(watchType);
+  const watchConfiguration = getWatchConfiguration({ watchType, detectionMode });
+  const normalizedWatchType = watchConfiguration.watchType;
+  const normalizedDetectionMode = watchConfiguration.detectionMode;
   const existingWebsitesSnapshot = await db
     .collection(WEBSITES_COLLECTION)
     .where("userId", "==", userId)
@@ -422,6 +466,7 @@ export async function createWebsiteForUser({ userId, url, watchType = "product" 
     url: normalizedUrl,
     normalizedUrl,
     watchType: normalizedWatchType,
+    detectionMode: normalizedDetectionMode,
     status: "Watching",
     lastChecked: null,
     lastChanged: null,
@@ -504,7 +549,12 @@ export async function checkWebsite({ websiteId, userId }) {
 
   const website = websiteSnap.data();
   const normalizedUrl = normalizeWebsiteUrl(website.normalizedUrl || website.url);
-  const watchType = normalizeWatchType(website.watchType);
+  const watchConfiguration = getWatchConfiguration({
+    watchType: website.watchType,
+    detectionMode: website.detectionMode
+  });
+  const watchType = watchConfiguration.watchType;
+  const detectionMode = watchConfiguration.detectionMode;
 
   if (website.userId !== userId) {
     throw new Error("You do not have access to this website.");
@@ -548,6 +598,7 @@ export async function checkWebsite({ websiteId, userId }) {
           url: normalizedUrl,
           normalizedUrl,
           watchType,
+          detectionMode,
           status: "Watching",
           lastChecked: now,
           latestSnapshotHash: snapshotHash,
@@ -579,7 +630,9 @@ export async function checkWebsite({ websiteId, userId }) {
         changed: false,
         message:
           watchType === "page"
-            ? "Initial website snapshot saved."
+            ? detectionMode === "job_updates"
+              ? "Initial job page snapshot saved."
+              : "Initial website snapshot saved."
             : priceData.primaryPrice
               ? `Initial price snapshot saved at ${priceData.primaryPrice}.`
               : "Initial snapshot saved."
@@ -645,6 +698,7 @@ export async function checkWebsite({ websiteId, userId }) {
           url: normalizedUrl,
           normalizedUrl,
           watchType,
+          detectionMode,
           status: "Changed",
           lastChecked: now,
           lastChanged: now,
@@ -678,7 +732,10 @@ export async function checkWebsite({ websiteId, userId }) {
           email: notificationEmail,
           url: normalizedUrl,
           checkedAt: currentIsoTime,
-          diffSummary
+          diffSummary,
+          detectionMode,
+          watchType,
+          productTitle: priceData.productTitle || website.latestProductTitle || ""
         });
       }
 
@@ -687,8 +744,14 @@ export async function checkWebsite({ websiteId, userId }) {
         message:
           watchType === "page"
             ? shouldSendEmail
-              ? "Website change detected. Notification sent."
-              : "Website change detected."
+              ? `${
+                  detectionMode === "job_updates"
+                    ? "Job page change detected"
+                    : "Website change detected"
+                }. Notification sent.`
+              : detectionMode === "job_updates"
+                ? "Job page change detected."
+                : "Website change detected."
             : priceChanged && diffSummary.priceChange?.label
               ? shouldSendEmail
                 ? `${diffSummary.priceChange.label}. Notification sent.`
@@ -719,6 +782,7 @@ export async function checkWebsite({ websiteId, userId }) {
         url: normalizedUrl,
         normalizedUrl,
         watchType,
+        detectionMode,
         status: "Watching",
         lastChecked: now,
         latestSnapshotHash: snapshotHash,
@@ -742,7 +806,9 @@ export async function checkWebsite({ websiteId, userId }) {
       changed: false,
       message:
         watchType === "page"
-          ? "No content change detected."
+          ? detectionMode === "job_updates"
+            ? "No job page change detected."
+            : "No content change detected."
           : hasReliablePrice && priceData.primaryPrice
             ? `Price unchanged at ${priceData.primaryPrice}.`
             : "No change detected."
