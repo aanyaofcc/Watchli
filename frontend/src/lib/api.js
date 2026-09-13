@@ -1,6 +1,6 @@
 import { auth } from "./firebase";
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+const BACKEND_URL = (import.meta.env.VITE_BACKEND_URL || "").replace(/\/+$/, "");
 
 async function request(path, options = {}) {
   const token = auth.currentUser ? await auth.currentUser.getIdToken() : "";
