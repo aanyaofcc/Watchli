@@ -209,7 +209,7 @@ export function LandingPagePro() {
             Product monitoring that feels calm, clear, and useful
           </div>
 
-          <h1 className="display-font mt-8 text-5xl font-bold leading-[0.95] tracking-tight text-[#168BFF] sm:text-6xl lg:text-7xl">
+          <h1 className="display-font mt-8 text-5xl font-bold leading-[0.95] tracking-tight text-slate-900 sm:text-6xl lg:text-7xl">
             A cleaner way to catch product price changes.
           </h1>
 
