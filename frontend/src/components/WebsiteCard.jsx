@@ -1,10 +1,7 @@
 import {
   Clock3,
-  DollarSign,
   ExternalLink,
   History,
-  Info,
-  PackageSearch,
   RefreshCw,
   TextSearch,
   Trash2
@@ -77,42 +74,6 @@ function getPriceSummary(priceChange) {
   }
 
   return priceChange.label || "";
-}
-
-function getPriceDirectionLabel(priceChange) {
-  if (!priceChange?.changed) {
-    return "";
-  }
-
-  if (priceChange.direction === "down") {
-    return priceChange.amount
-      ? `Price decreased by ${formatDollarAmount(Math.abs(priceChange.amount))}`
-      : "Price dropped";
-  }
-
-  if (priceChange.direction === "up") {
-    return priceChange.amount
-      ? `Price increased by ${formatDollarAmount(priceChange.amount)}`
-      : "Price increased";
-  }
-
-  if (priceChange.direction === "appeared") {
-    return "Price found";
-  }
-
-  if (priceChange.direction === "removed") {
-    return "Price removed";
-  }
-
-  if (priceChange.direction === "sold_out") {
-    return "Item sold out";
-  }
-
-  if (priceChange.direction === "unavailable") {
-    return "Item no longer available";
-  }
-
-  return "Price changed";
 }
 
 function formatDollarAmount(value) {
@@ -281,20 +242,37 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
     website.status === "Changed" &&
     Boolean(website.lastDiffSummary?.contentChanged);
 
+  const activityLabel = website.lastDiffSummary?.priceChange?.changed
+    ? getPriceSummary(website.lastDiffSummary.priceChange)
+    : hasContentChange
+      ? "Readable change found"
+      : availability === "sold_out"
+        ? "Sold out"
+        : availability === "unavailable"
+          ? "Unavailable"
+          : website.lastChecked
+            ? "No new changes"
+            : "Waiting for first check";
+
   return (
-    <article className="rounded-[28px] border border-white/10 bg-white/[0.04] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.02)]">
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-        <div className="min-w-0 flex-1">
+    <article className="rounded-[24px] border border-white/10 bg-white/[0.045] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.025)] sm:p-5">
+      <div className="grid gap-4 lg:grid-cols-[80px_minmax(0,1fr)_auto] lg:items-center">
+        <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-[20px] border border-white/10 bg-white/[0.05]">
+          {productImage ? (
+            <img
+              src={productImage}
+              alt={website.latestProductTitle || domainLabel}
+              className="h-full w-full bg-white/95 object-contain"
+              loading="lazy"
+            />
+          ) : (
+            <span className="text-lg font-semibold tracking-wide text-slate-200">{fallbackLabel}</span>
+          )}
+        </div>
+
+        <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
-            <span
-              className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${
-                website.status === "Changed"
-                  ? "bg-emerald-400/15 text-emerald-200"
-                  : website.status === "Error"
-                    ? "bg-rose-500/15 text-rose-100"
-                    : "bg-white/10 text-slate-200"
-              }`}
-            >
+            <span className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold ${statusClasses[website.status] || statusClasses.Watching}`}>
               {website.status === "Changed"
                 ? isPageWatch
                   ? detectionCopy.changedLabel
@@ -302,142 +280,109 @@ export function WebsiteCard({ website, onCheck, onDelete, onViewHistory, busy })
                 : website.statusLabel || website.status}
             </span>
             {!isPageWatch ? (
-              <span className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${availabilityClasses}`}>
+              <span className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-medium ${availabilityClasses}`}>
                 {availabilityLabel}
               </span>
-            ) : null}
+            ) : (
+              <span className="rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-1 text-xs text-slate-300">
+                {getDetectionMode(website) === "job_updates" ? "Job updates" : "Content changes"}
+              </span>
+            )}
           </div>
 
-          <h3 className="mt-4 text-2xl font-semibold text-white">
+          <h3 className="mt-2 truncate text-xl font-semibold text-white sm:text-2xl">
             {website.latestProductTitle || detectionCopy.titleFallback}
           </h3>
-          <div className="mt-1 flex items-start gap-2 text-sm text-slate-300">
-            <ExternalLink className="mt-0.5 h-4 w-4 shrink-0 text-slate-500" />
-            <p className="break-all">{website.url}</p>
-          </div>
-        </div>
-
-        <div className="min-w-[140px] text-right">
-          <p className="text-2xl font-semibold text-white">
-            {currentTrackedPrice || (isPageWatch ? "Watching" : "No price")}
-          </p>
-          <p
-            className={`mt-1 text-sm ${
-              website.lastDiffSummary?.priceChange?.direction === "down"
-                ? "text-emerald-300"
-                : website.lastDiffSummary?.priceChange?.direction === "up"
-                  ? "text-amber-200"
-                  : "text-slate-300"
-            }`}
+          <a
+            href={website.url}
+            target="_blank"
+            rel="noreferrer"
+            className="mt-1 inline-flex max-w-full items-center gap-2 text-sm text-slate-300 transition hover:text-white"
           >
-            {website.lastDiffSummary?.priceChange?.changed
-              ? getPriceSummary(website.lastDiffSummary.priceChange)
-              : hasContentChange
-                ? "Readable change found"
-                : availability === "sold_out"
-                  ? "Sold out"
-                  : availability === "unavailable"
-                    ? "Unavailable"
-                    : "Stable"}
-          </p>
-        </div>
-      </div>
-
-      {productImage ? (
-        <div className="mt-5 overflow-hidden rounded-[24px] border border-white/10 bg-white/[0.03]">
-          <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
-            <p className="text-xs uppercase tracking-[0.16em] text-slate-400">Detected image</p>
-            {website.latestProductImageSource ? (
-              <span className="text-xs text-slate-400">{website.latestProductImageSource}</span>
-            ) : null}
-          </div>
-          <div className="bg-white/[0.02] p-4">
-            <img
-              src={productImage}
-              alt={website.latestProductTitle || domainLabel}
-              className="h-52 w-full rounded-[20px] object-contain bg-white/95"
-              loading="lazy"
-            />
-          </div>
-        </div>
-      ) : null}
-
-      <div className="mt-5 grid gap-3 xl:grid-cols-[minmax(0,1fr)_260px]">
-        <div className="rounded-[24px] border border-white/10 bg-white/[0.03] p-4">
-          <p className="text-sm leading-6 text-slate-200">
-            {website.status === "Error"
-              ? website.lastErrorMessage || "The website could not be checked successfully."
-              : hasContentChange
-                ? detectionCopy.changedMessage
-                : website.lastDiffSummary?.priceChange?.changed
-                  ? website.lastDiffSummary.priceChange.label
-                  : detectionCopy.idleMessage}
-          </p>
+            <ExternalLink className="h-4 w-4 shrink-0 text-slate-500" />
+            <span className="truncate">{domainLabel}</span>
+          </a>
 
           {!isPageWatch && hasPriceMeta ? (
-            <div className="mt-4 flex flex-wrap gap-2 text-xs text-slate-300">
-              <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5">
-                {sourceLabel}
-              </span>
-              <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5">
-                Confidence {confidenceLabel}
+            <div className="mt-3 flex flex-wrap gap-2 text-xs text-slate-300">
+              <span className="rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-1">{sourceLabel}</span>
+              <span
+                className="rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-1"
+                title={getConfidenceNote(website.latestPrimaryPriceConfidence)}
+              >
+                {confidenceLabel} confidence
               </span>
             </div>
           ) : null}
         </div>
 
-        <div className="rounded-[24px] border border-white/10 bg-white/[0.03] p-4">
-          <p className="text-xs uppercase tracking-[0.16em] text-slate-400">Watch state</p>
-          <p className="mt-2 text-base font-semibold text-white">
-            {!isPageWatch && website.latestPrimaryPrice
-              ? `Tracking around ${website.latestPrimaryPrice}`
-              : detectionCopy.watchState}
+        <div className="lg:min-w-[190px] lg:text-right">
+          <p className="text-2xl font-semibold text-white">
+            {currentTrackedPrice || (isPageWatch ? "Monitoring" : "Price pending")}
           </p>
-          <p className="mt-3 text-sm leading-6 text-slate-300">
-            Last checked: {formatDate(website.lastChecked)}
+          <p className={`mt-1 text-sm ${
+            website.lastDiffSummary?.priceChange?.direction === "down"
+              ? "text-emerald-300"
+              : website.lastDiffSummary?.priceChange?.direction === "up"
+                ? "text-amber-200"
+                : website.status === "Error"
+                  ? "text-rose-200"
+                  : "text-slate-300"
+          }`}>
+            {website.status === "Error"
+              ? website.lastErrorMessage || "Check failed"
+              : activityLabel}
           </p>
-          <p className="mt-1 text-sm leading-6 text-slate-300">
-            Last changed: {formatDate(website.lastChanged)}
-          </p>
+          {previousTrackedPrice && previousTrackedPrice !== currentTrackedPrice ? (
+            <p className="mt-1 text-xs text-slate-400">Previously {previousTrackedPrice}</p>
+          ) : null}
         </div>
       </div>
 
-      <div className="mt-5 flex flex-col gap-3 sm:flex-row">
-        <button
-          type="button"
-          onClick={() => onCheck(website.id)}
-          disabled={busy}
-          className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[#356dcf] bg-[#2c2725] px-4 py-3 font-semibold text-white transition hover:bg-[#34302d] disabled:cursor-not-allowed disabled:opacity-60"
-        >
-          <RefreshCw className="h-4 w-4" />
-          {busy ? "Checking..." : "Check Now"}
-        </button>
-        <button
-          type="button"
-          onClick={() => onViewHistory(website)}
-          disabled={busy}
-          className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[#d3b697]/12 bg-white/[0.06] px-4 py-3 text-stone-100 transition hover:bg-white/[0.1] disabled:cursor-not-allowed disabled:opacity-60"
-        >
-          <History className="h-4 w-4" />
-          View history
-        </button>
-        <button
-          type="button"
-          onClick={() => onDelete(website.id)}
-          disabled={busy}
-          className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[#d3b697]/12 bg-white/[0.06] px-4 py-3 text-stone-100 transition hover:bg-white/[0.1] disabled:cursor-not-allowed disabled:opacity-60"
-        >
-          <Trash2 className="h-4 w-4" />
-          Delete
-        </button>
-      </div>
-
-      {website.latestSnapshotText ? (
-        <div className="mt-4 inline-flex items-center gap-2 text-sm text-slate-400">
-          <TextSearch className="h-4 w-4 text-amber-200" />
-          Snapshot history is available from the history view.
+      <div className="mt-4 flex flex-col gap-3 border-t border-white/10 pt-4 xl:flex-row xl:items-center xl:justify-between">
+        <div className="flex flex-wrap gap-x-5 gap-y-1 text-xs text-slate-400 sm:text-sm">
+          <span className="inline-flex items-center gap-1.5">
+            <Clock3 className="h-4 w-4" />
+            Checked {formatDate(website.lastChecked)}
+          </span>
+          <span>Changed {formatDate(website.lastChanged)}</span>
+          {website.latestSnapshotText ? (
+            <span className="inline-flex items-center gap-1.5">
+              <TextSearch className="h-4 w-4" /> Snapshot saved
+            </span>
+          ) : null}
         </div>
-      ) : null}
+
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={() => onCheck(website.id)}
+            disabled={busy}
+            className="theme-primary-button inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            <RefreshCw className={`h-4 w-4 ${busy ? "animate-spin" : ""}`} />
+            {busy ? "Checking" : "Check now"}
+          </button>
+          <button
+            type="button"
+            onClick={() => onViewHistory(website)}
+            disabled={busy}
+            className="theme-outline-button inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm transition disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            <History className="h-4 w-4" />
+            History
+          </button>
+          <button
+            type="button"
+            onClick={() => onDelete(website.id)}
+            disabled={busy}
+            aria-label={`Delete ${website.latestProductTitle || domainLabel}`}
+            className="inline-flex items-center justify-center rounded-xl border border-rose-300/15 bg-rose-400/5 p-2.5 text-rose-100 transition hover:bg-rose-400/10 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            <Trash2 className="h-4 w-4" />
+          </button>
+        </div>
+      </div>
     </article>
   );
 }

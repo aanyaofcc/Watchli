@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Crown, LayoutDashboard, LogOut, Settings } from "lucide-react";
+import { Activity, Crown, LayoutDashboard, LogOut, Settings } from "lucide-react";
 import { useAuth } from "../providers/AuthProvider";
 import { BrandLogoLink } from "./BrandLogo";
 import { SiteFooterDense } from "./SiteFooterDense";
@@ -32,61 +32,38 @@ export function AppLayoutPro({ children }) {
     navigate("/");
   };
 
-  const pathLabel =
-    location.pathname === "/dashboard"
-      ? "dashboard"
-      : location.pathname === "/settings"
-        ? "settings"
-        : location.pathname === "/upgrade"
-          ? "upgrade"
-          : "app";
-
   return (
     <div className="tech-shell min-h-screen text-slate-100">
       <div className="aurora-orb left-[-140px] top-16 h-72 w-72" style={{ background: "var(--app-orb-1)" }} />
       <div className="aurora-orb right-[-120px] top-24 h-80 w-80" style={{ background: "var(--app-orb-2)" }} />
       <header className="app-topbar">
-        <div className="mx-auto flex w-full max-w-[1760px] flex-col gap-4 px-4 py-4 sm:px-6 lg:flex-row lg:items-center lg:justify-between">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:gap-8">
-            <div className="flex items-center gap-3">
-              <div className="flex gap-2">
-                <span className="h-3 w-3 rounded-full bg-[#f26d7d]" />
-                <span className="h-3 w-3 rounded-full bg-[#f2c94c]" />
-                <span className="h-3 w-3 rounded-full bg-[#6fcf97]" />
-              </div>
-              <div className="rounded-full border px-4 py-2 text-sm text-slate-200 theme-outline-button">
-                watchliweb.com/{pathLabel}
-              </div>
-            </div>
+        <div className="mx-auto flex w-full max-w-[1480px] flex-wrap items-center justify-between gap-4 px-4 py-4 sm:px-6">
+          <BrandLogoLink to="/" size="dashboard" subtitle="Change intelligence" />
 
-            <BrandLogoLink to="/" size="dashboard" subtitle="Mission control" />
+          <nav className="order-3 flex w-full items-center gap-2 overflow-x-auto sm:order-none sm:w-auto">
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              const active = location.pathname === item.to;
 
-            <nav className="flex flex-wrap items-center gap-2">
-              {navItems.map((item) => {
-                const Icon = item.icon;
-                const active = location.pathname === item.to;
+              return (
+                <Link
+                  key={item.to}
+                  to={item.to}
+                  className={`inline-flex shrink-0 items-center gap-2 rounded-full px-4 py-2.5 text-sm transition ${
+                    active ? "theme-active-nav" : "theme-outline-button text-slate-300"
+                  }`}
+                >
+                  <Icon className="h-4 w-4" />
+                  <span>{item.label}</span>
+                </Link>
+              );
+            })}
+          </nav>
 
-                return (
-                  <Link
-                    key={item.to}
-                    to={item.to}
-                    className={`inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-sm transition ${
-                      active
-                        ? "theme-active-nav"
-                        : "theme-outline-button text-slate-300"
-                    }`}
-                  >
-                    <Icon className="h-4 w-4" />
-                    <span>{item.label}</span>
-                  </Link>
-                );
-              })}
-            </nav>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <div className="theme-accent-chip rounded-full px-4 py-2 text-sm font-medium">
-              Live product monitoring
+          <div className="flex items-center gap-2">
+            <div className="theme-accent-chip hidden items-center gap-2 rounded-full px-4 py-2 text-sm font-medium md:inline-flex">
+              <Activity className="h-4 w-4" />
+              Monitoring active
             </div>
             <button
               type="button"
@@ -101,41 +78,10 @@ export function AppLayoutPro({ children }) {
       </header>
 
       <main className="app-workspace relative z-10">
-        <div className="grid gap-6 xl:grid-cols-[260px_minmax(0,1fr)]">
-          <aside className="app-surface rounded-[30px] p-5">
-            <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Watchli</p>
-            <h2 className="mt-3 text-2xl font-semibold text-white">Mission control</h2>
-
-            <nav className="mt-6 space-y-3">
-              {navItems.map((item) => {
-                const Icon = item.icon;
-                const active = location.pathname === item.to;
-
-                return (
-                  <Link
-                    key={item.to}
-                    to={item.to}
-                    className={`flex items-center gap-3 rounded-[20px] px-4 py-3 text-lg transition ${
-                      active
-                        ? "theme-active-nav"
-                        : "app-surface-muted border border-transparent text-slate-300 hover:bg-white/[0.06]"
-                    }`}
-                  >
-                    <Icon className="h-5 w-5 shrink-0" />
-                    <span>{item.label}</span>
-                  </Link>
-                );
-              })}
-            </nav>
-          </aside>
-
-          <div className="min-w-0">
-            {children}
-          </div>
-        </div>
+        {children}
       </main>
 
-      <SiteFooterDense compact width="max-w-[1760px]" />
+      <SiteFooterDense compact width="max-w-[1480px]" />
     </div>
   );
 }

@@ -21,34 +21,34 @@ import { sendFeedback } from "../lib/api";
 
 const steps = [
   {
-    title: "Paste a product URL",
-    body: "Drop in a product or shopping page you want to keep an eye on."
+    title: "Choose what matters",
+    body: "Paste a product, job listing, or public webpage and choose the kind of change you care about."
   },
   {
-    title: "We watch the listing",
-    body: "Watchli saves the page text, looks for likely prices, and compares future checks."
+    title: "Watchli builds a baseline",
+    body: "The first check saves a snapshot, extracts useful signals, and creates a reliable point of comparison."
   },
   {
-    title: "Get a price-change alert",
-    body: "If the price or availability changes, you get an email instead of checking manually."
+    title: "Get a useful alert",
+    body: "When a tracked signal changes, Watchli records the difference and sends the update to your inbox."
   }
 ];
 
 const features = [
   {
     icon: Globe,
-    title: "Price-focused tracking",
-    body: "Built for shopping and product pages where the biggest question is usually simple: did the price change?"
+    title: "Three focused watch modes",
+    body: "Track prices and stock, job-page updates, or readable content changes without configuring complex rules."
   },
   {
     icon: LayoutDashboard,
-    title: "Snapshot-first dashboard",
-    body: "See what changed, the latest detected price, and the before-and-after text from one clean control panel."
+    title: "Evidence, not vague alerts",
+    body: "See the latest signal, check history, and review before-and-after snapshots from one focused dashboard."
   },
   {
     icon: ShieldCheck,
-    title: "Simple, trustworthy stack",
-    body: "Firebase auth, Firestore storage, and dependable email alerts without unnecessary moving parts."
+    title: "Quiet by design",
+    body: "Watchli records every check but only emails when the type of change you selected actually happens."
   }
 ];
 
@@ -152,7 +152,7 @@ export function LandingPagePro() {
             How it works
           </a>
           <a href="#product-preview" className="transition hover:text-slate-950">
-            Product preview
+            Live preview
           </a>
           <a href="#pricing" className="transition hover:text-slate-950">
             Pricing
@@ -184,17 +184,17 @@ export function LandingPagePro() {
               </div>
               <div>
                 <p className="display-font text-base font-semibold text-slate-900">
-                  Watchli tracks product pages for price drops, increases, sellouts, and listing changes.
+                  One dashboard for the web changes you do not want to miss.
                 </p>
                 <p className="mt-1 text-sm leading-6 text-slate-600">
-                  Add a shopping URL, let Watchli monitor the page, and get emailed when something important changes.
+                  Monitor prices, job listings, and public webpages with snapshots and focused email alerts.
                 </p>
               </div>
             </div>
 
             <div className="flex shrink-0 items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
               <span className="rounded-full border border-[#9a765926] bg-white/55 px-3 py-2">
-                Product monitoring
+                Change monitoring
               </span>
               <span className="rounded-full border border-[#9a765926] bg-white/55 px-3 py-2">
                 Email alerts
@@ -206,16 +206,16 @@ export function LandingPagePro() {
         <section className="mx-auto max-w-5xl px-6 pb-16 pt-12 text-center sm:pb-20">
           <div className="homepage-chip mx-auto inline-flex max-w-full items-center gap-2 rounded-full px-4 py-2 text-sm text-slate-700">
             <Sparkles className="h-4 w-4 text-[#8d5b40]" />
-            Product monitoring that feels calm, clear, and useful
+            Automated change detection, without the noise
           </div>
 
           <h1 className="display-font mt-8 text-5xl font-bold leading-[0.95] tracking-tight text-slate-900 sm:text-6xl lg:text-7xl">
-            A cleaner way to catch product price changes.
+            Know when the web changes. Before you miss it.
           </h1>
 
           <p className="mx-auto mt-6 max-w-3xl text-lg leading-8 text-slate-700">
-            Watchli tracks shopping pages, watches for likely prices, and emails you when a product
-            price rises, drops, or goes out of stock so you do not have to keep checking manually.
+            Track a product, a job posting, or any public webpage. Watchli checks it, keeps a history,
+            and emails you when the signal you care about changes.
           </p>
 
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
@@ -236,9 +236,9 @@ export function LandingPagePro() {
 
           <div className="mt-10 grid gap-4 text-left sm:grid-cols-3">
             {[
-              ["3 watched pages free", "Start with the products you care about most."],
-              ["Price-aware alerts", "Get emailed when a product page appears to move."],
-              ["Simple setup", "Paste a URL, run a check, and let Watchli keep watching."]
+              ["3 watches free", "Start with the pages that matter most."],
+              ["Purpose-built modes", "Choose product, job, or content tracking."],
+              ["Instant first check", "Add a URL and Watchli creates the baseline for you."]
             ].map(([title, body]) => (
               <div key={title} className="homepage-panel-soft rounded-3xl p-4 sm:p-5">
                 <p className="display-font text-lg font-semibold text-slate-900">{title}</p>
@@ -250,13 +250,13 @@ export function LandingPagePro() {
 
         <section id="product-preview" className="mx-auto max-w-7xl px-6 pb-12 sm:pb-16">
           <div className="mb-6 max-w-3xl">
-            <p className="text-sm uppercase tracking-[0.24em] text-[#8d5b40]">Product preview</p>
+            <p className="text-sm uppercase tracking-[0.24em] text-[#315f99]">Live preview</p>
             <h2 className="display-font mt-3 text-3xl font-bold text-slate-900 sm:text-4xl">
-              See the dashboard before you sign up
+              A monitoring workspace you can understand at a glance
             </h2>
             <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-700 sm:text-base">
-              The preview now sits in its own section, so it reads like a real screenshot instead of
-              getting squeezed into the hero.
+              Status, current signals, recent changes, and snapshot history stay together so you always
+              know what Watchli found and when it checked.
             </p>
           </div>
 
@@ -457,7 +457,7 @@ export function LandingPagePro() {
           <div className="mb-8 max-w-2xl">
             <p className="text-sm uppercase tracking-[0.24em] text-[#8d5b40]">How it works</p>
             <h2 className="display-font mt-3 text-4xl font-bold text-slate-900">
-              Watchli turns noisy product pages into simple signals
+              Watchli turns noisy webpages into useful signals
             </h2>
           </div>
 

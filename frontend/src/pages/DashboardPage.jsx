@@ -264,8 +264,23 @@ export function DashboardPage() {
         ...current,
         ...(payload.account || {})
       }));
+      let firstCheckMessage = "Website added and initial snapshot saved.";
+
+      if (payload.website?.id) {
+        setCheckingId(payload.website.id);
+
+        try {
+          const result = await checkSite(payload.website.id, user.uid);
+          firstCheckMessage = result.message || firstCheckMessage;
+        } catch (checkError) {
+          firstCheckMessage = `Website added, but the first check could not finish: ${checkError.message}`;
+        } finally {
+          setCheckingId("");
+        }
+      }
+
       await loadWebsites({ showRefreshing: true });
-      setSuccess("Website added to your dashboard.");
+      setSuccess(firstCheckMessage);
       setUrl("");
       setDetectionMode("product_price");
     } catch (submitError) {
@@ -471,7 +486,7 @@ export function DashboardPage() {
     schedulerAlertEmail === signedInUserEmail;
 
   return (
-    <div className="grid gap-5 xl:grid-cols-[minmax(0,1.18fr)_minmax(320px,0.82fr)] xl:items-start">
+    <div className="space-y-6">
       <div className="space-y-6">
         <section className="rounded-[30px] border border-white/10 bg-white/[0.03] p-5 sm:p-6">
           <div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
@@ -486,7 +501,7 @@ export function DashboardPage() {
                   : "Track watched pages, run checks, and review important product signals from one place."}
               </p>
             </div>
-            <div className="flex h-14 w-14 items-center justify-center rounded-[20px] border border-[#356dcf] bg-[#2c2725] text-white">
+            <div className="theme-accent-chip flex h-14 w-14 items-center justify-center rounded-[20px] text-white">
               <Bell className="h-6 w-6" />
             </div>
           </div>
@@ -494,16 +509,16 @@ export function DashboardPage() {
           <div className="mt-6 grid gap-4 xl:grid-cols-[minmax(0,1.15fr)_minmax(280px,0.85fr)]">
             <div className="space-y-4">
               <div className="grid gap-3 sm:grid-cols-3">
-                <div className="rounded-[24px] border border-white/10 bg-[#262228] p-4">
+                <div className="rounded-[24px] border border-white/10 bg-black/15 p-4">
                   <p className="text-xs uppercase tracking-[0.16em] text-slate-400">Active watches</p>
                   <p className="mt-3 text-4xl font-semibold text-white">{websites.length}</p>
                 </div>
-                <div className="rounded-[24px] border border-white/10 bg-[#262228] p-4">
-                  <p className="text-xs uppercase tracking-[0.16em] text-slate-400">Price drops found</p>
+                <div className="rounded-[24px] border border-white/10 bg-black/15 p-4">
+                  <p className="text-xs uppercase tracking-[0.16em] text-slate-400">Changes found</p>
                   <p className="mt-3 text-4xl font-semibold text-white">{changedWebsites.length}</p>
                 </div>
-                <div className="rounded-[24px] border border-white/10 bg-[#262228] p-4">
-                  <p className="text-xs uppercase tracking-[0.16em] text-slate-400">Alerts delivered</p>
+                <div className="rounded-[24px] border border-white/10 bg-black/15 p-4">
+                  <p className="text-xs uppercase tracking-[0.16em] text-slate-400">Last run changes</p>
                   <p className="mt-3 text-4xl font-semibold text-white">
                     {scheduler?.lastRunChanged || 0}
                   </p>
@@ -536,12 +551,12 @@ export function DashboardPage() {
                   value={url}
                   onChange={(event) => setUrl(event.target.value)}
                   placeholder={DETECTION_MODES[detectionMode].placeholder}
-                  className="w-full rounded-2xl border border-[#d3b697]/18 bg-[#f6eee5] px-4 py-3 text-[#2f2722] outline-none transition placeholder:text-[#8b7765] focus:border-[#b5835a]"
+                  className="app-input w-full rounded-2xl px-4 py-3 outline-none transition"
                 />
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="w-full rounded-2xl border border-[#356dcf] bg-[#2c2725] px-5 py-3 font-semibold text-white transition hover:bg-[#34302d] disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+                  className="theme-primary-button w-full rounded-2xl px-5 py-3 font-semibold transition disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
                 >
                   {submitting ? "Adding..." : "Add Website"}
                 </button>
@@ -752,7 +767,7 @@ export function DashboardPage() {
         </section>
       </div>
 
-      <aside className="space-y-4">
+      <aside className="grid gap-4 lg:grid-cols-3 lg:items-start">
           <div className="glass-panel-soft rounded-3xl p-5 sm:p-6">
             <div className="flex items-center gap-3">
               <Sparkles className="h-5 w-5 text-amber-200" />
@@ -773,12 +788,12 @@ export function DashboardPage() {
                 value={inspectUrl}
                 onChange={(event) => setInspectUrl(event.target.value)}
                 placeholder="https://store.com/product/example"
-                className="w-full rounded-2xl border border-[#d3b697]/18 bg-[#f6eee5] px-4 py-3 text-[#2f2722] outline-none transition placeholder:text-[#8b7765] focus:border-[#b5835a]"
+                className="app-input w-full rounded-2xl px-4 py-3 outline-none transition"
               />
               <button
                 type="submit"
                 disabled={inspectLoading}
-                className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-[#c9a37f]/18 bg-[#8d5b40]/88 px-4 py-3 text-sm font-medium text-white transition hover:bg-[#7b4d36] disabled:cursor-not-allowed disabled:opacity-60"
+                className="theme-primary-button inline-flex w-full items-center justify-center gap-2 rounded-2xl px-4 py-3 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {inspectLoading ? "Checking store..." : "Test compatibility"}
               </button>

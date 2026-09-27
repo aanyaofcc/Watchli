@@ -1,4 +1,4 @@
-export const DEFAULT_APP_THEME_ID = "mocha-editorial";
+export const DEFAULT_APP_THEME_ID = "midnight-ink";
 
 export const APP_THEMES = [
   {
