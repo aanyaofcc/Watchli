@@ -250,7 +250,7 @@ export function LandingPagePro() {
 
         <section id="product-preview" className="mx-auto max-w-7xl px-6 pb-12 sm:pb-16">
           <div className="mb-6 max-w-3xl">
-            <p className="text-sm uppercase tracking-[0.24em] text-[#315f99]">Live preview</p>
+            <p className="text-sm uppercase tracking-[0.24em] text-[#8d5b40]">Live preview</p>
             <h2 className="display-font mt-3 text-3xl font-bold text-slate-900 sm:text-4xl">
               A monitoring workspace you can understand at a glance
             </h2>
